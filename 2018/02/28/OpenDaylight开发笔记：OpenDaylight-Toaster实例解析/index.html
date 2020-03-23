@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>OpenDaylight开发笔记：OpenDaylight Toaster实例解析 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="SDN,Controller,OpenDaylight">
+  
+  
+    <meta name="description" content="
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+
+Toaster工程构建我们以...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2018/02/28/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight-Toaster%E5%AE%9E%E4%BE%8B%E8%A7%A3%E6%9E%90/">
+        OpenDaylight开发笔记：OpenDaylight Toaster实例解析
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/SDN/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>SDN</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2018-02-28 13:26:56</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言<br>SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。</p>
+</blockquote>
+<h2 id="Toaster工程构建"><a href="#Toaster工程构建" class="headerlink" title="Toaster工程构建"></a>Toaster工程构建</h2><p>我们以OpenDaylight Carbon SR2版本为基础。</p>
+<p>运行构建命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn org.apache.maven.plugins:maven-archetype-plugin:2.4:generate -DarchetypeGroupId&#x3D;org.opendaylight.controller -DarchetypeArtifactId&#x3D;opendaylight-startup-archetype -DarchetypeRepository&#x3D;https:&#x2F;&#x2F;nexus.opendaylight.org&#x2F;content&#x2F;repositories&#x2F;public -DarchetypeVersion&#x3D;1.3.2-Carbon</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>项目的基本信息填写如下：</p>
+<p><img src="http://img.bcoder.top/2018.02.28/1.png" alt="Toaster实例解析"></p>
+<p>构建完成后<code>mvn idea:idea</code>编译导入到idea</p>
+<h2 id="定义一个可操作的Toaster"><a href="#定义一个可操作的Toaster" class="headerlink" title="定义一个可操作的Toaster"></a>定义一个可操作的Toaster</h2><h3 id="Toaster-YANG数据模型定义"><a href="#Toaster-YANG数据模型定义" class="headerlink" title="Toaster YANG数据模型定义"></a>Toaster YANG数据模型定义</h3><p>编辑api/src/main/yang/toaster.yang，具体内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;这个文件包含一个YANG数据定义。这个数据模型定义基于SNMP MIB Toaster示例的烤面包机</span><br><span class="line">module toaster &#123;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;如果省略，则默认为1</span><br><span class="line">  yang-version 1;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;这个toaster模块的唯一命名空间，以便从其他可能具有相同名称的模块中唯一标识它。</span><br><span class="line">  namespace</span><br><span class="line">    &quot;http:&#x2F;&#x2F;netconfcentral.org&#x2F;ns&#x2F;toaster&quot;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;表示下面引用的名称空间的较短前缀</span><br><span class="line">  prefix toast;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;定义拥有这个toaster.yang文件的组织。</span><br><span class="line">  organization &quot;zlnnjit&quot;;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;定义这个yang文件的主要联系人。</span><br><span class="line">  contact</span><br><span class="line">    &quot;zlnnjit &lt;734681005@qq.com&gt;&quot;;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;提供了该yang文件的描述。</span><br><span class="line">  description</span><br><span class="line">    &quot;YANG version of the TOASTER-MIB.&quot;;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;定义此yang文件的修订日期</span><br><span class="line">  revision &quot;2018-02-26&quot; &#123;</span><br><span class="line">    description</span><br><span class="line">      &quot;Toaster module in progress.&quot;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;声明一个基本标识，在这种情况下是不同类型的Toaster的基本类型。</span><br><span class="line">  identity toast-type &#123;</span><br><span class="line">    description</span><br><span class="line">      &quot;Base for all bread types supported by the toaster.</span><br><span class="line">         New bread types not listed here nay be added in the </span><br><span class="line">         future.&quot;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;下面的身份部分用于定义全局唯一身份</span><br><span class="line">  &#x2F;&#x2F;注意:删除了许多不同类型的bread以缩短文本长度。</span><br><span class="line"></span><br><span class="line">  identity white-bread &#123;</span><br><span class="line">    base toast:toast-type;</span><br><span class="line">    description &quot;White bread.&quot;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  identity wheat-bread &#123;</span><br><span class="line">    base toast-type;</span><br><span class="line">    description &quot;Wheat bread.&quot;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  identity wonder-bread &#123;</span><br><span class="line">    base toast-type;</span><br><span class="line">    description &quot;Wonder bread.&quot;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  identity frozen-waffle &#123;</span><br><span class="line">    base toast-type;</span><br><span class="line">    description &quot;Frozen waffle.&quot;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  identity frozen-bagel &#123;</span><br><span class="line">    base toast-type;</span><br><span class="line">    description &quot;Frozen bagel.&quot;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  identity hash-brown &#123;</span><br><span class="line">    base toast-type;</span><br><span class="line">    description &quot;Hash browned potatos.&quot;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;定义类型，定义了字符长度，并对本例子使用的标准和语言版本进行了简单概述</span><br><span class="line">  typedef DisplayString &#123;</span><br><span class="line">    type string &#123;</span><br><span class="line">      length &quot;0 .. 255&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    description</span><br><span class="line">      &quot;YANG version of the SMIv2 DisplayString TEXTUAL-CONVENTION.&quot;;</span><br><span class="line">    reference</span><br><span class="line">      &quot;RFC 2579, section 2.&quot;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;定义了一个toaster容器，顶级配置“item”定义了一个烤面包机。</span><br><span class="line">  &#x2F;&#x2F;presence意味着只能有一个烤面包机实例，如果存在，则表明这个服务是可用的。</span><br><span class="line">  container toaster &#123;</span><br><span class="line">    presence</span><br><span class="line">      &quot;Indicates the toaster service is available&quot;;</span><br><span class="line">    description</span><br><span class="line">      &quot;Top-level container for all toaster database objects.&quot;;</span><br><span class="line">    leaf toasterManufacturer &#123;</span><br><span class="line">      &#x2F;&#x2F;注意这三个属性config &#x3D; false。这表明它们是操作属性。</span><br><span class="line">      type DisplayString;</span><br><span class="line">      config false;</span><br><span class="line">      mandatory true;</span><br><span class="line">      description</span><br><span class="line">        &quot;The name of the toaster&#39;s manufacturer. For instance, </span><br><span class="line">              Microsoft Toaster.&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    leaf toasterModelNumber &#123;</span><br><span class="line">      type DisplayString;</span><br><span class="line">      config false;</span><br><span class="line">      mandatory true;</span><br><span class="line">      description</span><br><span class="line">        &quot;The name of the toaster&#39;s model. For instance,</span><br><span class="line">             Radiant Automatic.&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    leaf toasterStatus &#123;</span><br><span class="line">      type enumeration &#123;</span><br><span class="line">        enum &quot;up&quot; &#123;</span><br><span class="line">          value 1;</span><br><span class="line">          description</span><br><span class="line">            &quot;The toaster knob position is up.</span><br><span class="line">                    No toast is being made now.&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        enum &quot;down&quot; &#123;</span><br><span class="line">          value 2;</span><br><span class="line">          description</span><br><span class="line">            &quot;The toaster knob position is down.</span><br><span class="line">                    Toast is being made now.&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      config false;</span><br><span class="line">      mandatory true;</span><br><span class="line">      description</span><br><span class="line">        &quot;This variable indicates the current state of </span><br><span class="line">             the toaster.&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    leaf darknessFactor &#123;</span><br><span class="line">      type uint32;</span><br><span class="line">      config true;</span><br><span class="line">      default 1000;</span><br><span class="line">      description</span><br><span class="line">        &quot;The darkness factor. Basically, the number of ms to multiple the doneness value by.&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  rpc make-toast &#123;</span><br><span class="line">    description</span><br><span class="line">      &quot;Make some toast.</span><br><span class="line">         The toastDone notification will be sent when </span><br><span class="line">         the toast is finished.</span><br><span class="line">         An &#39;in-use&#39; error will be returned if toast</span><br><span class="line">         is already being made.</span><br><span class="line">         A &#39;resource-denied&#39; error will be returned </span><br><span class="line">         if the toaster service is disabled.&quot;;</span><br><span class="line">    input &#123;</span><br><span class="line">      leaf toasterDoneness &#123;</span><br><span class="line">        type uint32 &#123;</span><br><span class="line">          range &quot;1 .. 10&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        default &#39;5&#39;;</span><br><span class="line">        description</span><br><span class="line">          &quot;This variable controls how well-done is the </span><br><span class="line">                 ensuing toast. It should be on a scale of 1 to 10.</span><br><span class="line">                 Toast made at 10 generally is considered unfit </span><br><span class="line">                 for human consumption; toast made at 1 is warmed </span><br><span class="line">                 lightly.&quot;;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      leaf toasterToastType &#123;</span><br><span class="line">        type identityref &#123;</span><br><span class="line">          base toast:toast-type;</span><br><span class="line">        &#125;</span><br><span class="line">        default &#39;wheat-bread&#39;;</span><br><span class="line">        description</span><br><span class="line">          &quot;This variable informs the toaster of the type of </span><br><span class="line">                 material that is being toasted. The toaster </span><br><span class="line">                 uses this information, combined with </span><br><span class="line">                 toasterDoneness, to compute for how </span><br><span class="line">                 long the material must be toasted to achieve </span><br><span class="line">                 the required doneness.&quot;;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  rpc cancel-toast &#123;</span><br><span class="line">    description</span><br><span class="line">      &quot;Stop making toast, if any is being made.</span><br><span class="line">         A &#39;resource-denied&#39; error will be returned </span><br><span class="line">         if the toaster service is disabled.&quot;;</span><br><span class="line">  &#125;  &#x2F;&#x2F; rpc cancel-toast</span><br><span class="line"></span><br><span class="line">  rpc restock-toaster &#123;</span><br><span class="line">      description</span><br><span class="line">        &quot;Restocks the toaster with the amount of bread specified.&quot;;</span><br><span class="line">        </span><br><span class="line">      input &#123;</span><br><span class="line">          leaf amountOfBreadToStock &#123;</span><br><span class="line">              type uint32;</span><br><span class="line">              description</span><br><span class="line">                &quot;Indicates the amount of bread to re-stock&quot;;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  notification toasterOutOfBread &#123;</span><br><span class="line">    description</span><br><span class="line">      &quot;Indicates that the toaster has run of out bread.&quot;;</span><br><span class="line">  &#125; </span><br><span class="line">  </span><br><span class="line">  notification toasterRestocked &#123;</span><br><span class="line">    description</span><br><span class="line">      &quot;Indicates that the toaster has run of out bread.&quot;;</span><br><span class="line">    leaf amountOfBread &#123;</span><br><span class="line">      type uint32;</span><br><span class="line">      description</span><br><span class="line">        &quot;Indicates the amount of bread that was re-stocked&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们将烤箱容器上的所有某些叶子节标记为可操作（config false），而不是配置数据。MD-SAL，以及一些restconf的restconf草案将配置和操作数据分成两个独立的数据存储。</p>
+<ul>
+<li>操作：操作数据存储用于显示您可能正在查看的设备，网络，服务等的运行状态（只读）视图。在我们的例子中，我们有一个称为烤面包机的服务： 烤面包机的制造，型号和状态全部由底层烤面包机提供，不能配置（稍后我们将添加配置属性）。将前两个属性看作是硬编码到物理设备中的常量，而第三个属性表示当前状态，并且随着使用烤面包机而变化。</li>
+<li>配置：配置数据存储通常用于在某种程度上配置设备。这些配置是用户提供的，并且是用户告诉设备如何表现的方式。例如，如果您想以某种方式配置资源，例如应用策略或其他配置，那么您将使用此数据存储。</li>
+</ul>
+<p>我们在api文件夹下面使用<code>mvn clean install</code>编译生成模板代码。</p>
+<p>生成的代码在api/target/generated-sources/mdsal-binding/目录下：</p>
+<p><img src="http://img.bcoder.top/2018.02.28/2.png" alt="Toaster实例解析"></p>
+<h3 id="实现Toaster的面包生产者"><a href="#实现Toaster的面包生产者" class="headerlink" title="实现Toaster的面包生产者"></a>实现Toaster的面包生产者</h3><p>我们已经为烤面包机定义了数据模型,现在我们需要一个实现提供操作数据。我们将会创建一个类OpendaylightToaster。在初始化的时候OpendaylightToaster通过DataBroker接口，把运行烤面包机的数据写入MD-SAL数据库，并且删除最近的数据（更新数据）。</p>
+<p>具体代码以及代码解释如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br><span class="line">406</span><br><span class="line">407</span><br><span class="line">408</span><br><span class="line">409</span><br><span class="line">410</span><br><span class="line">411</span><br><span class="line">412</span><br><span class="line">413</span><br><span class="line">414</span><br><span class="line">415</span><br><span class="line">416</span><br><span class="line">417</span><br><span class="line">418</span><br><span class="line">419</span><br><span class="line">420</span><br><span class="line">421</span><br><span class="line">422</span><br><span class="line">423</span><br><span class="line">424</span><br><span class="line">425</span><br><span class="line">426</span><br><span class="line">427</span><br><span class="line">428</span><br><span class="line">429</span><br><span class="line">430</span><br><span class="line">431</span><br><span class="line">432</span><br><span class="line">433</span><br><span class="line">434</span><br><span class="line">435</span><br><span class="line">436</span><br><span class="line">437</span><br><span class="line">438</span><br><span class="line">439</span><br><span class="line">440</span><br><span class="line">441</span><br><span class="line">442</span><br><span class="line">443</span><br><span class="line">444</span><br><span class="line">445</span><br><span class="line">446</span><br><span class="line">447</span><br><span class="line">448</span><br><span class="line">449</span><br><span class="line">450</span><br><span class="line">451</span><br><span class="line">452</span><br><span class="line">453</span><br><span class="line">454</span><br><span class="line">455</span><br><span class="line">456</span><br><span class="line">457</span><br><span class="line">458</span><br><span class="line">459</span><br><span class="line">460</span><br><span class="line">461</span><br><span class="line">462</span><br><span class="line">463</span><br><span class="line">464</span><br><span class="line">465</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Copyright © 2017 zlnnjit and others.  All rights reserved.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * This program and the accompanying materials are made available under the</span></span><br><span class="line"><span class="comment"> * terms of the Eclipse Public License v1.0 which accompanies this distribution,</span></span><br><span class="line"><span class="comment"> * and is available at http://www.eclipse.org/legal/epl-v10.html</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">package</span> top.bcoder.toaster.impl;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.google.common.base.Function;</span><br><span class="line"><span class="keyword">import</span> com.google.common.base.Optional;</span><br><span class="line"><span class="keyword">import</span> com.google.common.util.concurrent.AsyncFunction;</span><br><span class="line"><span class="keyword">import</span> com.google.common.util.concurrent.FutureCallback;</span><br><span class="line"><span class="keyword">import</span> com.google.common.util.concurrent.Futures;</span><br><span class="line"><span class="keyword">import</span> com.google.common.util.concurrent.ListenableFuture;</span><br><span class="line"><span class="keyword">import</span> com.google.common.util.concurrent.SettableFuture;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.controller.md.sal.binding.api.DataBroker;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.controller.md.sal.binding.api.DataObjectModification;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.controller.md.sal.binding.api.DataTreeModification;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.controller.md.sal.binding.api.WriteTransaction;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.controller.md.sal.common.api.data.OptimisticLockFailedException;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.controller.md.sal.common.util.jmx.AbstractMXBean;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev180226.DisplayString;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev180226.MakeToastInput;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev180226.RestockToasterInput;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev180226.Toaster;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev180226.ToasterBuilder;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev180226.ToasterOutOfBreadBuilder;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev180226.ToasterRestocked;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev180226.ToasterRestockedBuilder;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.http.netconfcentral.org.ns.toaster.rev180226.ToasterService;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.toaster.app.config.rev160503.ToasterAppConfig;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.toaster.app.config.rev160503.ToasterAppConfigBuilder;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yangtools.concepts.ListenerRegistration;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yangtools.yang.binding.InstanceIdentifier;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yangtools.yang.common.RpcError;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yangtools.yang.common.RpcResult;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yangtools.yang.common.RpcResultBuilder;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.annotation.Nullable;</span><br><span class="line"><span class="keyword">import</span> java.util.Collection;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Callable;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ExecutorService;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Future;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicLong;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicReference;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType.DELETE;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType.WRITE;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType.OPERATIONAL;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.opendaylight.yangtools.yang.common.RpcError.ErrorType.APPLICATION;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ToasterProvider</span> <span class="keyword">extends</span> <span class="title">AbstractMXBean</span> <span class="keyword">implements</span> <span class="title">ToasterService</span>, <span class="title">DataTreeChangeListener</span>&lt;<span class="title">Toaster</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//log4j日志注册</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger LOG = LoggerFactory.getLogger(ToasterProvider<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">//定义常量</span></span><br><span class="line">	<span class="comment">//toaster container的索引（IID）</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> InstanceIdentifier&lt;Toaster&gt; TOASTER_IID = InstanceIdentifier.builder(Toaster<span class="class">.<span class="keyword">class</span>).<span class="title">build</span>()</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//toaster制造商</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> DisplayString TOASTER_MANUFACTURE = <span class="keyword">new</span> DisplayString(<span class="string">"opendaylight"</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//toaster型号</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> DisplayString TOASTER_MODEL_NUMBER = <span class="keyword">new</span> DisplayString(<span class="string">"Model 1 - Binding Aware"</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">//提供访问数据的接口，由blueprint通过构造器进行注入</span></span><br><span class="line">	<span class="keyword">private</span> DataBroker dataBroker;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">//通知.由blueprint通过构造器进行注入</span></span><br><span class="line">	<span class="keyword">private</span> NotificationPublishService notificationProvider;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//数据树更改监听器注册类</span></span><br><span class="line">	<span class="keyword">private</span> ListenerRegistration&lt;ToasterProvider&gt; dataTreeChangeListenerRegistration;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//自定义线程池接口</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> ExecutorService executor;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">//这对于当前的烤面包任务来说是未来，并且用于取消当前烤面包</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> AtomicReference&lt;Future&lt;?&gt;&gt; currentMakeToastTask = <span class="keyword">new</span> AtomicReference&lt;&gt;();</span><br><span class="line"></span><br><span class="line">	<span class="comment">//原子变量</span></span><br><span class="line">	<span class="comment">//库存面包</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> AtomicLong amountOfBreadInStock = <span class="keyword">new</span> AtomicLong(<span class="number">100</span>);</span><br><span class="line">	<span class="comment">//生产的面包书</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> AtomicLong toastsMade = <span class="keyword">new</span> AtomicLong(<span class="number">0</span>);</span><br><span class="line">	<span class="comment">//睡眠时间</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> AtomicLong darknessFactor = <span class="keyword">new</span> AtomicLong(<span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//toaster配置数据YANG MODEL类</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> ToasterAppConfig toasterAppConfig;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">//无参构造器</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">ToasterProvider</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//无参构造器调用有参构造器</span></span><br><span class="line">		<span class="keyword">this</span>(<span class="keyword">new</span> ToasterAppConfigBuilder()</span><br><span class="line">				.setManufacturer(TOASTER_MANUFACTURE)</span><br><span class="line">				.setModelNumber(TOASTER_MODEL_NUMBER)</span><br><span class="line">				.setMaxMakeToastTries(<span class="number">2</span>).build());</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//有参构造器</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">ToasterProvider</span><span class="params">(ToasterAppConfig toasterAppConfig)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//AbstractMXBean的构造方法</span></span><br><span class="line">		<span class="keyword">super</span>(<span class="string">"OpendaylightToaster"</span>, <span class="string">"toaster-provider"</span>, <span class="keyword">null</span>);</span><br><span class="line">		<span class="comment">//申请线程数为1个</span></span><br><span class="line">		executor = Executors.newFixedThreadPool(<span class="number">1</span>);</span><br><span class="line">		<span class="keyword">this</span>.toasterAppConfig = toasterAppConfig;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//注入NotificationPublishService(注入的时候建议使用final)</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setNotificationProvider</span><span class="params">(<span class="keyword">final</span> NotificationPublishService notificationProvider)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.notificationProvider = notificationProvider;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//注入dataBroker,注入的同时注册数据树的监听器</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDataBroker</span><span class="params">(<span class="keyword">final</span> DataBroker dataBroker)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.dataBroker = dataBroker;</span><br><span class="line">		<span class="comment">//监听器注册</span></span><br><span class="line">		DataTreeIdentifier&lt;Toaster&gt; toaster_path = <span class="keyword">new</span> DataTreeIdentifier&lt;&gt;(LogicalDatastoreType.CONFIGURATION, TOASTER_IID);</span><br><span class="line">		dataBroker.registerDataTreeChangeListener(toaster_path, <span class="keyword">this</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*************************容器方法*************************/</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 容器加载时运行该方法</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		LOG.info(<span class="string">"ToasterProvider 初始化"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 容器销毁时运行该方法</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">//关闭线程池</span></span><br><span class="line">		executor.shutdown();</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (dataBroker != <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="comment">//关闭监听器</span></span><br><span class="line">			dataTreeChangeListenerRegistration.close();</span><br><span class="line"></span><br><span class="line">			<span class="comment">//异步回滚，将异步返回的结果打印到debug日志中</span></span><br><span class="line">			WriteTransaction tx = dataBroker.newWriteOnlyTransaction();</span><br><span class="line"></span><br><span class="line">			tx.delete(LogicalDatastoreType.CONFIGURATION, TOASTER_IID);</span><br><span class="line"></span><br><span class="line">			Futures.addCallback(tx.submit(), <span class="keyword">new</span> FutureCallback&lt;Void&gt;() &#123;</span><br><span class="line"></span><br><span class="line">				<span class="comment">//删除成功</span></span><br><span class="line">				<span class="meta">@Override</span></span><br><span class="line">				<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSuccess</span><span class="params">(@Nullable Void aVoid)</span> </span>&#123;</span><br><span class="line">					LOG.debug(<span class="string">"Delete Toaster commit result: "</span> + aVoid);</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				<span class="comment">//删除失败</span></span><br><span class="line">				<span class="meta">@Override</span></span><br><span class="line">				<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(Throwable throwable)</span> </span>&#123;</span><br><span class="line">					LOG.error(<span class="string">"Delete of Toaster failed"</span>, throwable);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*************************监听器*************************/</span></span><br><span class="line">	<span class="comment">//实现DataTreeChangeListener接口，监听器的触发处理逻辑</span></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDataTreeChanged</span><span class="params">(Collection&lt;DataTreeModification&lt;Toaster&gt;&gt; changes)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">for</span> (DataTreeModification&lt;Toaster&gt; change : changes) &#123;</span><br><span class="line">			DataObjectModification&lt;Toaster&gt; rootNode = change.getRootNode();</span><br><span class="line"></span><br><span class="line">			<span class="comment">//有数据写入</span></span><br><span class="line">			<span class="keyword">if</span> (rootNode.getModificationType() == WRITE) &#123;</span><br><span class="line">				Toaster oldToaster = rootNode.getDataBefore();</span><br><span class="line">				Toaster newToaster = rootNode.getDataAfter();</span><br><span class="line">				LOG.info(<span class="string">"onDataTreeChanged - Toaster config with path &#123;&#125; was added or replaced: old Toaster: &#123;&#125;, new Toaster: &#123;&#125;"</span>,</span><br><span class="line">						change.getRootPath().getRootIdentifier(), oldToaster, newToaster);</span><br><span class="line"></span><br><span class="line">				Long darkness = newToaster.getDarknessFactor();</span><br><span class="line">				<span class="keyword">if</span> (darkness != <span class="keyword">null</span>) &#123;</span><br><span class="line">					darknessFactor.set(darkness);</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				<span class="comment">//有数据删除</span></span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> (rootNode.getModificationType() == DELETE) &#123;</span><br><span class="line">				LOG.info(<span class="string">"onDataTreeChanged - Toaster config with path &#123;&#125; was deleted: old Toaster: &#123;&#125;"</span>,</span><br><span class="line">						change.getRootPath().getRootIdentifier(), rootNode.getDataBefore());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">//制作面包RPC</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*************************RPC*************************/</span></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> Future&lt;RpcResult&lt;Void&gt;&gt; makeToast(MakeToastInput input) &#123;</span><br><span class="line">		LOG.info(<span class="string">"makeToast:"</span> + input);</span><br><span class="line">		<span class="keyword">final</span> SettableFuture&lt;RpcResult&lt;Void&gt;&gt; futureResult = SettableFuture.create();</span><br><span class="line"></span><br><span class="line">		<span class="comment">//检查烤面包机的状态，并进行制作面包</span></span><br><span class="line">		checkStatusAndMakeToast(input, futureResult, toasterAppConfig.getMaxMakeToastTries());</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> futureResult;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> Future&lt;RpcResult&lt;Void&gt;&gt; cancelToast() &#123;</span><br><span class="line">		Future&lt;?&gt; current = currentMakeToastTask.getAndSet( <span class="keyword">null</span> );</span><br><span class="line">		<span class="keyword">if</span>( current != <span class="keyword">null</span> ) &#123;</span><br><span class="line">			current.cancel( <span class="keyword">true</span> );</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Always return success from the cancel toast call</span></span><br><span class="line">		<span class="keyword">return</span> Futures.immediateFuture( RpcResultBuilder.&lt;Void&gt; success().build() );</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> Future&lt;RpcResult&lt;java.lang.Void&gt;&gt; restockToaster(<span class="keyword">final</span> RestockToasterInput input) &#123;</span><br><span class="line">		LOG.info( <span class="string">"restockToaster: "</span> + input );</span><br><span class="line"></span><br><span class="line">		amountOfBreadInStock.set( input.getAmountOfBreadToStock() );</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span>( amountOfBreadInStock.get() &gt; <span class="number">0</span> ) &#123;</span><br><span class="line">			ToasterRestocked reStockedNotification = <span class="keyword">new</span> ToasterRestockedBuilder()</span><br><span class="line">					.setAmountOfBread( input.getAmountOfBreadToStock() ).build();</span><br><span class="line">			notificationProvider.offerNotification( reStockedNotification );</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> Futures.immediateFuture( RpcResultBuilder.&lt;Void&gt; success().build() );</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	阅读“烤面包机状态”，如果当前为“up”，则尝试将状态写入“down”。</span></span><br><span class="line"><span class="comment">	如果成功，那么我们有一个排他锁，可以继续做烤面包。</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkStatusAndMakeToast</span><span class="params">(MakeToastInput input,</span></span></span><br><span class="line"><span class="function"><span class="params">										 SettableFuture&lt;RpcResult&lt;Void&gt;&gt; futureResult, Integer tries)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//开启可读可写的事务</span></span><br><span class="line">		<span class="keyword">final</span> ReadWriteTransaction tx = dataBroker.newReadWriteTransaction();</span><br><span class="line">		ListenableFuture&lt;Optional&lt;Toaster&gt;&gt; readFuture = tx.read(OPERATIONAL, TOASTER_IID);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		<span class="comment">//AsyncFunction&lt;T, R&gt;异步的函数型接口</span></span><br><span class="line">		<span class="keyword">final</span> ListenableFuture&lt;Void&gt; commitFuture =</span><br><span class="line">				Futures.transform(readFuture, (AsyncFunction&lt;Optional&lt;Toaster&gt;, Void&gt;) toasterData -&gt; &#123;</span><br><span class="line"></span><br><span class="line">					Toaster.ToasterStatus toasterStatus = Toaster.ToasterStatus.Up;</span><br><span class="line"></span><br><span class="line">					<span class="comment">//查看当前面包机的状态</span></span><br><span class="line">					<span class="keyword">if</span> (toasterData.isPresent()) &#123;</span><br><span class="line">						toasterStatus = toasterData.get().getToasterStatus();</span><br><span class="line">					&#125;</span><br><span class="line"></span><br><span class="line">					LOG.debug(<span class="string">"Read toaster status: &#123;&#125;"</span>, toasterStatus);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">					<span class="keyword">if</span> (toasterStatus == Toaster.ToasterStatus.Up) &#123;</span><br><span class="line">						<span class="comment">//此时，面包机处于开启状态</span></span><br><span class="line"></span><br><span class="line">						<span class="comment">//检查库存</span></span><br><span class="line">						<span class="keyword">if</span> (outOfBread()) &#123;</span><br><span class="line"></span><br><span class="line">							<span class="comment">//存库满了，抛出异常</span></span><br><span class="line">							LOG.debug(<span class="string">"Toaster is out of bread"</span>);</span><br><span class="line"></span><br><span class="line">							<span class="keyword">return</span> Futures.immediateFailedCheckedFuture(</span><br><span class="line">									<span class="keyword">new</span> TransactionCommitFailedException(<span class="string">""</span>, makeToasterOutOfBreadError()));</span><br><span class="line">						&#125;</span><br><span class="line"></span><br><span class="line">						<span class="comment">//库存没满，将面包机关闭</span></span><br><span class="line">						LOG.debug(<span class="string">"Setting Toaster status to Down"</span>);</span><br><span class="line"></span><br><span class="line">						<span class="comment">//我们目前没有烤面包,尝试将状态更新为“down”以表示我们要烤面包。</span></span><br><span class="line">						<span class="comment">//这起到防止同时烘烤的锁定作用。</span></span><br><span class="line">						tx.put(OPERATIONAL, TOASTER_IID,</span><br><span class="line">								buildToaster(Toaster.ToasterStatus.Down));</span><br><span class="line">						<span class="keyword">return</span> tx.submit();</span><br><span class="line">					&#125;</span><br><span class="line"></span><br><span class="line">					LOG.debug(<span class="string">"Oops - already making toast!"</span>);</span><br><span class="line"></span><br><span class="line">					<span class="comment">//因为我们已经开始制作面包（面包机正在使用），所以会返回一个错误</span></span><br><span class="line">					<span class="keyword">return</span> Futures.immediateFailedCheckedFuture(</span><br><span class="line">							<span class="keyword">new</span> TransactionCommitFailedException(<span class="string">""</span>, makeToasterInUseError()));</span><br><span class="line">				&#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		Futures.addCallback(commitFuture, <span class="keyword">new</span> FutureCallback&lt;Void&gt;() &#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSuccess</span><span class="params">(<span class="keyword">final</span> Void result)</span> </span>&#123;</span><br><span class="line">				<span class="comment">// 库存没满并且我们前面一个方法已经将面包机关闭，此时开始正常的去生产面包</span></span><br><span class="line">				currentMakeToastTask.set(executor.submit(<span class="keyword">new</span> MakeToastTask(input, futureResult)));</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(<span class="keyword">final</span> Throwable ex)</span> </span>&#123;</span><br><span class="line">				<span class="keyword">if</span> (ex <span class="keyword">instanceof</span> OptimisticLockFailedException) &#123;</span><br><span class="line"></span><br><span class="line">					<span class="comment">//另一个线程可能会同时做出制作面包和更新我们面前的状态。</span></span><br><span class="line">					<span class="comment">//尝试再次读取状态</span></span><br><span class="line">					<span class="comment">// 如果其他人正在进行制作面包，我们应该得到ToasterStatus.Down并且失败。</span></span><br><span class="line"></span><br><span class="line">					<span class="keyword">if</span> ((tries - <span class="number">1</span>) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">						LOG.debug(<span class="string">"Got OptimisticLockFailedException - trying again"</span>);</span><br><span class="line"></span><br><span class="line">						checkStatusAndMakeToast(input, futureResult, tries - <span class="number">1</span>);</span><br><span class="line">					&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">						futureResult.set(RpcResultBuilder.&lt;Void&gt;failed()</span><br><span class="line">								.withError(APPLICATION, ex.getMessage()).build());</span><br><span class="line">					&#125;</span><br><span class="line"></span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">					LOG.debug(<span class="string">"Failed to commit Toaster status"</span>, ex);</span><br><span class="line"></span><br><span class="line">					<span class="comment">//可能已经开始制作面包</span></span><br><span class="line">					futureResult.set(RpcResultBuilder.&lt;Void&gt;failed()</span><br><span class="line">							.withRpcErrors(((TransactionCommitFailedException) ex).getErrorList())</span><br><span class="line">							.build());</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> Toaster <span class="title">buildToaster</span><span class="params">(<span class="keyword">final</span> Toaster.ToasterStatus status)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//注意：我们正在模拟其制造和型号固定（嵌入）到硬件中的设备。这就是为什么制造商和型号是硬编码的原因。</span></span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> ToasterBuilder().setToasterManufacturer(toasterAppConfig.getManufacturer())</span><br><span class="line">				.setToasterModelNumber(toasterAppConfig.getModelNumber())</span><br><span class="line">				.setToasterStatus(status)</span><br><span class="line">				.build();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//是否还有库存</span></span><br><span class="line">	<span class="comment">//false：表示有库存</span></span><br><span class="line">	<span class="comment">//true:表示没有库存</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">outOfBread</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> amountOfBreadInStock.get() == <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">//异常</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> RpcError <span class="title">makeToasterOutOfBreadError</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> RpcResultBuilder.newError(APPLICATION, <span class="string">"resource-denied"</span>,</span><br><span class="line">				<span class="string">"Toaster is out of bread"</span>, <span class="string">"out-of-stock"</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> RpcError <span class="title">makeToasterInUseError</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> RpcResultBuilder.newWarning(APPLICATION, <span class="string">"in-use"</span>,</span><br><span class="line">				<span class="string">"Toaster is busy"</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">MakeToastTask</span> <span class="keyword">implements</span> <span class="title">Callable</span>&lt;<span class="title">Void</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">final</span> MakeToastInput toastRequest;</span><br><span class="line">		<span class="keyword">final</span> SettableFuture&lt;RpcResult&lt;Void&gt;&gt; futureResult;</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="title">MakeToastTask</span><span class="params">(<span class="keyword">final</span> MakeToastInput toastRequest,</span></span></span><br><span class="line"><span class="function"><span class="params">							 <span class="keyword">final</span> SettableFuture&lt;RpcResult&lt;Void&gt;&gt; futureResult)</span> </span>&#123;</span><br><span class="line">			<span class="keyword">this</span>.toastRequest = toastRequest;</span><br><span class="line">			<span class="keyword">this</span>.futureResult = futureResult;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="meta">@Override</span></span><br><span class="line">		<span class="function"><span class="keyword">public</span> Void <span class="title">call</span><span class="params">()</span> </span>&#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				<span class="comment">// 使烤面包随机睡眠n秒钟（模拟时延）</span></span><br><span class="line">				<span class="keyword">long</span> darknessFactor = ToasterProvider.<span class="keyword">this</span>.darknessFactor.get();</span><br><span class="line">				Thread.sleep(darknessFactor * toastRequest.getToasterDoneness());</span><br><span class="line"></span><br><span class="line">			&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">				LOG.info(<span class="string">"Interrupted while making the toast"</span>);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="comment">//生产一个面包</span></span><br><span class="line">			toastsMade.incrementAndGet();</span><br><span class="line"></span><br><span class="line">			<span class="comment">//面包的总额减1</span></span><br><span class="line">			amountOfBreadInStock.getAndDecrement();</span><br><span class="line"></span><br><span class="line">			<span class="comment">//检查是否库存是否还有余量</span></span><br><span class="line">			<span class="keyword">if</span> (outOfBread()) &#123;</span><br><span class="line">				LOG.info(<span class="string">"Toaster is out of bread!"</span>);</span><br><span class="line"></span><br><span class="line">				notificationProvider.offerNotification(<span class="keyword">new</span> ToasterOutOfBreadBuilder().build());</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="comment">//将Toaster状态重新设置</span></span><br><span class="line">			<span class="comment">//这实际上释放了烘烤锁定。</span></span><br><span class="line">			<span class="comment">//我们无法清除当前的Toast任务，也不会在更新提交之前设置Future结果，因此我们会传递一个回调函以完成通知。</span></span><br><span class="line">			setToasterStatusUp(result -&gt; &#123;</span><br><span class="line"></span><br><span class="line">				currentMakeToastTask.set(<span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">				LOG.debug(<span class="string">"Toast done"</span>);</span><br><span class="line"></span><br><span class="line">				futureResult.set(RpcResultBuilder.&lt;Void&gt;success().build());</span><br><span class="line"></span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">			&#125;);</span><br><span class="line"></span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">setToasterStatusUp</span><span class="params">(<span class="keyword">final</span> Function&lt;Boolean, Void&gt; resultCallback)</span> </span>&#123;</span><br><span class="line">		WriteTransaction tx = dataBroker.newWriteOnlyTransaction();</span><br><span class="line">		tx.put(OPERATIONAL, TOASTER_IID, buildToaster(Toaster.ToasterStatus.Up));</span><br><span class="line"></span><br><span class="line">		Futures.addCallback(tx.submit(), <span class="keyword">new</span> FutureCallback&lt;Void&gt;() &#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSuccess</span><span class="params">(<span class="keyword">final</span> Void result)</span> </span>&#123;</span><br><span class="line">				notifyCallback(<span class="keyword">true</span>);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(<span class="keyword">final</span> Throwable t)</span> </span>&#123;</span><br><span class="line">				<span class="comment">//我们不应该得到一个OptimisticLockFailedException（或任何ex），</span></span><br><span class="line">				<span class="comment">// 因为没有其他组件应该更新操作状态。</span></span><br><span class="line">				LOG.error(<span class="string">"Failed to update toaster status"</span>, t);</span><br><span class="line"></span><br><span class="line">				notifyCallback(<span class="keyword">false</span>);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="function"><span class="keyword">void</span> <span class="title">notifyCallback</span><span class="params">(<span class="keyword">final</span> <span class="keyword">boolean</span> result)</span> </span>&#123;</span><br><span class="line">				<span class="keyword">if</span> (resultCallback != <span class="keyword">null</span>) &#123;</span><br><span class="line">					resultCallback.apply(result);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>其中，我们定义了toaster-app-config.yang来描述面包机的配置信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">module toaster-app-config &#123;</span><br><span class="line">    yang-version 1;</span><br><span class="line"></span><br><span class="line">    namespace &quot;urn:opendaylight:params:xml:ns:yang:controller:toaster-app-config&quot;;</span><br><span class="line">    prefix toaster-app-config;</span><br><span class="line"></span><br><span class="line">    import toaster &#123; prefix toaster; revision-date 2018-02-26; &#125;</span><br><span class="line"></span><br><span class="line">    description</span><br><span class="line">      &quot;Configuration for the Opendaylight toaster application.&quot;;</span><br><span class="line"></span><br><span class="line">    revision &quot;2016-05-03&quot; &#123;</span><br><span class="line">        description</span><br><span class="line">            &quot;Initial revision.&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    container toaster-app-config &#123;</span><br><span class="line">        leaf manufacturer &#123;</span><br><span class="line">            type toaster:DisplayString;</span><br><span class="line">            default &quot;Opendaylight&quot;;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        leaf model-number &#123;</span><br><span class="line">            type toaster:DisplayString;</span><br><span class="line">            default &quot;Model 1 - Binding Aware&quot;;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        leaf max-make-toast-tries &#123;</span><br><span class="line">            type uint16;</span><br><span class="line">            default 2;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="注册RPC"><a href="#注册RPC" class="headerlink" title="注册RPC"></a>注册RPC</h3><p>编辑impl/src/main/resources/org/opendaylight/blueprint/impl-blueprint.xml：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">blueprint</span> <span class="attr">xmlns</span>=<span class="string">"http://www.osgi.org/xmlns/blueprint/v1.0.0"</span></span></span><br><span class="line"><span class="tag">           <span class="attr">xmlns:odl</span>=<span class="string">"http://opendaylight.org/xmlns/blueprint/v1.0.0"</span></span></span><br><span class="line"><span class="tag">           <span class="attr">xmlns:cm</span>=<span class="string">"http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"</span></span></span><br><span class="line"><span class="tag">           <span class="attr">odl:restart-dependents-on-updates</span>=<span class="string">"true"</span> <span class="attr">odl:use-default-for-reference-types</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">         “restart-dependents-on-updates”是一个ODL扩展属性，用于处理任何“property-placeholder”元素，</span></span><br><span class="line"><span class="comment">         并通过重新启动此blueprint容器来响应对相应cfg文件的更新，任何相关容器都会使用此容器提供的OSGi服务原子和有</span></span><br><span class="line"><span class="comment">         序的方式。</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">         “use-default-for-reference-types”是一个ODL扩展属性，它为通过“reference”元素导入的所有服务</span></span><br><span class="line"><span class="comment">         添加过滤器，其中“type”属性未设置，或者如果odl：type设置为“default” 属性没有明确指定。 这确保了</span></span><br><span class="line"><span class="comment">         如果有其他类型的实现，就会导入默认实现。</span></span><br><span class="line"><span class="comment">    --&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">         通过etc/org.opendaylight.toaster.cfg文件访问属性。</span></span><br><span class="line"><span class="comment">         这些属性可用作可引用的变量。 用cfg文件读取的实际值（如果存在）或默认属性替换变量。</span></span><br><span class="line"><span class="comment">     --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">cm:property-placeholder</span> <span class="attr">persistent-id</span>=<span class="string">"org.opendaylight.toaster"</span> <span class="attr">update-strategy</span>=<span class="string">"none"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">cm:default-properties</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">cm:property</span> <span class="attr">name</span>=<span class="string">"databroker-type"</span> <span class="attr">value</span>=<span class="string">"default"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">cm:default-properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">cm:property-placeholder</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--      </span></span><br><span class="line"><span class="comment">      “clustered-app-config”是一种ODL扩展，它从MD-SAL数据存储中获取应用程序配置yang容器，并将绑定DataObject</span></span><br><span class="line"><span class="comment">      作为可以注入其他Bean的bean(argument)。 这里我们获取ToasterAppConfig容器的DataObject。 这也显示了如何</span></span><br><span class="line"><span class="comment">      通过“default-config”。 虽然返回了杨中定义的默认叶值，但可能有更复杂的数据，例如列表，需要默认数据。 </span></span><br><span class="line"><span class="comment">      “default-config”必须包含XML数据的XML表示，包括命名空间，封装在CDATA部分以防止buleprint容器将其视为标记。</span></span><br><span class="line"><span class="comment"> --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">odl:clustered-app-config</span> <span class="attr">id</span>=<span class="string">"toasterAppConfig"</span></span></span><br><span class="line"><span class="tag">                              <span class="attr">binding-class</span>=<span class="string">"org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.toaster.app.config.rev160503.ToasterAppConfig"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">odl:default-config</span>&gt;</span>&lt;![CDATA[</span><br><span class="line">      &lt;toaster-app-config xmlns="urn:opendaylight:params:xml:ns:yang:controller:toaster-app-config"&gt;</span><br><span class="line">        &lt;max-make-toast-tries&gt;3&lt;/max-make-toast-tries&gt;</span><br><span class="line">      &lt;/toaster-app-config&gt;</span><br><span class="line">    ]]&gt;<span class="tag">&lt;/<span class="name">odl:default-config</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">odl:clustered-app-config</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">reference</span> <span class="attr">id</span>=<span class="string">"dataBroker"</span> <span class="attr">interface</span>=<span class="string">"org.opendaylight.controller.md.sal.binding.api.DataBroker"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">odl:type</span>=<span class="string">"$&#123;databroker-type&#125;"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">reference</span> <span class="attr">id</span>=<span class="string">"notificationService"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">interface</span>=<span class="string">"org.opendaylight.controller.md.sal.binding.api.NotificationPublishService"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"toaster"</span> <span class="attr">class</span>=<span class="string">"top.bcoder.toaster.impl.ToasterProvider"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">init-method</span>=<span class="string">"init"</span> <span class="attr">destroy-method</span>=<span class="string">"close"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">argument</span> <span class="attr">ref</span>=<span class="string">"toasterAppConfig"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataProvider"</span> <span class="attr">ref</span>=<span class="string">"dataBroker"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"notificationProvider"</span> <span class="attr">ref</span>=<span class="string">"notificationService"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">odl:rpc-implementation</span> <span class="attr">ref</span>=<span class="string">"toaster"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">blueprint</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>这里对Toaster的实例有一个大致的了解，后面的文章会对其中所涉及到的知识进行细粒度的讲述。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2018/02/28/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight-Toaster%E5%AE%9E%E4%BE%8B%E8%A7%A3%E6%9E%90/>https://www.bcoder.top/2018/02/28/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight-Toaster%E5%AE%9E%E4%BE%8B%E8%A7%A3%E6%9E%90/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/SDN/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>SDN</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Controller/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Controller</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/OpenDaylight/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>OpenDaylight</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2018/02/28/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight-Toaster%E5%AE%9E%E4%BE%8B%E8%A7%A3%E6%9E%90/&title=OpenDaylight开发笔记：OpenDaylight Toaster实例解析 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+
+Toaster工程构建我们以OpenDaylight Carbon SR2版本为基础。
+运行构建命令：
+1mvn org.apache.maven.plugins:maven-archetype-plugin:2.4:generate -DarchetypeGroupId&#x3D;org.opendaylight.controller -DarchetypeArtifactId&#x3D;opendaylight-startup-archetype -DarchetypeRepository&#x3D;https:&#x2F;&#x2F;nexus.opendaylight.org&#x2F;content&#x2F;repositories&#x2F;public -DarchetypeVersion&#x3D;1.3.2-Carbon"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2018/02/28/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight-Toaster%E5%AE%9E%E4%BE%8B%E8%A7%A3%E6%9E%90/&title=OpenDaylight开发笔记：OpenDaylight Toaster实例解析 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+
+Toaster工程构建我们以OpenDaylight Carbon SR2版本为基础。
+运行构建命令：
+1mvn org.apache.maven.plugins:maven-archetype-plugin:2.4:generate -DarchetypeGroupId&#x3D;org.opendaylight.controller -DarchetypeArtifactId&#x3D;opendaylight-startup-archetype -DarchetypeRepository&#x3D;https:&#x2F;&#x2F;nexus.opendaylight.org&#x2F;content&#x2F;repositories&#x2F;public -DarchetypeVersion&#x3D;1.3.2-Carbon"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2018/02/28/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight-Toaster%E5%AE%9E%E4%BE%8B%E8%A7%A3%E6%9E%90/&title=OpenDaylight开发笔记：OpenDaylight Toaster实例解析 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+
+Toaster工程构建我们以OpenDaylight Carbon SR2版本为基础。
+运行构建命令：
+1mvn org.apache.maven.plugins:maven-archetype-plugin:2.4:generate -DarchetypeGroupId&#x3D;org.opendaylight.controller -DarchetypeArtifactId&#x3D;opendaylight-startup-archetype -DarchetypeRepository&#x3D;https:&#x2F;&#x2F;nexus.opendaylight.org&#x2F;content&#x2F;repositories&#x2F;public -DarchetypeVersion&#x3D;1.3.2-Carbon"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2018/03/02/%E3%80%8A%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8B%E8%AF%BB%E4%B9%A6%E5%B0%8F%E7%BB%93/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>《深入理解Java虚拟机》读书小结</p>
+                <p class='content'>
+引言趁着这几天做毕设比较清闲，想再深入了解一下jvm（之前只是把基本内容看了一下）,于是就把周志明的《深入理解Java虚拟机》第二版这本书粗略的看了一遍，看完之后获益良多，但是也有很多地方没搞...</p>
+              </a>
+            
+            
+              <a class='next' href='/2018/02/26/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E5%BC%80%E5%8F%91%E5%AE%9E%E4%BE%8B/'>
+                <p class='title'>ODL开发笔记：OpenDaylight开发实例<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'OpenDaylight开发笔记：OpenDaylight Toaster实例解析',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Toaster工程构建"><span class="toc-text">Toaster工程构建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#定义一个可操作的Toaster"><span class="toc-text">定义一个可操作的Toaster</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Toaster-YANG数据模型定义"><span class="toc-text">Toaster YANG数据模型定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现Toaster的面包生产者"><span class="toc-text">实现Toaster的面包生产者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注册RPC"><span class="toc-text">注册RPC</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

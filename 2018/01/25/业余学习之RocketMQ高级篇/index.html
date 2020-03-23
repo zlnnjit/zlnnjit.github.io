@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>业余学习之RocketMQ高级篇 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="中间件,RocketMQ">
+  
+  
+    <meta name="description" content="
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2018/01/25/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRocketMQ%E9%AB%98%E7%BA%A7%E7%AF%87/">
+        业余学习之RocketMQ高级篇
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/deep/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>deep</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2018-01-25 15:52:52</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言<br>本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="consumer详解"><a href="#consumer详解" class="headerlink" title="consumer详解"></a>consumer详解</h2><p>在Rocket MQ里，consumer被分为2类：<code>MQPullConsumer</code>和<code>MQPushConsumer</code>，其实本质都是拉模式（pull），即consumer轮询从broker拉取消息。</p>
+<p>区别是：<br>push方式:consumer把轮询过程封装了，并注册MessageListener监听器，取到消息后，唤醒MessageListener的consumeMessage()来消费，对用户而言，感觉消息是被推送过来的。</p>
+<p>pull方式:取消息的过程需要用户自己写，首先通过打算消费的Topic拿到MessageQueue的集合，遍历MessageQueue集合，然后针对每个MessageQueue批量取消息，一次取完后，记录该队列下一次要取的开始offset，直到取完了，再换另一个MessageQueue。</p>
+<p>我们之前的两篇文章中，都是用push进行编写代码，下面给出pull方式的代码：</p>
+<p>首先我们看最原始的pull的示例代码：</p>
+<p>Producer的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.alibaba.rocketmq.example.simple;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.exception.MQClientException;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.producer.DefaultMQProducer;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.producer.SendResult;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.common.message.Message;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> MQClientException, InterruptedException </span>&#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 一个应用创建一个Producer，由应用来维护此对象，可以设置为全局对象或者单例&lt;br&gt;</span></span><br><span class="line"><span class="comment">         * 注意：ProducerGroupName需要由应用来保证唯一&lt;br&gt;</span></span><br><span class="line"><span class="comment">         * ProducerGroup这个概念发送普通的消息时，作用不大，但是发送分布式事务消息时，比较关键，</span></span><br><span class="line"><span class="comment">         * 因为服务器会回查这个Group下的任意一个Producer</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        DefaultMQProducer producer = <span class="keyword">new</span> DefaultMQProducer(<span class="string">"ProducerGroupName"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Producer对象在使用之前必须要调用start初始化，初始化一次即可&lt;br&gt;</span></span><br><span class="line"><span class="comment">         * 注意：切记不可以在每次发送消息时，都调用start方法</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        producer.start();</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 下面这段代码表明一个Producer对象可以发送多个topic，多个tag的消息。</span></span><br><span class="line"><span class="comment">         * 注意：send方法是同步调用，只要不抛异常就标识成功。但是发送成功也可会有多种状态，&lt;br&gt;</span></span><br><span class="line"><span class="comment">         * 例如消息写入Master成功，但是Slave不成功，这种情况消息属于成功，但是对于个别应用如果对消息可靠性要求极高，&lt;br&gt;</span></span><br><span class="line"><span class="comment">         * 需要对这种情况做处理。另外，消息可能会存在发送失败的情况，失败重试由应用来处理。</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1</span>; i++)</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                &#123;</span><br><span class="line">                    Message msg = <span class="keyword">new</span> Message(<span class="string">"TopicTest1"</span>,<span class="comment">// topic</span></span><br><span class="line">                        <span class="string">"TagA"</span>,<span class="comment">// tag</span></span><br><span class="line">                        <span class="string">"OrderID188"</span>,<span class="comment">// key</span></span><br><span class="line">                        (<span class="string">"Hello MetaQ"</span>).getBytes());<span class="comment">// body</span></span><br><span class="line">                    SendResult sendResult = producer.send(msg);</span><br><span class="line">                    System.out.println(sendResult);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 应用退出时，要调用shutdown来清理资源，关闭网络连接，从MetaQ服务器上注销自己</span></span><br><span class="line"><span class="comment">         * 注意：我们建议应用在JBOSS、Tomcat等容器的退出钩子里调用shutdown方法</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        producer.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>下面来看PullConsumer的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.alibaba.rocketmq.example.simple;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.consumer.DefaultMQPullConsumer;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.consumer.PullResult;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.exception.MQClientException;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.common.message.MessageQueue;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * PullConsumer，订阅消息</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PullConsumer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Map&lt;MessageQueue, Long&gt; offseTable = <span class="keyword">new</span> HashMap&lt;MessageQueue, Long&gt;();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> MQClientException </span>&#123;</span><br><span class="line">        DefaultMQPullConsumer consumer = <span class="keyword">new</span> DefaultMQPullConsumer(<span class="string">"please_rename_unique_group_name_5"</span>);</span><br><span class="line"></span><br><span class="line">        consumer.start();</span><br><span class="line"></span><br><span class="line">        Set&lt;MessageQueue&gt; mqs = consumer.fetchSubscribeMessageQueues(<span class="string">"TopicTest"</span>);</span><br><span class="line">        <span class="keyword">for</span> (MessageQueue mq : mqs) &#123;</span><br><span class="line">            System.out.println(<span class="string">"Consume from the queue: "</span> + mq);</span><br><span class="line">            SINGLE_MQ: <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    PullResult pullResult =</span><br><span class="line">                            consumer.pullBlockIfNotFound(mq, <span class="keyword">null</span>, getMessageQueueOffset(mq), <span class="number">32</span>);</span><br><span class="line">                    System.out.println(pullResult);</span><br><span class="line">                    putMessageQueueOffset(mq, pullResult.getNextBeginOffset());</span><br><span class="line">                    <span class="keyword">switch</span> (pullResult.getPullStatus()) &#123;</span><br><span class="line">                    <span class="keyword">case</span> FOUND:</span><br><span class="line">                        <span class="comment">// TODO</span></span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    <span class="keyword">case</span> NO_MATCHED_MSG:</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    <span class="keyword">case</span> NO_NEW_MSG:</span><br><span class="line">                        <span class="keyword">break</span> SINGLE_MQ;</span><br><span class="line">                    <span class="keyword">case</span> OFFSET_ILLEGAL:</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    <span class="keyword">default</span>:</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    <span class="comment">//记录日志,存到数据库，无法自动实现重试</span></span><br><span class="line">                    <span class="comment">//e.printStackTrace();</span></span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        consumer.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">putMessageQueueOffset</span><span class="params">(MessageQueue mq, <span class="keyword">long</span> offset)</span> </span>&#123;</span><br><span class="line">        offseTable.put(mq, offset);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">getMessageQueueOffset</span><span class="params">(MessageQueue mq)</span> </span>&#123;</span><br><span class="line">        Long offset = offseTable.get(mq);</span><br><span class="line">        <span class="keyword">if</span> (offset != <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> offset;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>进一步的，我们看PullScheduleService,一般情况下，如果我们使用pull这种方式的话，我们使用下面的代码进行拉取。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.alibaba.rocketmq.example.simple;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.consumer.MQPullConsumer;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.consumer.MQPullConsumerScheduleService;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.consumer.PullResult;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.consumer.PullTaskCallback;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.consumer.PullTaskContext;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.exception.MQClientException;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.common.message.MessageQueue;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PullScheduleService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> MQClientException </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> MQPullConsumerScheduleService scheduleService = <span class="keyword">new</span> MQPullConsumerScheduleService(<span class="string">"GroupName1"</span>);</span><br><span class="line"></span><br><span class="line">        scheduleService.setMessageModel(MessageModel.CLUSTERING);</span><br><span class="line">        scheduleService.registerPullTaskCallback(<span class="string">"TopicTest1"</span>, <span class="keyword">new</span> PullTaskCallback() &#123;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doPullTask</span><span class="params">(MessageQueue mq, PullTaskContext context)</span> </span>&#123;</span><br><span class="line">                MQPullConsumer consumer = context.getPullConsumer();</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="comment">// 获取从哪里拉取</span></span><br><span class="line">                    <span class="keyword">long</span> offset = consumer.fetchConsumeOffset(mq, <span class="keyword">false</span>);</span><br><span class="line">                    <span class="keyword">if</span> (offset &lt; <span class="number">0</span>)</span><br><span class="line">                        offset = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                    PullResult pullResult = consumer.pull(mq, <span class="string">"*"</span>, offset, <span class="number">32</span>);</span><br><span class="line">                    System.out.println(offset + <span class="string">"\t"</span> + mq + <span class="string">"\t"</span> + pullResult);</span><br><span class="line">                    <span class="keyword">switch</span> (pullResult.getPullStatus()) &#123;</span><br><span class="line">                    <span class="keyword">case</span> FOUND:</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    <span class="keyword">case</span> NO_MATCHED_MSG:</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    <span class="keyword">case</span> NO_NEW_MSG:</span><br><span class="line">                    <span class="keyword">case</span> OFFSET_ILLEGAL:</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    <span class="keyword">default</span>:</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 存储Offset，客户端每隔5s会定时刷新到Broker</span></span><br><span class="line">                    consumer.updateConsumeOffset(mq, pullResult.getNextBeginOffset());</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 设置再过100ms后重新拉取</span></span><br><span class="line">                    context.setPullNextDelayTimeMillis(<span class="number">100</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        scheduleService.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到上面的代码中的public void doPullTask(MessageQueue mq, PullTaskContext context)；此函数没有返回值，因此不能进行消息重试，如果有异常抛出，我们需要进行自己捕获，并进行消息重试或者把失败的消息记入日志，并写入到数据库中。</p>
+<h2 id="Filter消息过滤"><a href="#Filter消息过滤" class="headerlink" title="Filter消息过滤"></a>Filter消息过滤</h2><p>RocketMQ 的消息过滤方式有别于其他消息中间件，是在订阅时，再做过滤，先来看下Consume Queue的存储结构。</p>
+<p><img src="http://img.bcoder.top/2018.01.25/1.png" alt="业余学习之RocketMQ高级篇"></p>
+<p>(1). 在Broker端进行Message Tag比对，先遍历 Consume Queue，如果存储的Message Tag 不订阅的 MessageTag不符合，则跳过，继续比对下一个，符合则传输给Consumer。<br>注意：Message Tag是字符串形式，Consume Queue中存储的是其对应的hashcode，比对时也是比对hashcode。</p>
+<p>(2).Consumer收到过滤后的消息后，同样也要执行在Broker端的操作，但是比对的是真实的Message Tag字符串，而不是 Hashcode。</p>
+<p><strong>为什么过滤要这样做？</strong><br>(1). Message Tag 存储 Hashcode，是为了在Consume Queue定长方式存储，节约空间。</p>
+<p>(2). 过滤过程中不会访问 Commit Log 数据，可以保证堆积情况下也能高效过滤。</p>
+<p>(3). 即使存在 Hash 冲突，也可以在 Consumer 端进行修正，保证万无一失。</p>
+<h3 id="简单消息过滤"><a href="#简单消息过滤" class="headerlink" title="简单消息过滤"></a>简单消息过滤</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 订阅指定topic下tags分别等于TagA戒TagC戒TagD</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">consumer.subscribe(<span class="string">"TopicTest1"</span>, <span class="string">"TagA || TagC || TagD"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>如以上代码所示，简单消息过滤通过指定多个Tag来过滤消息，过滤动作在服务器进行。</p>
+<h3 id="高级消息过滤"><a href="#高级消息过滤" class="headerlink" title="高级消息过滤"></a>高级消息过滤</h3><p><img src="http://img.bcoder.top/2018.01.25/2.png" alt="业余学习之RocketMQ高级篇"></p>
+<p>Rocket MQ 执行过滤是在 Broker 端，Broker 所在的机器会启动多个 FilterServer 过滤进程；Consumer 启动后，会向 FilterServer 上传一个过滤的Java类；Consumer 从 FilterServer拉消息，FilterServer将请求转发给Broker，FilterServer从Broker 收到消息后，按照 Consumer上传的Java过滤程序做过滤，过滤完成后返回给Consumer。这种过滤方法可以节省网络流量，但是增加了 Broker 的负担。</p>
+<p>简单来说，是以下几点：</p>
+<ol>
+<li>Broker 所在的机器会启动多个 FilterServer 过滤进程</li>
+<li>Consumer 启动后，会向 FilterServer 上传一个过滤的 Java 类</li>
+<li>Consumer 从 FilterServer拉消息，FilterServer将请求转収给Broker，FilterServer 从 Broker 收到消息后，按照Consumer上传的Java过滤程序做过滤，过滤完成后返回给 Consumer。</li>
+</ol>
+<p>首先，我们需要启动我们的MQ服务，顺序为 namesrv、broker、filter。我配置的为：2m-2s-async（也就是两主两从模式）<br>我们需要在broker-*.properties文件里添加一句话，如下：</p>
+<p><strong>filterServerNums=1</strong></p>
+<p>先看一下product端代码，如下：发送100条消息到broker。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.alibaba.rocketmq.example.filter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.exception.MQClientException;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.producer.DefaultMQProducer;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.producer.SendResult;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.common.message.Message;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> MQClientException, InterruptedException </span>&#123;</span><br><span class="line">        String group_name = <span class="string">"filter_producer"</span>;</span><br><span class="line">        DefaultMQProducer producer = <span class="keyword">new</span> DefaultMQProducer(group_name);</span><br><span class="line">        producer.setNamesrvAddr(<span class="string">"192.168.1.111:9876;192.168.1.112:9876;192.168.1.113:9876;192.168.1.114:9876"</span>);</span><br><span class="line">        producer.start();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">                Message msg = <span class="keyword">new</span> Message(<span class="string">"TopicFilter7"</span>,<span class="comment">// topic</span></span><br><span class="line">                    <span class="string">"TagA"</span>,<span class="comment">// tag</span></span><br><span class="line">                    <span class="string">"OrderID001"</span>,<span class="comment">// key</span></span><br><span class="line">                    (<span class="string">"Hello MetaQ"</span> + i).getBytes());<span class="comment">// body</span></span><br><span class="line">                msg.putUserProperty(<span class="string">"SequenceId"</span>, String.valueOf(i));</span><br><span class="line">                SendResult sendResult = producer.send(msg);</span><br><span class="line">                System.out.println(sendResult);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        producer.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来我们看一下consumer代码，如下：需要注意的一点是我们所上传的过滤器类里，一定不允许有中文，否则MixAll.file2String方法返回null，Filter不识别！</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.alibaba.rocketmq.example.filter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.UnsupportedEncodingException;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.client.exception.MQClientException;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.common.MixAll;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.common.message.MessageExt;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException, MQClientException </span>&#123;</span><br><span class="line">        String group_name = <span class="string">"filter_consumer"</span>;</span><br><span class="line">        DefaultMQPushConsumer consumer = <span class="keyword">new</span> DefaultMQPushConsumer(group_name);</span><br><span class="line">        consumer.setNamesrvAddr(<span class="string">"192.168.1.111:9876;192.168.1.112:9876;192.168.1.113:9876;192.168.1.114:9876"</span>);</span><br><span class="line">        <span class="comment">// 使用Java代码，在服务器做消息过滤</span></span><br><span class="line">        String filterCode = MixAll.file2String(<span class="string">"D:\\workspace_001\\rocketmqAPI\\com\\alibaba\\rocketmq\\example\\MessageFilterImpl.java"</span>);</span><br><span class="line">        System.out.println(filterCode);</span><br><span class="line">        <span class="comment">//直接使用下面的的代码也可以向filtersev上传代码</span></span><br><span class="line">        <span class="comment">//consumer.subscribe("TopicFilter7", MessageFilterImpl.class.getCanonicalName());</span></span><br><span class="line">        consumer.subscribe(<span class="string">"TopicFilter7"</span>, <span class="string">"bhz.mq.filter.MessageFilterImpl"</span>, filterCode);</span><br><span class="line">        consumer.registerMessageListener(<span class="keyword">new</span> MessageListenerConcurrently() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> ConsumeConcurrentlyStatus <span class="title">consumeMessage</span><span class="params">(List&lt;MessageExt&gt; msgs,</span></span></span><br><span class="line"><span class="function"><span class="params">                    ConsumeConcurrentlyContext context)</span> </span>&#123;</span><br><span class="line">                <span class="comment">//System.out.println(Thread.currentThread().getName() + " Receive New Messages: " + msgs);</span></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    System.out.println(<span class="keyword">new</span> String(msgs.get(<span class="number">0</span>).getBody(),<span class="string">"utf-8"</span>));</span><br><span class="line">                &#125; <span class="keyword">catch</span> (UnsupportedEncodingException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> ConsumeConcurrentlyStatus.CONSUME_SUCCESS;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        consumer.start();</span><br><span class="line">        System.out.println(<span class="string">"Consumer Started."</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后我们看一下MessageFilterImpl这个类：再次强调一下，注意这个类是上传到FilterSrv的，不要有中文，上面说了不然MixAll.file2String方法返回null。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.alibaba.rocketmq.example.filter;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.common.filter.MessageFilter;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.rocketmq.common.message.MessageExt;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessageFilterImpl</span> <span class="keyword">implements</span> <span class="title">MessageFilter</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">match</span><span class="params">(MessageExt msg)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// NO Chinese</span></span><br><span class="line">        System.out.println(<span class="string">"-------------"</span>);</span><br><span class="line">        String property = msg.getUserProperty(<span class="string">"SequenceId"</span>);</span><br><span class="line">        System.out.println(<span class="string">"---------"</span> + property);</span><br><span class="line">        <span class="keyword">if</span> (property != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> id = Integer.parseInt(property);</span><br><span class="line">            <span class="keyword">if</span>((id % <span class="number">2</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">//if ((id % 3) == 0 &amp;&amp; (id &gt; 10)) &#123;</span></span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们进行测试，先运行consumer，然后运行producer发送数据，这样就好根据MessageFilterImpl的代码过滤出来 id % 2 == 0 的所有数据给Consumer端消费了！</p>
+<p>最后我们总结下：</p>
+<ol>
+<li>使用 CPU 资源来换取网卡流量资源。</li>
+<li>FilterServer 与 Broker 部署在同一台机器，数据通过本地回环通信，不走网卡。</li>
+<li>一台 Broker 部署多个FilterServer，充分利用CPU资源，因为单个Jvm难以全面利用高配的物理机CPU资源。</li>
+<li>因为过滤代码使用Java语言来编写，应用几乎可以做任意形式的服务器端消息过滤，例如通过 Message Header进行过滤，甚至可以按照 Message Body 进行过滤。</li>
+<li>使用 Java 语言进行作为过滤表达式是一个双刃剑，方便了应用的过滤操作，但是带来了服务器端的安全风险。需要应用来保证过滤代码安全，例如在过滤程序里尽可能不做申请大内存，创建线程等操作。避免 Broker 服务器发生资源泄漏。</li>
+</ol>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2018/01/25/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRocketMQ%E9%AB%98%E7%BA%A7%E7%AF%87/>https://www.bcoder.top/2018/01/25/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRocketMQ%E9%AB%98%E7%BA%A7%E7%AF%87/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>中间件</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/RocketMQ/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>RocketMQ</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2018/01/25/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRocketMQ%E9%AB%98%E7%BA%A7%E7%AF%87/&title=业余学习之RocketMQ高级篇 - zln's blog&summary=
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2018/01/25/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRocketMQ%E9%AB%98%E7%BA%A7%E7%AF%87/&title=业余学习之RocketMQ高级篇 - zln's blog&summary=
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2018/01/25/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRocketMQ%E9%AB%98%E7%BA%A7%E7%AF%87/&title=业余学习之RocketMQ高级篇 - zln's blog&summary=
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2018/01/26/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BZookeeper%E5%9F%BA%E7%A1%80%E7%AF%87/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>业余学习之Zookeeper基础篇</p>
+                <p class='content'>
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+
+Zookeeper简介什么是ZookeeperZooKeeper是一个开放源代码的分布式协调服务，...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/12/17/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRocketMQ%E4%B8%AD%E7%BA%A7%E7%AF%87/'>
+                <p class='title'>业余学习之RocketMQ中级篇<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+RocketMQ消息重试机制RocketMQ提供了消息重试机制 ：生产者:消息重投重试(保证数据...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '业余学习之RocketMQ高级篇',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#consumer详解"><span class="toc-text">consumer详解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Filter消息过滤"><span class="toc-text">Filter消息过滤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#简单消息过滤"><span class="toc-text">简单消息过滤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#高级消息过滤"><span class="toc-text">高级消息过滤</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

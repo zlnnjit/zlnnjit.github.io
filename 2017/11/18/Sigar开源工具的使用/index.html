@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>Sigar开源工具的使用 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="Sigar,心跳">
+  
+  
+    <meta name="description" content="前言Sigar（System Information Gatherer And Reporter），是一个开源的工具，提供了跨平台的系统信息收集的API，核心由C语言实现的。">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/11/18/Sigar%E5%BC%80%E6%BA%90%E5%B7%A5%E5%85%B7%E7%9A%84%E4%BD%BF%E7%94%A8/">
+        Sigar开源工具的使用
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/%E5%BC%80%E6%BA%90%E5%B7%A5%E5%85%B7/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>开源工具</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-11-18 14:30:09</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Sigar（System Information Gatherer And Reporter），是一个开源的工具，提供了跨平台的系统信息收集的API，核心由C语言实现的。</p>
+<a id="more"></a>
+
+
+<p>Sigar提供了一组轻便式接口来收集系统信息，主要信息包含：</p>
+<ul>
+<li>操作系统的信息，包括：dataModel、cpuEndian、name、version、arch、machine、description、patchLevel、vendor、vendorVersion、vendorName、vendorCodeName</li>
+<li>CPU信息，包括：基本信息（vendor、model、mhz、cacheSize）和统计信息（user、sys、idle、nice、wait）</li>
+<li>内存信息，物理内存和交换内存的总数、使用数、剩余数；RAM的大小</li>
+<li>进程信息，包括每个进程的内存、CPU占用数、状态、参数、句柄等。</li>
+<li>文件系统信息，包括名称、容量、剩余数、使用数、分区类型等</li>
+<li>网络接口信息，包括基本信息和统计信息。</li>
+<li>网络路由和链接表信息。</li>
+</ul>
+<p>Sigar有C，C#，Java和Perl API，java版的API为sigar.jar sigar.jar的底层是用C语言编写的，它通过本地方法来调用操作系统API来获取系统相关数据。Windows操作系统下Sigar.jar 依赖sigar-amd64-winnt.dll或sigar-x86-winnt.dll，linux 操作系统下则依赖libsigar-amd64-linux.so或libsigar-x86-linux.so</p>
+<p>Sigar适用的平台：</p>
+<p><img src="http://img.bcoder.top/2017.11.18/2.png" alt="Sigar开源工具的使用"></p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><p>1) 需要jar包：sigar.jar<br>2）C:\Windows\System32中加入sigar-amd64-winnt.dll        </p>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><p>1.获取系统信息和jvm虚拟机信息 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">property</span><span class="params">()</span> <span class="keyword">throws</span> UnknownHostException </span>&#123;</span><br><span class="line">    Runtime r = Runtime.getRuntime();</span><br><span class="line">    Properties props = System.getProperties();</span><br><span class="line">    InetAddress addr;</span><br><span class="line">    addr = InetAddress.getLocalHost();</span><br><span class="line">    String ip = addr.getHostAddress();</span><br><span class="line">    Map&lt;String, String&gt; map = System.getenv();</span><br><span class="line">    String userName = map.get(<span class="string">"USERNAME"</span>);<span class="comment">// 获取用户名</span></span><br><span class="line">    String computerName = map.get(<span class="string">"COMPUTERNAME"</span>);<span class="comment">// 获取计算机名</span></span><br><span class="line">    String userDomain = map.get(<span class="string">"USERDOMAIN"</span>);<span class="comment">// 获取计算机域名</span></span><br><span class="line">    System.out.println(<span class="string">"用户名:    "</span> + userName);</span><br><span class="line">    System.out.println(<span class="string">"计算机名:    "</span> + computerName);</span><br><span class="line">    System.out.println(<span class="string">"计算机域名:    "</span> + userDomain);</span><br><span class="line">    System.out.println(<span class="string">"本地ip地址:    "</span> + ip);</span><br><span class="line">    System.out.println(<span class="string">"本地主机名:    "</span> + addr.getHostName());</span><br><span class="line">    System.out.println(<span class="string">"JVM可以使用的总内存:    "</span> + r.totalMemory());</span><br><span class="line">    System.out.println(<span class="string">"JVM可以使用的剩余内存:    "</span> + r.freeMemory());</span><br><span class="line">    System.out.println(<span class="string">"JVM可以使用的处理器个数:    "</span> + r.availableProcessors());</span><br><span class="line">    System.out.println(<span class="string">"Java的运行环境版本：    "</span> + props.getProperty(<span class="string">"java.version"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java的运行环境供应商：    "</span> + props.getProperty(<span class="string">"java.vendor"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java供应商的URL：    "</span> + props.getProperty(<span class="string">"java.vendor.url"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java的安装路径：    "</span> + props.getProperty(<span class="string">"java.home"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java的虚拟机规范版本：    "</span> + props.getProperty(<span class="string">"java.vm.specification.version"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java的虚拟机规范供应商：    "</span> + props.getProperty(<span class="string">"java.vm.specification.vendor"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java的虚拟机规范名称：    "</span> + props.getProperty(<span class="string">"java.vm.specification.name"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java的虚拟机实现版本：    "</span> + props.getProperty(<span class="string">"java.vm.version"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java的虚拟机实现供应商：    "</span> + props.getProperty(<span class="string">"java.vm.vendor"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java的虚拟机实现名称：    "</span> + props.getProperty(<span class="string">"java.vm.name"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java运行时环境规范版本：    "</span> + props.getProperty(<span class="string">"java.specification.version"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java运行时环境规范供应商：    "</span> + props.getProperty(<span class="string">"java.specification.vender"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java运行时环境规范名称：    "</span> + props.getProperty(<span class="string">"java.specification.name"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java的类格式版本号：    "</span> + props.getProperty(<span class="string">"java.class.version"</span>));</span><br><span class="line">    System.out.println(<span class="string">"Java的类路径：    "</span> + props.getProperty(<span class="string">"java.class.path"</span>));</span><br><span class="line">    System.out.println(<span class="string">"加载库时搜索的路径列表：    "</span> + props.getProperty(<span class="string">"java.library.path"</span>));</span><br><span class="line">    System.out.println(<span class="string">"默认的临时文件路径：    "</span> + props.getProperty(<span class="string">"java.io.tmpdir"</span>));</span><br><span class="line">    System.out.println(<span class="string">"一个或多个扩展目录的路径：    "</span> + props.getProperty(<span class="string">"java.ext.dirs"</span>));</span><br><span class="line">    System.out.println(<span class="string">"操作系统的名称：    "</span> + props.getProperty(<span class="string">"os.name"</span>));</span><br><span class="line">    System.out.println(<span class="string">"操作系统的构架：    "</span> + props.getProperty(<span class="string">"os.arch"</span>));</span><br><span class="line">    System.out.println(<span class="string">"操作系统的版本：    "</span> + props.getProperty(<span class="string">"os.version"</span>));</span><br><span class="line">    System.out.println(<span class="string">"文件分隔符：    "</span> + props.getProperty(<span class="string">"file.separator"</span>));</span><br><span class="line">    System.out.println(<span class="string">"路径分隔符：    "</span> + props.getProperty(<span class="string">"path.separator"</span>));</span><br><span class="line">    System.out.println(<span class="string">"行分隔符：    "</span> + props.getProperty(<span class="string">"line.separator"</span>));</span><br><span class="line">    System.out.println(<span class="string">"用户的账户名称：    "</span> + props.getProperty(<span class="string">"user.name"</span>));</span><br><span class="line">    System.out.println(<span class="string">"用户的主目录：    "</span> + props.getProperty(<span class="string">"user.home"</span>));</span><br><span class="line">    System.out.println(<span class="string">"用户的当前工作目录：    "</span> + props.getProperty(<span class="string">"user.dir"</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">用户名:    zln</span><br><span class="line">计算机名:    DESKTOP-G1R1SPJ</span><br><span class="line">计算机域名:    DESKTOP-G1R1SPJ</span><br><span class="line">本地ip地址:    192.168.200.1</span><br><span class="line">本地主机名:    DESKTOP-G1R1SPJ</span><br><span class="line">JVM可以使用的总内存:    128974848</span><br><span class="line">JVM可以使用的剩余内存:    124201456</span><br><span class="line">JVM可以使用的处理器个数:    4</span><br><span class="line">Java的运行环境版本：    1.8.0_31</span><br><span class="line">Java的运行环境供应商：    Oracle Corporation</span><br><span class="line">Java供应商的URL：    http:&#x2F;&#x2F;java.oracle.com&#x2F;</span><br><span class="line">Java的安装路径：    C:\Program Files\Java\jdk1.8.0_31\jre</span><br><span class="line">Java的虚拟机规范版本：    1.8</span><br><span class="line">Java的虚拟机规范供应商：    Oracle Corporation</span><br><span class="line">Java的虚拟机规范名称：    Java Virtual Machine Specification</span><br><span class="line">Java的虚拟机实现版本：    25.31-b07</span><br><span class="line">Java的虚拟机实现供应商：    Oracle Corporation</span><br><span class="line">Java的虚拟机实现名称：    Java HotSpot(TM) 64-Bit Server VM</span><br><span class="line">Java运行时环境规范版本：    1.8</span><br><span class="line">Java运行时环境规范供应商：    null</span><br><span class="line">Java运行时环境规范名称：    Java Platform API Specification</span><br><span class="line">Java的类格式版本号：    52.0</span><br><span class="line">Java的类路径：    C:\Program Files\Java\jdk1.8.0_31\jre\lib\charsets.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\deploy.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\access-bridge-64.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\cldrdata.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\dnsns.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\jaccess.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\jfxrt.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\localedata.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\nashorn.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\sunec.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\sunjce_provider.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\sunmscapi.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\sunpkcs11.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\zipfs.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\javaws.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\jce.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\jfr.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\jfxswt.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\jsse.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\management-agent.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\plugin.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\resources.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\rt.jar;E:\Code\java\IDEA\HelloIdea\out\production\Adv;C:\Program Files\JetBrains\IntelliJ IDEA 2017.2.3\redist\annotations-java8.jar;E:\Code\java\IDEA\HelloIdea\lib\mysql-connector-java-5.1.7-bin.jar;E:\Code\java\IDEA\HelloIdea\lib\disruptor-3.3.2.jar;E:\Code\java\IDEA\HelloIdea\lib\netty-all-5.0.0.Alpha2.jar;E:\Code\java\IDEA\HelloIdea\lib\jboss-marshalling-1.3.0.CR9.jar;E:\Code\java\IDEA\HelloIdea\lib\jboss-marshalling-serial-1.3.0.CR9.jar;E:\Code\java\IDEA\HelloIdea\lib\commons-logging-1.1.1.jar;E:\Code\java\IDEA\HelloIdea\lib\httpclient-4.3.1.jar;E:\Code\java\IDEA\HelloIdea\lib\httpmime-4.3.1.jar;E:\Code\java\IDEA\HelloIdea\lib\httpclient-cache-4.3.1.jar;E:\Code\java\IDEA\HelloIdea\lib\httpcore-4.3.1.jar;E:\Code\java\IDEA\HelloIdea\lib\log4j.jar;E:\Code\java\IDEA\HelloIdea\lib\mina-integration-beans-2.0.9.jar;E:\Code\java\IDEA\HelloIdea\lib\mina-integration-jmx-2.0.9.jar;E:\Code\java\IDEA\HelloIdea\lib\mina-example-2.0.9.jar;E:\Code\java\IDEA\HelloIdea\lib\mina-core-2.0.9.jar;E:\Code\java\IDEA\HelloIdea\lib\mina-transport-apr-2.0.9.jar;E:\Code\java\IDEA\HelloIdea\lib\mina-http-2.0.9.jar;E:\Code\java\IDEA\HelloIdea\lib\mina-integration-xbean-2.0.9.jar;E:\Code\java\IDEA\HelloIdea\lib\mina-integration-ognl-2.0.9.jar;E:\Code\java\IDEA\HelloIdea\lib\mina-statemachine-2.0.9.jar;E:\Code\java\IDEA\HelloIdea\lib\mina-filter-compression-2.0.9.jar;E:\Code\java\IDEA\HelloIdea\lib\sigar.jar;E:\Code\java\IDEA\HelloIdea\lib\protobuf-java-2.5.0.jar;C:\Program Files\JetBrains\IntelliJ IDEA 2017.2.3\lib\idea_rt.jar</span><br><span class="line">加载库时搜索的路径列表：    C:\Program Files\Java\jdk1.8.0_31\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;c:\gtk\bin;C:\Program Files\Java\jdk1.8.0_31\bin;C:\Program Files\Java\jdk1.8.0_31\jre\bin;C:\Program Files\TortoiseSVN\bin;C:\Program Files\MySQL\MySQL Server 5.0\bin;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\VSShell\Common7\IDE\;C:\Program Files (x86)\Microsoft Visual Studio 9.0\Common7\IDE\PrivateAssemblies\;C:\Program Files (x86)\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files\nodejs\;C:\Program Files (x86)\Bitvise SSH Client;C:\Windows\System32;C:\Users\zln\AppData\Local\Microsoft\WindowsApps;C:\Users\zln\AppData\Roaming\npm;C:\Program Files\Crucial\Crucial Storage Executive;C:\Python27;C:\Users\zln\AppData\Local\Microsoft\WindowsApps;C:\Users\zln\AppData\Roaming\npm;D:\apache-maven-3.3.9\bin;;.</span><br><span class="line">默认的临时文件路径：    C:\Users\zln\AppData\Local\Temp\</span><br><span class="line">一个或多个扩展目录的路径：    C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext;C:\Windows\Sun\Java\lib\ext</span><br><span class="line">操作系统的名称：    Windows 8.1</span><br><span class="line">操作系统的构架：    amd64</span><br><span class="line">操作系统的版本：    6.3</span><br><span class="line">文件分隔符：    \</span><br><span class="line">路径分隔符：    ;</span><br><span class="line">行分隔符：    </span><br><span class="line"></span><br><span class="line">用户的账户名称：    zln</span><br><span class="line">用户的主目录：    C:\Users\zln</span><br><span class="line">用户的当前工作目录：    E:\Code\java\IDEA\HelloIdea</span><br></pre></td></tr></table></figure>
+
+
+<p>2.获取cpu信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">cpu</span><span class="params">()</span> <span class="keyword">throws</span> SigarException </span>&#123;</span><br><span class="line">    Sigar sigar = <span class="keyword">new</span> Sigar();</span><br><span class="line">    CpuInfo infos[] = sigar.getCpuInfoList();</span><br><span class="line">    CpuPerc cpuList[] = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"cpu 总量参数情况:"</span> + sigar.getCpu());</span><br><span class="line">    System.out.println(<span class="string">"cpu 总百分比情况:"</span> + sigar.getCpuPerc());</span><br><span class="line">    </span><br><span class="line">    cpuList = sigar.getCpuPercList();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; infos.length; i++) &#123;<span class="comment">// 不管是单块CPU还是多CPU都适用</span></span><br><span class="line">        CpuInfo info = infos[i];</span><br><span class="line">        System.out.println(<span class="string">"第"</span> + (i + <span class="number">1</span>) + <span class="string">"块CPU信息"</span>);</span><br><span class="line">        System.out.println(<span class="string">"CPU的总量MHz:    "</span> + info.getMhz());<span class="comment">// CPU的总量MHz</span></span><br><span class="line">        System.out.println(<span class="string">"CPU生产商:    "</span> + info.getVendor());<span class="comment">// 获得CPU的卖主，如：Intel</span></span><br><span class="line">        System.out.println(<span class="string">"CPU类别:    "</span> + info.getModel());<span class="comment">// 获得CPU的类别，如：Celeron</span></span><br><span class="line">        System.out.println(<span class="string">"CPU缓存数量:    "</span> + info.getCacheSize());<span class="comment">// 缓冲存储器数量</span></span><br><span class="line">        printCpuPerc(cpuList[i]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">cpu 总量参数情况:&#123;User&#x3D;94209030, Idle&#x3D;726116234, Total&#x3D;2195792553, Nice&#x3D;0, Irq&#x3D;2522874, Sys&#x3D;57991576, Wait&#x3D;0, SoftIrq&#x3D;0, Stolen&#x3D;0&#125;</span><br><span class="line">cpu 总百分比情况:CPU states: 43.0% user, 17.9% system, 0.0% nice, 0.0% wait, 39.0% idle</span><br><span class="line">第1块CPU信息</span><br><span class="line">CPU的总量MHz:    2594</span><br><span class="line">CPU生产商:    Intel</span><br><span class="line">CPU类别:    Core(TM) i7-4510U CPU @ 2.00GHz</span><br><span class="line">CPU缓存数量:    -1</span><br><span class="line">CPU用户使用率:    43.6%</span><br><span class="line">CPU系统使用率:    18.8%</span><br><span class="line">CPU当前等待率:    0.0%</span><br><span class="line">CPU当前错误率:    0.0%</span><br><span class="line">CPU当前空闲率:    37.6%</span><br><span class="line">CPU总的使用率:    62.4%</span><br><span class="line">第2块CPU信息</span><br><span class="line">CPU的总量MHz:    2594</span><br><span class="line">CPU生产商:    Intel</span><br><span class="line">CPU类别:    Core(TM) i7-4510U CPU @ 2.00GHz</span><br><span class="line">CPU缓存数量:    -1</span><br><span class="line">CPU用户使用率:    47.0%</span><br><span class="line">CPU系统使用率:    6.2%</span><br><span class="line">CPU当前等待率:    0.0%</span><br><span class="line">CPU当前错误率:    0.0%</span><br><span class="line">CPU当前空闲率:    46.8%</span><br><span class="line">CPU总的使用率:    53.2%</span><br><span class="line">第3块CPU信息</span><br><span class="line">CPU的总量MHz:    2594</span><br><span class="line">CPU生产商:    Intel</span><br><span class="line">CPU类别:    Core(TM) i7-4510U CPU @ 2.00GHz</span><br><span class="line">CPU缓存数量:    -1</span><br><span class="line">CPU用户使用率:    53.0%</span><br><span class="line">CPU系统使用率:    3.1%</span><br><span class="line">CPU当前等待率:    0.0%</span><br><span class="line">CPU当前错误率:    0.0%</span><br><span class="line">CPU当前空闲率:    43.7%</span><br><span class="line">CPU总的使用率:    56.2%</span><br><span class="line">第4块CPU信息</span><br><span class="line">CPU的总量MHz:    2594</span><br><span class="line">CPU生产商:    Intel</span><br><span class="line">CPU类别:    Core(TM) i7-4510U CPU @ 2.00GHz</span><br><span class="line">CPU缓存数量:    -1</span><br><span class="line">CPU用户使用率:    59.2%</span><br><span class="line">CPU系统使用率:    9.3%</span><br><span class="line">CPU当前等待率:    0.0%</span><br><span class="line">CPU当前错误率:    0.0%</span><br><span class="line">CPU当前空闲率:    31.3%</span><br><span class="line">CPU总的使用率:    68.6%</span><br></pre></td></tr></table></figure>
+
+<p>3.获取内存信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">memory</span><span class="params">()</span> <span class="keyword">throws</span> SigarException </span>&#123;</span><br><span class="line">    Sigar sigar = <span class="keyword">new</span> Sigar();</span><br><span class="line">    Mem mem = sigar.getMem();</span><br><span class="line">    <span class="comment">// 内存总量</span></span><br><span class="line">    System.out.println(<span class="string">"内存总量:    "</span> + mem.getTotal() / <span class="number">1024L</span> + <span class="string">"K av"</span>);</span><br><span class="line">    <span class="comment">// 当前内存使用量</span></span><br><span class="line">    System.out.println(<span class="string">"当前内存使用量:    "</span> + mem.getUsed() / <span class="number">1024L</span> + <span class="string">"K used"</span>);</span><br><span class="line">    <span class="comment">// 当前内存剩余量</span></span><br><span class="line">    System.out.println(<span class="string">"当前内存剩余量:    "</span> + mem.getFree() / <span class="number">1024L</span> + <span class="string">"K free"</span>);</span><br><span class="line">    Swap swap = sigar.getSwap();</span><br><span class="line">    <span class="comment">// 交换区总量</span></span><br><span class="line">    System.out.println(<span class="string">"交换区总量:    "</span> + swap.getTotal() / <span class="number">1024L</span> + <span class="string">"K av"</span>);</span><br><span class="line">    <span class="comment">// 当前交换区使用量</span></span><br><span class="line">    System.out.println(<span class="string">"当前交换区使用量:    "</span> + swap.getUsed() / <span class="number">1024L</span> + <span class="string">"K used"</span>);</span><br><span class="line">    <span class="comment">// 当前交换区剩余量</span></span><br><span class="line">    System.out.println(<span class="string">"当前交换区剩余量:    "</span> + swap.getFree() / <span class="number">1024L</span> + <span class="string">"K free"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">内存总量:    8282476K av</span><br><span class="line">当前内存使用量:    4854644K used</span><br><span class="line">当前内存剩余量:    3427832K free</span><br><span class="line">交换区总量:    9265516K av</span><br><span class="line">当前交换区使用量:    6903492K used</span><br><span class="line">当前交换区剩余量:    2362024K free</span><br></pre></td></tr></table></figure>
+
+<p>4.获取操作系统信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">os</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    OperatingSystem OS = OperatingSystem.getInstance();</span><br><span class="line">    <span class="comment">// 操作系统内核类型如： 386、486、586等x86</span></span><br><span class="line">    System.out.println(<span class="string">"操作系统:    "</span> + OS.getArch());</span><br><span class="line">    System.out.println(<span class="string">"操作系统CpuEndian():    "</span> + OS.getCpuEndian());<span class="comment">//</span></span><br><span class="line">    System.out.println(<span class="string">"操作系统DataModel():    "</span> + OS.getDataModel());<span class="comment">//</span></span><br><span class="line">    <span class="comment">// 系统描述</span></span><br><span class="line">    System.out.println(<span class="string">"操作系统的描述:    "</span> + OS.getDescription());</span><br><span class="line">    <span class="comment">// 操作系统类型</span></span><br><span class="line">    System.out.println(<span class="string">"OS.getName():    "</span> + OS.getName());</span><br><span class="line">     System.out.println(<span class="string">"OS.getPatchLevel():    "</span> + OS.getPatchLevel());<span class="comment">//</span></span><br><span class="line">    <span class="comment">// 操作系统的卖主</span></span><br><span class="line">    System.out.println(<span class="string">"操作系统的卖主:    "</span> + OS.getVendor());</span><br><span class="line">    <span class="comment">// 卖主名称</span></span><br><span class="line">    System.out.println(<span class="string">"操作系统的卖主名:    "</span> + OS.getVendorCodeName());</span><br><span class="line">    <span class="comment">// 操作系统名称</span></span><br><span class="line">    System.out.println(<span class="string">"操作系统名称:    "</span> + OS.getVendorName());</span><br><span class="line">    <span class="comment">// 操作系统卖主类型</span></span><br><span class="line">    System.out.println(<span class="string">"操作系统卖主类型:    "</span> + OS.getVendorVersion());</span><br><span class="line">    <span class="comment">// 操作系统的版本号</span></span><br><span class="line">    System.out.println(<span class="string">"操作系统的版本号:    "</span> + OS.getVersion());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">操作系统:    x64</span><br><span class="line">操作系统CpuEndian():    little</span><br><span class="line">操作系统DataModel():    64</span><br><span class="line">操作系统的描述:    Microsoft Windows 7</span><br><span class="line">OS.getName():    Win32</span><br><span class="line">OS.getPatchLevel():    </span><br><span class="line">操作系统的卖主:    Microsoft</span><br><span class="line">操作系统的卖主名:    Vienna</span><br><span class="line">操作系统名称:    Windows 7</span><br><span class="line">操作系统卖主类型:    7</span><br><span class="line">操作系统的版本号:    6.3</span><br></pre></td></tr></table></figure>
+
+<p>5.获取用户信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">who</span><span class="params">()</span> <span class="keyword">throws</span> SigarException </span>&#123;</span><br><span class="line">    Sigar sigar = <span class="keyword">new</span> Sigar();</span><br><span class="line">    Who who[] = sigar.getWhoList();</span><br><span class="line">    <span class="keyword">if</span> (who != <span class="keyword">null</span> &amp;&amp; who.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; who.length; i++) &#123;</span><br><span class="line">            <span class="comment">// System.out.println("当前系统进程表中的用户名" + String.valueOf(i));</span></span><br><span class="line">            Who _who = who[i];</span><br><span class="line">            System.out.println(<span class="string">"用户控制台:    "</span> + _who.getDevice());</span><br><span class="line">            System.out.println(<span class="string">"用户host:    "</span> + _who.getHost());</span><br><span class="line">            <span class="comment">// System.out.println("getTime():    " + _who.getTime());</span></span><br><span class="line">            <span class="comment">// 当前系统进程表中的用户名</span></span><br><span class="line">            System.out.println(<span class="string">"当前系统进程表中的用户名:    "</span> + _who.getUser());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">用户控制台:    console</span><br><span class="line">用户host:    NT AUTHORITY</span><br><span class="line">当前系统进程表中的用户名:    LOCAL SERVICE</span><br><span class="line">用户控制台:    console</span><br><span class="line">用户host:    NT AUTHORITY</span><br><span class="line">当前系统进程表中的用户名:    NETWORK SERVICE</span><br><span class="line">用户控制台:    console</span><br><span class="line">用户host:    DESKTOP-G1R1SPJ</span><br><span class="line">当前系统进程表中的用户名:    zln</span><br><span class="line">用户控制台:    console</span><br><span class="line">用户host:    NT AUTHORITY</span><br><span class="line">当前系统进程表中的用户名:    SYSTEM</span><br></pre></td></tr></table></figure>
+
+<p>6.获取文件系统信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">file</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    Sigar sigar = <span class="keyword">new</span> Sigar();</span><br><span class="line">    FileSystem fslist[] = sigar.getFileSystemList();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; fslist.length; i++) &#123;</span><br><span class="line">        System.out.println(<span class="string">"分区的盘符名称"</span> + i);</span><br><span class="line">        FileSystem fs = fslist[i];</span><br><span class="line">        <span class="comment">// 分区的盘符名称</span></span><br><span class="line">        System.out.println(<span class="string">"盘符名称:    "</span> + fs.getDevName());</span><br><span class="line">        <span class="comment">// 分区的盘符名称</span></span><br><span class="line">        System.out.println(<span class="string">"盘符路径:    "</span> + fs.getDirName());</span><br><span class="line">        System.out.println(<span class="string">"盘符标志:    "</span> + fs.getFlags());<span class="comment">//</span></span><br><span class="line">        <span class="comment">// 文件系统类型，比如 FAT32、NTFS</span></span><br><span class="line">        System.out.println(<span class="string">"盘符类型:    "</span> + fs.getSysTypeName());</span><br><span class="line">        <span class="comment">// 文件系统类型名，比如本地硬盘、光驱、网络文件系统等</span></span><br><span class="line">        System.out.println(<span class="string">"盘符类型名:    "</span> + fs.getTypeName());</span><br><span class="line">        <span class="comment">// 文件系统类型</span></span><br><span class="line">        System.out.println(<span class="string">"盘符文件系统类型:    "</span> + fs.getType());</span><br><span class="line">        FileSystemUsage usage = <span class="keyword">null</span>;</span><br><span class="line">        usage = sigar.getFileSystemUsage(fs.getDirName());</span><br><span class="line">        <span class="keyword">switch</span> (fs.getType()) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">0</span>: <span class="comment">// TYPE_UNKNOWN ：未知</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">1</span>: <span class="comment">// TYPE_NONE</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">2</span>: <span class="comment">// TYPE_LOCAL_DISK : 本地硬盘</span></span><br><span class="line">            <span class="comment">// 文件系统总大小</span></span><br><span class="line">            System.out.println(fs.getDevName() + <span class="string">"总大小:    "</span> + usage.getTotal() + <span class="string">"KB"</span>);</span><br><span class="line">            <span class="comment">// 文件系统剩余大小</span></span><br><span class="line">            System.out.println(fs.getDevName() + <span class="string">"剩余大小:    "</span> + usage.getFree() + <span class="string">"KB"</span>);</span><br><span class="line">            <span class="comment">// 文件系统可用大小</span></span><br><span class="line">            System.out.println(fs.getDevName() + <span class="string">"可用大小:    "</span> + usage.getAvail() + <span class="string">"KB"</span>);</span><br><span class="line">            <span class="comment">// 文件系统已经使用量</span></span><br><span class="line">            System.out.println(fs.getDevName() + <span class="string">"已经使用量:    "</span> + usage.getUsed() + <span class="string">"KB"</span>);</span><br><span class="line">            <span class="keyword">double</span> usePercent = usage.getUsePercent() * <span class="number">100</span>D;</span><br><span class="line">            <span class="comment">// 文件系统资源的利用率</span></span><br><span class="line">            System.out.println(fs.getDevName() + <span class="string">"资源的利用率:    "</span> + usePercent + <span class="string">"%"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">3</span>:<span class="comment">// TYPE_NETWORK ：网络</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">4</span>:<span class="comment">// TYPE_RAM_DISK ：闪存</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">5</span>:<span class="comment">// TYPE_CDROM ：光驱</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">6</span>:<span class="comment">// TYPE_SWAP ：页面交换</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(fs.getDevName() + <span class="string">"读出：    "</span> + usage.getDiskReads());</span><br><span class="line">        System.out.println(fs.getDevName() + <span class="string">"写入：    "</span> + usage.getDiskWrites());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">分区的盘符名称0</span><br><span class="line">盘符名称:    C:\</span><br><span class="line">盘符路径:    C:\</span><br><span class="line">盘符标志:    0</span><br><span class="line">盘符类型:    NTFS</span><br><span class="line">盘符类型名:    local</span><br><span class="line">盘符文件系统类型:    2</span><br><span class="line">C:\总大小:    138854396KB</span><br><span class="line">C:\剩余大小:    47943008KB</span><br><span class="line">C:\可用大小:    47943008KB</span><br><span class="line">C:\已经使用量:    90911388KB</span><br><span class="line">C:\资源的利用率:    66.0%</span><br><span class="line">C:\读出：    1590662</span><br><span class="line">C:\写入：    1624917</span><br><span class="line">分区的盘符名称1</span><br><span class="line">盘符名称:    D:\</span><br><span class="line">盘符路径:    D:\</span><br><span class="line">盘符标志:    0</span><br><span class="line">盘符类型:    NTFS</span><br><span class="line">盘符类型名:    local</span><br><span class="line">盘符文件系统类型:    2</span><br><span class="line">D:\总大小:    104829948KB</span><br><span class="line">D:\剩余大小:    40842620KB</span><br><span class="line">D:\可用大小:    40842620KB</span><br><span class="line">D:\已经使用量:    63987328KB</span><br><span class="line">D:\资源的利用率:    62.0%</span><br><span class="line">D:\读出：    453114</span><br><span class="line">D:\写入：    179755</span><br><span class="line">分区的盘符名称2</span><br><span class="line">盘符名称:    E:\</span><br><span class="line">盘符路径:    E:\</span><br><span class="line">盘符标志:    0</span><br><span class="line">盘符类型:    NTFS</span><br><span class="line">盘符类型名:    local</span><br><span class="line">盘符文件系统类型:    2</span><br><span class="line">E:\总大小:    314573820KB</span><br><span class="line">E:\剩余大小:    223515060KB</span><br><span class="line">E:\可用大小:    223515060KB</span><br><span class="line">E:\已经使用量:    91058760KB</span><br><span class="line">E:\资源的利用率:    28.999999999999996%</span><br><span class="line">E:\读出：    16825</span><br><span class="line">E:\写入：    28208</span><br><span class="line">分区的盘符名称3</span><br><span class="line">盘符名称:    F:\</span><br><span class="line">盘符路径:    F:\</span><br><span class="line">盘符标志:    0</span><br><span class="line">盘符类型:    NTFS</span><br><span class="line">盘符类型名:    local</span><br><span class="line">盘符文件系统类型:    2</span><br><span class="line">F:\总大小:    314573820KB</span><br><span class="line">F:\剩余大小:    187990212KB</span><br><span class="line">F:\可用大小:    187990212KB</span><br><span class="line">F:\已经使用量:    126583608KB</span><br><span class="line">F:\资源的利用率:    41.0%</span><br><span class="line">F:\读出：    141788</span><br><span class="line">F:\写入：    2742</span><br><span class="line">分区的盘符名称4</span><br><span class="line">盘符名称:    G:\</span><br><span class="line">盘符路径:    G:\</span><br><span class="line">盘符标志:    0</span><br><span class="line">盘符类型:    NTFS</span><br><span class="line">盘符类型名:    local</span><br><span class="line">盘符文件系统类型:    2</span><br><span class="line">G:\总大小:    347481084KB</span><br><span class="line">G:\剩余大小:    231318704KB</span><br><span class="line">G:\可用大小:    231318704KB</span><br><span class="line">G:\已经使用量:    116162380KB</span><br><span class="line">G:\资源的利用率:    34.0%</span><br><span class="line">G:\读出：    14056</span><br><span class="line">G:\写入：    4951</span><br></pre></td></tr></table></figure>
+
+<p>7.获取网络信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">net</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    Sigar sigar = <span class="keyword">new</span> Sigar();</span><br><span class="line">    String ifNames[] = sigar.getNetInterfaceList();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; ifNames.length; i++) &#123;</span><br><span class="line">        String name = ifNames[i];</span><br><span class="line">        NetInterfaceConfig ifconfig = sigar.getNetInterfaceConfig(name);</span><br><span class="line">        System.out.println(<span class="string">"网络设备名:    "</span> + name);<span class="comment">// 网络设备名</span></span><br><span class="line">        System.out.println(<span class="string">"IP地址:    "</span> + ifconfig.getAddress());<span class="comment">// IP地址</span></span><br><span class="line">        System.out.println(<span class="string">"子网掩码:    "</span> + ifconfig.getNetmask());<span class="comment">// 子网掩码</span></span><br><span class="line">        <span class="keyword">if</span> ((ifconfig.getFlags() &amp; <span class="number">1L</span>) &lt;= <span class="number">0L</span>) &#123;</span><br><span class="line">            System.out.println(<span class="string">"!IFF_UP...skipping getNetInterfaceStat"</span>);</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        NetInterfaceStat ifstat = sigar.getNetInterfaceStat(name);</span><br><span class="line">        System.out.println(name + <span class="string">"接收的总包裹数:"</span> + ifstat.getRxPackets());<span class="comment">// 接收的总包裹数</span></span><br><span class="line">        System.out.println(name + <span class="string">"发送的总包裹数:"</span> + ifstat.getTxPackets());<span class="comment">// 发送的总包裹数</span></span><br><span class="line">        System.out.println(name + <span class="string">"接收到的总字节数:"</span> + ifstat.getRxBytes());<span class="comment">// 接收到的总字节数</span></span><br><span class="line">        System.out.println(name + <span class="string">"发送的总字节数:"</span> + ifstat.getTxBytes());<span class="comment">// 发送的总字节数</span></span><br><span class="line">        System.out.println(name + <span class="string">"接收到的错误包数:"</span> + ifstat.getRxErrors());<span class="comment">// 接收到的错误包数</span></span><br><span class="line">        System.out.println(name + <span class="string">"发送数据包时的错误数:"</span> + ifstat.getTxErrors());<span class="comment">// 发送数据包时的错误数</span></span><br><span class="line">        System.out.println(name + <span class="string">"接收时丢弃的包数:"</span> + ifstat.getRxDropped());<span class="comment">// 接收时丢弃的包数</span></span><br><span class="line">        System.out.println(name + <span class="string">"发送时丢弃的包数:"</span> + ifstat.getTxDropped());<span class="comment">// 发送时丢弃的包数</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">网络设备名:    eth0</span><br><span class="line">IP地址:    0.0.0.0</span><br><span class="line">子网掩码:    0.0.0.0</span><br><span class="line">!IFF_UP...skipping getNetInterfaceStat</span><br><span class="line">网络设备名:    eth1</span><br><span class="line">IP地址:    0.0.0.0</span><br><span class="line">子网掩码:    0.0.0.0</span><br><span class="line">!IFF_UP...skipping getNetInterfaceStat</span><br><span class="line">网络设备名:    eth2</span><br><span class="line">IP地址:    0.0.0.0</span><br><span class="line">子网掩码:    0.0.0.0</span><br><span class="line">!IFF_UP...skipping getNetInterfaceStat</span><br><span class="line">网络设备名:    eth3</span><br><span class="line">IP地址:    0.0.0.0</span><br><span class="line">子网掩码:    0.0.0.0</span><br><span class="line">eth3接收的总包裹数:0</span><br><span class="line">eth3发送的总包裹数:0</span><br><span class="line">eth3接收到的总字节数:0</span><br><span class="line">eth3发送的总字节数:0</span><br><span class="line">eth3接收到的错误包数:0</span><br><span class="line">eth3发送数据包时的错误数:0</span><br><span class="line">eth3接收时丢弃的包数:0</span><br><span class="line">eth3发送时丢弃的包数:0</span><br><span class="line">网络设备名:    eth4</span><br><span class="line">IP地址:    0.0.0.0</span><br><span class="line">子网掩码:    0.0.0.0</span><br><span class="line">eth4接收的总包裹数:0</span><br><span class="line">eth4发送的总包裹数:0</span><br><span class="line">eth4接收到的总字节数:0</span><br><span class="line">eth4发送的总字节数:0</span><br><span class="line">eth4接收到的错误包数:0</span><br><span class="line">eth4发送数据包时的错误数:0</span><br><span class="line">eth4接收时丢弃的包数:0</span><br><span class="line">eth4发送时丢弃的包数:0</span><br><span class="line">网络设备名:    eth5</span><br><span class="line">IP地址:    0.0.0.0</span><br><span class="line">子网掩码:    0.0.0.0</span><br><span class="line">eth5接收的总包裹数:0</span><br><span class="line">eth5发送的总包裹数:0</span><br><span class="line">eth5接收到的总字节数:0</span><br><span class="line">eth5发送的总字节数:0</span><br><span class="line">eth5接收到的错误包数:0</span><br><span class="line">eth5发送数据包时的错误数:0</span><br><span class="line">eth5接收时丢弃的包数:0</span><br><span class="line">eth5发送时丢弃的包数:0</span><br><span class="line">网络设备名:    eth6</span><br><span class="line">IP地址:    0.0.0.0</span><br><span class="line">子网掩码:    0.0.0.0</span><br></pre></td></tr></table></figure>
+
+<p>8.获取以太网信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ethernet</span><span class="params">()</span> <span class="keyword">throws</span> SigarException </span>&#123;</span><br><span class="line">    Sigar sigar = <span class="keyword">null</span>;</span><br><span class="line">    sigar = <span class="keyword">new</span> Sigar();</span><br><span class="line">    String[] ifaces = sigar.getNetInterfaceList();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; ifaces.length; i++) &#123;</span><br><span class="line">        NetInterfaceConfig cfg = sigar.getNetInterfaceConfig(ifaces[i]);</span><br><span class="line">        <span class="keyword">if</span> (NetFlags.LOOPBACK_ADDRESS.equals(cfg.getAddress()) || (cfg.getFlags() &amp; NetFlags.IFF_LOOPBACK) != <span class="number">0</span></span><br><span class="line">                || NetFlags.NULL_HWADDR.equals(cfg.getHwaddr())) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(cfg.getName() + <span class="string">"IP地址:"</span> + cfg.getAddress());<span class="comment">// IP地址</span></span><br><span class="line">        System.out.println(cfg.getName() + <span class="string">"网关广播地址:"</span> + cfg.getBroadcast());<span class="comment">// 网关广播地址</span></span><br><span class="line">        System.out.println(cfg.getName() + <span class="string">"网卡MAC地址:"</span> + cfg.getHwaddr());<span class="comment">// 网卡MAC地址</span></span><br><span class="line">        System.out.println(cfg.getName() + <span class="string">"子网掩码:"</span> + cfg.getNetmask());<span class="comment">// 子网掩码</span></span><br><span class="line">        System.out.println(cfg.getName() + <span class="string">"网卡描述信息:"</span> + cfg.getDescription());<span class="comment">// 网卡描述信息</span></span><br><span class="line">        System.out.println(cfg.getName() + <span class="string">"网卡类型"</span> + cfg.getType());<span class="comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">eth0IP地址:0.0.0.0</span><br><span class="line">eth0网关广播地址:0.0.0.0</span><br><span class="line">eth0网卡MAC地址:68:F7:28:19:77:D7</span><br><span class="line">eth0子网掩码:0.0.0.0</span><br><span class="line">eth0网卡描述信息:Realtek PCIe GBE Family Controller-WFP Native MAC Layer LightWeight Filter-0000</span><br><span class="line">eth0网卡类型Ethernet</span><br><span class="line">eth1IP地址:0.0.0.0</span><br><span class="line">eth1网关广播地址:0.0.0.0</span><br><span class="line">eth1网卡MAC地址:68:F7:28:19:77:D7</span><br><span class="line">eth1子网掩码:0.0.0.0</span><br><span class="line">eth1网卡描述信息:Realtek PCIe GBE Family Controller-QoS Packet Scheduler-0000</span><br><span class="line">eth1网卡类型Ethernet</span><br><span class="line">eth2IP地址:0.0.0.0</span><br><span class="line">eth2网关广播地址:0.0.0.0</span><br><span class="line">eth2网卡MAC地址:68:F7:28:19:77:D7</span><br><span class="line">eth2子网掩码:0.0.0.0</span><br><span class="line">eth2网卡描述信息:Realtek PCIe GBE Family Controller-WFP 802.3 MAC Layer LightWeight Filter-0000</span><br><span class="line">eth2网卡类型Ethernet</span><br></pre></td></tr></table></figure>
+
+
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/11/18/Sigar%E5%BC%80%E6%BA%90%E5%B7%A5%E5%85%B7%E7%9A%84%E4%BD%BF%E7%94%A8/>https://www.bcoder.top/2017/11/18/Sigar%E5%BC%80%E6%BA%90%E5%B7%A5%E5%85%B7%E7%9A%84%E4%BD%BF%E7%94%A8/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Sigar/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Sigar</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E5%BF%83%E8%B7%B3/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>心跳</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/11/18/Sigar%E5%BC%80%E6%BA%90%E5%B7%A5%E5%85%B7%E7%9A%84%E4%BD%BF%E7%94%A8/&title=Sigar开源工具的使用 - zln's blog&summary=前言Sigar（System Information Gatherer And Reporter），是一个开源的工具，提供了跨平台的系统信息收集的API，核心由C语言实现的。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/11/18/Sigar%E5%BC%80%E6%BA%90%E5%B7%A5%E5%85%B7%E7%9A%84%E4%BD%BF%E7%94%A8/&title=Sigar开源工具的使用 - zln's blog&summary=前言Sigar（System Information Gatherer And Reporter），是一个开源的工具，提供了跨平台的系统信息收集的API，核心由C语言实现的。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/11/18/Sigar%E5%BC%80%E6%BA%90%E5%B7%A5%E5%85%B7%E7%9A%84%E4%BD%BF%E7%94%A8/&title=Sigar开源工具的使用 - zln's blog&summary=前言Sigar（System Information Gatherer And Reporter），是一个开源的工具，提供了跨平台的系统信息收集的API，核心由C语言实现的。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/11/18/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8BNetty%E6%A1%86%E6%9E%B6%E5%BA%94%E7%94%A8%E7%AF%87/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>业余学习之网络编程Netty框架应用篇</p>
+                <p class='content'>
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+Netty应用场景之数据通信数据通信场景下的基本解决方案我们需要了解在真正项目中如何使用Nett...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/11/16/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8BNetty%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8%E7%AF%87/'>
+                <p class='title'>业余学习之网络编程Netty框架入门篇<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+初识Netty框架为什么选择Netty Netty是一个NIO client-server(客户...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'Sigar开源工具的使用',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用"><span class="toc-text">使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#环境准备"><span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码实现"><span class="toc-text">代码实现</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

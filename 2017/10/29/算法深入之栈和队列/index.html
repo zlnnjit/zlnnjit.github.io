@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>算法深入之栈和队列 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="java,算法,栈,队列">
+  
+  
+    <meta name="description" content="0.前言本系列题目以及部分截图均来自左程云大大的算法书《程序员代码面试指南—-IT名企算法与数据结构最优解》，有兴趣的小伙伴可以去网上购买正版书籍阅读。">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/10/29/%E7%AE%97%E6%B3%95%E6%B7%B1%E5%85%A5%E4%B9%8B%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/">
+        算法深入之栈和队列
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>数据结构与算法</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-10-29 15:54:49</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <h2 id="0-前言"><a href="#0-前言" class="headerlink" title="0.前言"></a>0.前言</h2><p>本系列题目以及部分截图均来自左程云大大的算法书《程序员代码面试指南—-IT名企算法与数据结构最优解》，有兴趣的小伙伴可以去网上购买正版书籍阅读。</p>
+<a id="more"></a>
+
+<h2 id="1-设计一个带有getMin功能栈"><a href="#1-设计一个带有getMin功能栈" class="headerlink" title="1.设计一个带有getMin功能栈"></a>1.设计一个带有getMin功能栈</h2><h3 id="【题目及要求】"><a href="#【题目及要求】" class="headerlink" title="【题目及要求】"></a>【题目及要求】</h3><p><img src="http://img.bcoder.top/al/ch1/1.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【方案一分析】"><a href="#【方案一分析】" class="headerlink" title="【方案一分析】"></a>【方案一分析】</h3><p><img src="http://img.bcoder.top/al/ch1/2.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/3.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/4.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【方案一代码实现】"><a href="#【方案一代码实现】" class="headerlink" title="【方案一代码实现】"></a>【方案一代码实现】</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Stack;</span><br><span class="line"></span><br><span class="line"><span class="comment">//设计一个带有getMin功能栈</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyStack1</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//普通栈</span></span><br><span class="line">    <span class="keyword">private</span> Stack&lt;Integer&gt; stackData;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//最小栈</span></span><br><span class="line">    <span class="keyword">private</span> Stack&lt;Integer&gt; stackMin;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyStack1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        stackData = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line">        stackMin = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//将数据压入栈</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(<span class="keyword">int</span> newNum)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (stackMin.isEmpty())&#123;</span><br><span class="line">            stackMin.push(newNum);</span><br><span class="line">            <span class="comment">//stackMin.peek()查看栈顶元素</span></span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> (newNum&lt;=stackMin.peek())&#123;</span><br><span class="line">            stackMin.push(newNum);</span><br><span class="line">        &#125;</span><br><span class="line">        stackData.push(newNum);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//将数据弹出顶元素</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">pop</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (stackData.isEmpty())&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"栈空了，不能弹出元素"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        Integer num = stackData.pop();</span><br><span class="line">        <span class="keyword">if</span> (num==stackMin.peek())&#123;</span><br><span class="line">            stackMin.pop();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> num;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getMin</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (stackMin.isEmpty())&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"栈空了，不能弹出元素"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> stackMin.peek();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="【方案二分析】"><a href="#【方案二分析】" class="headerlink" title="【方案二分析】"></a>【方案二分析】</h3><p><img src="http://img.bcoder.top/al/ch1/5.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/6.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【方案二代码实现】"><a href="#【方案二代码实现】" class="headerlink" title="【方案二代码实现】"></a>【方案二代码实现】</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Stack;</span><br><span class="line"></span><br><span class="line"><span class="comment">//设计一个带有getMin功能栈</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyStack2</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//普通栈</span></span><br><span class="line">    <span class="keyword">private</span> Stack&lt;Integer&gt; stackData;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//最小栈</span></span><br><span class="line">    <span class="keyword">private</span> Stack&lt;Integer&gt; stackMin;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyStack2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        stackData = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line">        stackMin = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//将数据压入栈</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(<span class="keyword">int</span> newNum)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (stackMin.isEmpty()) &#123;</span><br><span class="line">            stackMin.push(newNum);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (newNum &lt; stackMin.peek()) &#123;</span><br><span class="line">            stackMin.push(newNum);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            stackMin.push(stackData.peek());</span><br><span class="line">        &#125;</span><br><span class="line">        stackData.push(newNum);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//将数据弹出顶元素</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">pop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (stackData.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"栈空了，不能弹出元素"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        Integer num = stackData.pop();</span><br><span class="line">        stackMin.pop();</span><br><span class="line">        <span class="keyword">return</span> num;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getMin</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (stackMin.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"栈空了，不能弹出元素"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> stackMin.peek();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="【总结】"><a href="#【总结】" class="headerlink" title="【总结】"></a>【总结】</h3><p><img src="http://img.bcoder.top/al/ch1/7.png" alt="算法刷题之栈和队列"></p>
+<h2 id="2-由两个栈组成的队列"><a href="#2-由两个栈组成的队列" class="headerlink" title="2.由两个栈组成的队列"></a>2.由两个栈组成的队列</h2><h3 id="【题目】"><a href="#【题目】" class="headerlink" title="【题目】"></a>【题目】</h3><p>编写一个类，用两个栈实现队列，实现队列的基本操作（add、poll、peek）</p>
+<h3 id="【题目分析】"><a href="#【题目分析】" class="headerlink" title="【题目分析】"></a>【题目分析】</h3><p><img src="http://img.bcoder.top/al/ch1/8.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/9.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/10.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【代码实现】"><a href="#【代码实现】" class="headerlink" title="【代码实现】"></a>【代码实现】</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Stack;</span><br><span class="line"></span><br><span class="line"><span class="comment">//由两个栈组成的队列</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TwoStackesQueue</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Stack&lt;Integer&gt; stackPush;</span><br><span class="line">    <span class="keyword">public</span> Stack&lt;Integer&gt; stackPop;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TwoStackesQueue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        stackPop = <span class="keyword">new</span> Stack();</span><br><span class="line">        stackPush = <span class="keyword">new</span> Stack();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//入队操作</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> newNum)</span></span>&#123;</span><br><span class="line">        stackPush.push(newNum);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//出队操作</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">poll</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (stackPush.isEmpty())&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"队列为空，无法出队"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (!stackPush.isEmpty())&#123;</span><br><span class="line">            stackPop.push(stackPush.pop());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> stackPop.pop();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//访问队头元素</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">peek</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (stackPush.isEmpty())&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"队列为空，无队头元素"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> (!stackPush.isEmpty())&#123;</span><br><span class="line">            stackPop.push(stackPush.pop());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> stackPop.peek();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-如何仅用递归函数和栈操作逆序操作一个栈"><a href="#3-如何仅用递归函数和栈操作逆序操作一个栈" class="headerlink" title="3.如何仅用递归函数和栈操作逆序操作一个栈"></a>3.如何仅用递归函数和栈操作逆序操作一个栈</h2><h3 id="【题目】-1"><a href="#【题目】-1" class="headerlink" title="【题目】"></a>【题目】</h3><p><img src="http://img.bcoder.top/al/ch1/11.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【题目分析】-1"><a href="#【题目分析】-1" class="headerlink" title="【题目分析】"></a>【题目分析】</h3><p>我们设计两个递归函数进行实现：</p>
+<p>1.将栈stack的栈底元素返回并移除：</p>
+<p><img src="http://img.bcoder.top/al/ch1/12.png" alt="算法刷题之栈和队列"></p>
+<p>2.借用函数1实现逆序栈</p>
+<p><img src="http://img.bcoder.top/al/ch1/13.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【代码实现】-1"><a href="#【代码实现】-1" class="headerlink" title="【代码实现】"></a>【代码实现】</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Stack;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReverseStack</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getAndRemoveLastElement</span><span class="params">(Stack&lt;Integer&gt; stack)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> result = stack.pop();</span><br><span class="line">        <span class="keyword">if</span> (stack.isEmpty())&#123;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">int</span> last = getAndRemoveLastElement(stack);</span><br><span class="line">            stack.push(result);</span><br><span class="line">            <span class="keyword">return</span> last;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">reverse</span><span class="params">(Stack&lt;Integer&gt; stack)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (stack.isEmpty())&#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> i = getAndRemoveLastElement(stack);</span><br><span class="line">        reverse(stack);</span><br><span class="line">        stack.push(i);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="4-猫狗队列"><a href="#4-猫狗队列" class="headerlink" title="4.猫狗队列"></a>4.猫狗队列</h2><h3 id="【题目】-2"><a href="#【题目】-2" class="headerlink" title="【题目】"></a>【题目】</h3><p><img src="http://img.bcoder.top/al/ch1/14.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【题目分析】-2"><a href="#【题目分析】-2" class="headerlink" title="【题目分析】"></a>【题目分析】</h3><p><img src="http://img.bcoder.top/al/ch1/15.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/16.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/17.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【代码实现】-2"><a href="#【代码实现】-2" class="headerlink" title="【代码实现】"></a>【代码实现】</h3><p>默认使用上面分析中使用的数据结构定义的类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.LinkedList;</span><br><span class="line"><span class="keyword">import</span> java.util.Queue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DogCatQueue</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Queue&lt;PetEnterQueue&gt; dogQ;</span><br><span class="line">    <span class="keyword">private</span> Queue&lt;PetEnterQueue&gt; catQ;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> count;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DogCatQueue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        dogQ = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">        catQ = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">        count = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//add方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(Pet pet)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (pet.getType().equals(<span class="string">"dog"</span>))&#123;</span><br><span class="line">            dogQ.add(<span class="keyword">new</span> PetEnterQueue(pet,count++));</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            catQ.add(<span class="keyword">new</span> PetEnterQueue(pet,count++));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//pollAll(不区分动物)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Pet <span class="title">pollAll</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (dogQ.isEmpty()&amp;&amp;catQ.isEmpty())&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"队列为空"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!dogQ.isEmpty()&amp;&amp;!catQ.isEmpty())&#123;</span><br><span class="line">            <span class="keyword">if</span> (dogQ.peek().getCount()&gt;catQ.peek().getCount())&#123;</span><br><span class="line">                <span class="keyword">return</span> dogQ.poll().getPet();</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> catQ.poll().getPet();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> (dogQ.isEmpty())&#123;</span><br><span class="line">            <span class="keyword">return</span> catQ.poll().getPet();</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> dogQ.poll().getPet();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Pet <span class="title">pollDog</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (dogQ.isEmpty())&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"狗队列为空"</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> dogQ.poll().getPet();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Pet <span class="title">pollCat</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (catQ.isEmpty())&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"猫队列为空"</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> catQ.poll().getPet();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> dogQ.isEmpty()&amp;&amp; catQ.isEmpty();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isDogQueueEmpty</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> dogQ.isEmpty();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isCatQueueEmpty</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> catQ.isEmpty();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-用一个栈实现另一个栈的排序"><a href="#5-用一个栈实现另一个栈的排序" class="headerlink" title="5.用一个栈实现另一个栈的排序"></a>5.用一个栈实现另一个栈的排序</h2><h3 id="【题目】-3"><a href="#【题目】-3" class="headerlink" title="【题目】"></a>【题目】</h3><p>一个栈的中元素的数据类型为整型，现在想将该栈从顶到底按照从大到小顺序排序，只允许申请一个栈，除此之外，可以申请新的变量，但不能申请新的数据结构，如何完成排序？</p>
+<h3 id="【题目分析】-3"><a href="#【题目分析】-3" class="headerlink" title="【题目分析】"></a>【题目分析】</h3><p><img src="http://img.bcoder.top/al/ch1/18.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【代码实现】-3"><a href="#【代码实现】-3" class="headerlink" title="【代码实现】"></a>【代码实现】</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Stack;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SortStackByStack</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span>  <span class="keyword">void</span> <span class="title">SortStackByStack</span><span class="params">(Stack&lt;Integer&gt; stack)</span></span>&#123;</span><br><span class="line">        Stack&lt;Integer&gt; help = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line">        <span class="keyword">while</span> (!stack.isEmpty())&#123;</span><br><span class="line">            <span class="keyword">if</span> (help.isEmpty())&#123;</span><br><span class="line">                help.push(stack.pop());</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (help.peek()&gt;=stack.peek())&#123;</span><br><span class="line">                help.push(stack.pop());</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">int</span> cur = stack.pop();</span><br><span class="line">                <span class="keyword">while</span> (!help.isEmpty())&#123;</span><br><span class="line">                    stack.push(help.pop());</span><br><span class="line">                &#125;</span><br><span class="line">                help.push(cur);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> (!help.isEmpty())&#123;</span><br><span class="line">            stack.push(help.pop());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//测试代码</span></span><br><span class="line">        Stack&lt;Integer&gt; stack = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line">        stack.push(<span class="number">5</span>);</span><br><span class="line">        stack.push(<span class="number">2</span>);</span><br><span class="line">        stack.push(<span class="number">8</span>);</span><br><span class="line">        stack.push(<span class="number">1</span>);</span><br><span class="line">        SortStackByStack(stack);</span><br><span class="line">        System.out.println(stack.pop());</span><br><span class="line">        System.out.println(stack.pop());</span><br><span class="line">        System.out.println(stack.pop());</span><br><span class="line">        System.out.println(stack.pop());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">8</span><br><span class="line">5</span><br><span class="line">2</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="6-用栈来求解汉诺塔问题"><a href="#6-用栈来求解汉诺塔问题" class="headerlink" title="6.用栈来求解汉诺塔问题"></a>6.用栈来求解汉诺塔问题</h2><p>本题放在动态规划章节完成后更新</p>
+<h2 id="7-生成窗口最大值数组"><a href="#7-生成窗口最大值数组" class="headerlink" title="7.生成窗口最大值数组"></a>7.生成窗口最大值数组</h2><h3 id="【题目】-4"><a href="#【题目】-4" class="headerlink" title="【题目】"></a>【题目】</h3><p><img src="http://img.bcoder.top/al/ch1/19.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/20.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【题目分析】-4"><a href="#【题目分析】-4" class="headerlink" title="【题目分析】"></a>【题目分析】</h3><p><img src="http://img.bcoder.top/al/ch1/21.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/22.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/23.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【代码实现】-4"><a href="#【代码实现】-4" class="headerlink" title="【代码实现】"></a>【代码实现】</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.LinkedList;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">getMaxWindow</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> arr 数组</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> w   滑动窗口大小</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 最大值数组</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span>[] getMaxWindow(<span class="keyword">int</span>[] arr, <span class="keyword">int</span> w) &#123;</span><br><span class="line">        <span class="keyword">if</span> (arr.length &lt; w || arr == <span class="keyword">null</span> || w &lt; <span class="number">1</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        LinkedList&lt;Integer&gt; qmax = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//定义滑动窗口数组</span></span><br><span class="line">        <span class="keyword">int</span>[] res = <span class="keyword">new</span> <span class="keyword">int</span>[arr.length - w + <span class="number">1</span>];</span><br><span class="line">        <span class="keyword">int</span> index = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arr.length; i++) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//新值比对尾的值大</span></span><br><span class="line">            <span class="keyword">while</span> (!qmax.isEmpty() &amp;&amp; arr[qmax.peekLast()] &lt;= arr[i]) &#123;</span><br><span class="line">                qmax.pollLast();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            qmax.addLast(i);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (qmax.peekFirst() == i - w) &#123;</span><br><span class="line">                qmax.pollFirst();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (i &gt;= w - <span class="number">1</span>)</span><br><span class="line">                res[index++] = arr[qmax.peekFirst()];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[] arr = &#123;<span class="number">4</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">6</span>, <span class="number">7</span>&#125;;</span><br><span class="line">        <span class="keyword">int</span>[] res = getMaxWindow(arr, <span class="number">3</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; res.length; i++) &#123;</span><br><span class="line">            System.out.print(res[i] + <span class="string">"   "</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">5   5   5   4   6   7</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="8-构造数组的MaxTree"><a href="#8-构造数组的MaxTree" class="headerlink" title="8.构造数组的MaxTree"></a>8.构造数组的MaxTree</h2><h3 id="【题目】-5"><a href="#【题目】-5" class="headerlink" title="【题目】"></a>【题目】</h3><p><img src="http://img.bcoder.top/al/ch1/24.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【题目分析】-5"><a href="#【题目分析】-5" class="headerlink" title="【题目分析】"></a>【题目分析】</h3><p><img src="http://img.bcoder.top/al/ch1/25.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/26.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/27.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【代码实现】-5"><a href="#【代码实现】-5" class="headerlink" title="【代码实现】"></a>【代码实现】</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Stack;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MaxTree</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Node <span class="title">getMAxtree</span><span class="params">(<span class="keyword">int</span>[] arr)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//初始化节点</span></span><br><span class="line">        Node[] nArr = <span class="keyword">new</span> Node[arr.length];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arr.length; i++) &#123;</span><br><span class="line">            nArr[i] = <span class="keyword">new</span> Node(arr[i]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        Stack&lt;Node&gt; stack = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        HashMap&lt;Node, Node&gt; lBigMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        HashMap&lt;Node, Node&gt; rBigMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nArr.length; i++) &#123;</span><br><span class="line">            </span><br><span class="line">            Node curNode = nArr[i];</span><br><span class="line">            <span class="keyword">while</span> ((!stack.isEmpty()) &amp;&amp; stack.peek().value &lt; curNode.value) &#123;</span><br><span class="line">                popStackSetMap(stack, lBigMap);</span><br><span class="line">            &#125;</span><br><span class="line">            stack.push(curNode);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (!stack.isEmpty()) &#123;</span><br><span class="line">            popStackSetMap(stack, lBigMap);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = nArr.length - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">            Node curNode = nArr[i];</span><br><span class="line">            <span class="keyword">while</span> ((!stack.isEmpty()) &amp;&amp; stack.peek().value &lt; curNode.value) &#123;</span><br><span class="line">                popStackSetMap(stack, rBigMap);</span><br><span class="line">            &#125;</span><br><span class="line">            stack.push(curNode);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> (!stack.isEmpty()) &#123;</span><br><span class="line">            popStackSetMap(stack, rBigMap);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//寻找头结点</span></span><br><span class="line">        Node head = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = nArr.length - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">            Node curNode = nArr[i];</span><br><span class="line">            Node left = lBigMap.get(curNode);</span><br><span class="line">            Node right = rBigMap.get(curNode);</span><br><span class="line">            <span class="keyword">if</span> (left == <span class="keyword">null</span> &amp;&amp; right == <span class="keyword">null</span>) &#123;</span><br><span class="line">                head = curNode;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (left == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (right.left == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    right.left = curNode;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    right.right = curNode;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (right == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (left.left == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    left.left = curNode;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    left.right = curNode;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                Node parent = left.value &lt; right.value ? left : right;</span><br><span class="line">                <span class="keyword">if</span> (parent.left == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    parent.left = curNode;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    parent.right = curNode;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> head;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">popStackSetMap</span><span class="params">(Stack&lt;Node&gt; stack, HashMap&lt;Node, Node&gt; map)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Node popNode = stack.pop();</span><br><span class="line">        <span class="keyword">if</span> (stack.isEmpty()) &#123;</span><br><span class="line">            map.put(popNode, <span class="keyword">null</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            map.put(popNode, stack.peek());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="9-求最大子矩阵的大小"><a href="#9-求最大子矩阵的大小" class="headerlink" title="9.求最大子矩阵的大小"></a>9.求最大子矩阵的大小</h2><h3 id="【题目】-6"><a href="#【题目】-6" class="headerlink" title="【题目】"></a>【题目】</h3><p><img src="http://img.bcoder.top/al/ch1/28.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【题目分析】-6"><a href="#【题目分析】-6" class="headerlink" title="【题目分析】"></a>【题目分析】</h3><p><img src="http://img.bcoder.top/al/ch1/29.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/30.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/31.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/32.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/33.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/34.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/35.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/36.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【代码实现】-6"><a href="#【代码实现】-6" class="headerlink" title="【代码实现】"></a>【代码实现】</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Stack;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MacRexSize</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">maxRecSize</span><span class="params">(<span class="keyword">int</span>[][] map)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (map == <span class="keyword">null</span> || map.length == <span class="number">0</span> || map[<span class="number">0</span>].length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> maxArea = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span>[] height = <span class="keyword">new</span> <span class="keyword">int</span>[map[<span class="number">0</span>].length];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; map.length; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; map[<span class="number">0</span>].length; j++) &#123;</span><br><span class="line">                height[j] = map[i][j] == <span class="number">0</span> ? <span class="number">0</span> : height[j] + <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//maxArea = Math.max(maxRecFromBottom(height), maxArea);</span></span><br><span class="line">            maxArea = Math.max(maxRecFromBottom1(height), maxArea);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> maxArea;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">maxRecFromBottom1</span><span class="params">(<span class="keyword">int</span>[] height)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (height == <span class="keyword">null</span> || height.length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> maxArea = <span class="number">0</span>;</span><br><span class="line">        Stack&lt;Integer&gt; stack = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; height.length; i++) &#123;</span><br><span class="line">            <span class="keyword">while</span> (!stack.isEmpty() &amp;&amp; height[i] &lt;= height[stack.peek()]) &#123;</span><br><span class="line">                <span class="keyword">int</span> j = stack.pop();</span><br><span class="line">                <span class="keyword">int</span> k = stack.isEmpty() ? -<span class="number">1</span> : stack.peek();</span><br><span class="line">                <span class="keyword">int</span> curArea = (i - k - <span class="number">1</span>) * height[j];</span><br><span class="line">                maxArea = Math.max(maxArea, curArea);</span><br><span class="line">            &#125;</span><br><span class="line">            stack.push(i);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (!stack.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">int</span> j = stack.pop();</span><br><span class="line">            <span class="keyword">int</span> k = stack.isEmpty() ? -<span class="number">1</span> : stack.peek();</span><br><span class="line">            <span class="keyword">int</span> curArea = (height.length - k - <span class="number">1</span>) * height[j];</span><br><span class="line">            maxArea = Math.max(maxArea, curArea);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> maxArea;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//遍历的方式实现</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">maxRecFromBottom</span><span class="params">(<span class="keyword">int</span>[] height)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> max = -<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; height.length; i++) &#123;</span><br><span class="line">            <span class="comment">//向左边遍历</span></span><br><span class="line">            <span class="keyword">int</span> left = i;</span><br><span class="line">            <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = left; j &gt;= <span class="number">0</span>; j--) &#123;</span><br><span class="line">                <span class="keyword">if</span> (height[j] &gt;= height[i]) &#123;</span><br><span class="line">                    count++;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">int</span> right = i;</span><br><span class="line">            <span class="comment">//向左边遍历</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = right + <span class="number">1</span>; j &lt; height.length; j++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (height[j] &gt;= height[i]) &#123;</span><br><span class="line">                    count++;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (max &lt; count * height[i]) &#123;</span><br><span class="line">                max = count * height[i];</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> max;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[][] map = &#123;&#123;<span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>&#125;, &#123;<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>&#125;, &#123;<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>&#125;&#125;;</span><br><span class="line">        System.out.println(maxRecSize(map));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">6</span><br></pre></td></tr></table></figure>
+
+<h2 id="10-最大值减去最小值小于或者等于num的子数组数量"><a href="#10-最大值减去最小值小于或者等于num的子数组数量" class="headerlink" title="10.最大值减去最小值小于或者等于num的子数组数量"></a>10.最大值减去最小值小于或者等于num的子数组数量</h2><h3 id="【题目及要求】-1"><a href="#【题目及要求】-1" class="headerlink" title="【题目及要求】"></a>【题目及要求】</h3><p><img src="http://img.bcoder.top/al/ch1/37.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【题目分析】-7"><a href="#【题目分析】-7" class="headerlink" title="【题目分析】"></a>【题目分析】</h3><p><img src="http://img.bcoder.top/al/ch1/38.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/39.png" alt="算法刷题之栈和队列"></p>
+<p><img src="http://img.bcoder.top/al/ch1/40.png" alt="算法刷题之栈和队列"></p>
+<h3 id="【代码实现】-7"><a href="#【代码实现】-7" class="headerlink" title="【代码实现】"></a>【代码实现】</h3><p>…等待更新</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/10/29/%E7%AE%97%E6%B3%95%E6%B7%B1%E5%85%A5%E4%B9%8B%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/>https://www.bcoder.top/2017/10/29/%E7%AE%97%E6%B3%95%E6%B7%B1%E5%85%A5%E4%B9%8B%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/java/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>java</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E7%AE%97%E6%B3%95/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>算法</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E6%A0%88/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>栈</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E9%98%9F%E5%88%97/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>队列</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/10/29/%E7%AE%97%E6%B3%95%E6%B7%B1%E5%85%A5%E4%B9%8B%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/&title=算法深入之栈和队列 - zln's blog&summary=0.前言本系列题目以及部分截图均来自左程云大大的算法书《程序员代码面试指南—-IT名企算法与数据结构最优解》，有兴趣的小伙伴可以去网上购买正版书籍阅读。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/10/29/%E7%AE%97%E6%B3%95%E6%B7%B1%E5%85%A5%E4%B9%8B%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/&title=算法深入之栈和队列 - zln's blog&summary=0.前言本系列题目以及部分截图均来自左程云大大的算法书《程序员代码面试指南—-IT名企算法与数据结构最优解》，有兴趣的小伙伴可以去网上购买正版书籍阅读。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/10/29/%E7%AE%97%E6%B3%95%E6%B7%B1%E5%85%A5%E4%B9%8B%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/&title=算法深入之栈和队列 - zln's blog&summary=0.前言本系列题目以及部分截图均来自左程云大大的算法书《程序员代码面试指南—-IT名企算法与数据结构最优解》，有兴趣的小伙伴可以去网上购买正版书籍阅读。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/11/04/%E7%AE%97%E6%B3%95%E6%B7%B1%E5%85%A5%E4%B9%8B%E9%93%BE%E8%A1%A8%E9%97%AE%E9%A2%98/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>算法深入之链表问题</p>
+                <p class='content'>0.前言本系列题目以及部分截图均来自左程云大大的算法书《程序员代码面试指南—-IT名企算法与数据结构最优解》，有兴趣的小伙伴可以去网上购买正版书籍阅读。
+
+
+1.打印两个有序序列的公共部分【题目...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/10/28/%C2%96%E4%BB%80%E4%B9%88%E6%98%AFVxlan/'>
+                <p class='title'>什么是Vxlan<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>为什么需要Vxlan?1、服务器虚拟化技术，允许在物理机上运行多个MAC地址各不相同的虚拟机，随着数量的增加，交换机上的MAC地址表将剧烈膨胀，甚至需要MAC覆盖。
+2、数据中心多以VLAN为虚...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '算法深入之栈和队列',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-前言"><span class="toc-text">0.前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-设计一个带有getMin功能栈"><span class="toc-text">1.设计一个带有getMin功能栈</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目及要求】"><span class="toc-text">【题目及要求】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【方案一分析】"><span class="toc-text">【方案一分析】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【方案一代码实现】"><span class="toc-text">【方案一代码实现】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【方案二分析】"><span class="toc-text">【方案二分析】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【方案二代码实现】"><span class="toc-text">【方案二代码实现】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【总结】"><span class="toc-text">【总结】</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-由两个栈组成的队列"><span class="toc-text">2.由两个栈组成的队列</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目】"><span class="toc-text">【题目】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目分析】"><span class="toc-text">【题目分析】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【代码实现】"><span class="toc-text">【代码实现】</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-如何仅用递归函数和栈操作逆序操作一个栈"><span class="toc-text">3.如何仅用递归函数和栈操作逆序操作一个栈</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目】-1"><span class="toc-text">【题目】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目分析】-1"><span class="toc-text">【题目分析】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【代码实现】-1"><span class="toc-text">【代码实现】</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-猫狗队列"><span class="toc-text">4.猫狗队列</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目】-2"><span class="toc-text">【题目】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目分析】-2"><span class="toc-text">【题目分析】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【代码实现】-2"><span class="toc-text">【代码实现】</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-用一个栈实现另一个栈的排序"><span class="toc-text">5.用一个栈实现另一个栈的排序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目】-3"><span class="toc-text">【题目】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目分析】-3"><span class="toc-text">【题目分析】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【代码实现】-3"><span class="toc-text">【代码实现】</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-用栈来求解汉诺塔问题"><span class="toc-text">6.用栈来求解汉诺塔问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-生成窗口最大值数组"><span class="toc-text">7.生成窗口最大值数组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目】-4"><span class="toc-text">【题目】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目分析】-4"><span class="toc-text">【题目分析】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【代码实现】-4"><span class="toc-text">【代码实现】</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-构造数组的MaxTree"><span class="toc-text">8.构造数组的MaxTree</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目】-5"><span class="toc-text">【题目】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目分析】-5"><span class="toc-text">【题目分析】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【代码实现】-5"><span class="toc-text">【代码实现】</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-求最大子矩阵的大小"><span class="toc-text">9.求最大子矩阵的大小</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目】-6"><span class="toc-text">【题目】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目分析】-6"><span class="toc-text">【题目分析】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【代码实现】-6"><span class="toc-text">【代码实现】</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-最大值减去最小值小于或者等于num的子数组数量"><span class="toc-text">10.最大值减去最小值小于或者等于num的子数组数量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目及要求】-1"><span class="toc-text">【题目及要求】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【题目分析】-7"><span class="toc-text">【题目分析】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#【代码实现】-7"><span class="toc-text">【代码实现】</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

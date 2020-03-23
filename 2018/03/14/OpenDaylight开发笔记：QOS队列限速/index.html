@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>OpenDaylight开发笔记：ODL实现Qos队列限速 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="SDN,Qos,OpenDaylight,限速">
+  
+  
+    <meta name="description" content="
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2018/03/14/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AQOS%E9%98%9F%E5%88%97%E9%99%90%E9%80%9F/">
+        OpenDaylight开发笔记：ODL实现Qos队列限速
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/SDN/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>SDN</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2018-03-14 21:03:49</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言<br>SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。</p>
+</blockquote>
+<a id="more"></a>
+
+
+<p>本文不涉及ODL开发相关的知识，主要介绍如何使用Qos队列进行限速。</p>
+<h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><ul>
+<li>mininet</li>
+<li>openvswitch</li>
+<li>opendaylight boron sr3</li>
+<li>postman</li>
+</ul>
+<p>这里需要</p>
+<h3 id="预备"><a href="#预备" class="headerlink" title="预备"></a>预备</h3><p>1.mininet创建拓扑：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mn --mac --switch&#x3D;ovsk,protocols&#x3D;OpenFlow13 --controller&#x3D;remote,ip&#x3D;127.0.0.1 --topo linear,2</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://img.bcoder.top/2018.03.14/1.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>我们可以查看我们的openvswitch已经创建了相应的bridge:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ovs-vsctl show -OOpenflow13</span><br></pre></td></tr></table></figure>
+
+<p>2.启动OpenDaylight控制器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;distribution-karaf-0.5.3-Boron-SR3&#x2F;bin&#x2F;karaf</span><br></pre></td></tr></table></figure>
+
+<p>3.给控制器安装相应的插件，主要是dlux控制台、ovsdb、l2switch:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">feature:install odl-dlux-all odl-openflowjava-all odl-dlux-yangman odl-openflowplugin-flow-services-ui odl-ovsdb-southbound-impl-rest odl-ovsdb-southbound-impl-ui odl-ovsdb-library odl-l2switch-all</span><br></pre></td></tr></table></figure>
+
+<p>如果是carbon版本，安装下面的feature:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">feature:install odl-openflowjava-all odl-openflowplugin-flow-services-ui  odl-dluxapps-applications odl-dluxapps-topology odl-dluxapps-nodes odl-dluxapps-yangui odl-ovsdb-southbound-impl-rest odl-ovsdb-southbound-impl-ui odl-ovsdb-library odl-l2switch-all</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://img.bcoder.top/2018.03.14/2.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>4.建立openvswitch(ovs)与OpenDaylight(odl)的ovadb连接：<br>主要有两种方式，一种是ovs主动连接，直接：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ovs-vsctl set-manager tcp:127.0.0.1:6640</span><br></pre></td></tr></table></figure>
+<p>这里的127.0.0.1指的是控制器ip地址。</p>
+<p>另外一种是ovs被动连接，由odl发起连接，主要分为两步：<br>①ovs上开启被动连接：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ovs-vsctl set-manager ptcp:6640</span><br></pre></td></tr></table></figure>
+<p>②使用postman发起odl对ovs的连接：<br>URL=<code>http://127.0.0.1:8181/restconf/config/network-topology:network-topology/topology/ovsdb:1/</code><br>Method=POST<br>Body:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"network-topology:node"</span>:[</span><br><span class="line">        &#123;</span><br><span class="line">                <span class="attr">"node-id"</span>: <span class="string">"ovsdb://127.0.0.1:6641"</span>,</span><br><span class="line">                <span class="attr">"connection-info"</span>: &#123;</span><br><span class="line">                        <span class="attr">"ovsdb:remote-port"</span>: <span class="number">6641</span>,</span><br><span class="line">                        <span class="attr">"ovsdb:remote-ip"</span>: <span class="string">"127.0.0.1"</span></span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们使用的是主动连接方式：</p>
+<p><img src="http://img.bcoder.top/2018.03.14/4.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>postman调用odl restapi之前需要设置认证：</p>
+<p><img src="http://img.bcoder.top/2018.03.14/3.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>我们也可以在odl dlux上看见拓扑：</p>
+<p>url:<code>http://127.0.0.1:8181/index.html#/topology</code></p>
+<p><img src="http://img.bcoder.top/2018.03.14/5.png" alt="ODL开发笔记：QOS队列限速"></p>
+<h3 id="正式步骤"><a href="#正式步骤" class="headerlink" title="正式步骤"></a>正式步骤</h3><p>上面我们已经连上了ovsdb，我们可以查看ovs上的ovsdb拓扑信息：<br>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/operational/network-topology:network-topology/topology/ovsdb:1</code><br>Method=POST</p>
+<p>Response(太长只截取了一部分):</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"topology"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"topology-id"</span>: <span class="string">"ovsdb:1"</span>,</span><br><span class="line">            <span class="attr">"node"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"node-id"</span>: <span class="string">"ovsdb://127.0.0.1:6641/bridge/s2"</span>,</span><br><span class="line">                    <span class="attr">"ovsdb:bridge-uuid"</span>: <span class="string">"ad9c08ec-ae06-4b1a-add9-05cf8cf311c9"</span>,</span><br><span class="line">                    <span class="attr">"ovsdb:bridge-openflow-node-ref"</span>: <span class="string">"/network-topology:network-topology/network-topology:topology[network-topology:topology-id='ovsdb:1']/network-topology:node[network-topology:node-id='ovsdb://127.0.0.1:6641']"</span>,</span><br><span class="line">                    <span class="attr">"ovsdb:datapath-id"</span>: <span class="string">"00:00:00:00:00:00:00:02"</span>,</span><br><span class="line">                    <span class="attr">"ovsdb:datapath-type"</span>: <span class="string">"ovsdb:datapath-type-system"</span>,</span><br><span class="line">                    <span class="attr">"ovsdb:managed-by"</span>: <span class="string">"/network-topology:network-topology/network-topology:topology[network-topology:topology-id='ovsdb:1']/network-topology:node[network-topology:node-id='ovsdb://127.0.0.1:6641']"</span>,</span><br><span class="line">                    <span class="attr">"ovsdb:fail-mode"</span>: <span class="string">"ovsdb:ovsdb-fail-mode-secure"</span>,</span><br><span class="line">                    <span class="attr">"ovsdb:protocol-entry"</span>: [</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="attr">"protocol"</span>: <span class="string">"ovsdb:ovsdb-bridge-protocol-openflow-13"</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    ],</span><br><span class="line">                    <span class="attr">"ovsdb:bridge-name"</span>: <span class="string">"s2"</span>,</span><br><span class="line">                    <span class="attr">"ovsdb:bridge-other-configs"</span>: [</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="attr">"bridge-other-config-key"</span>: <span class="string">"datapath-id"</span>,</span><br><span class="line">                            <span class="attr">"bridge-other-config-value"</span>: <span class="string">"0000000000000002"</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="attr">"bridge-other-config-key"</span>: <span class="string">"disable-in-band"</span>,</span><br><span class="line">                            <span class="attr">"bridge-other-config-value"</span>: <span class="string">"true"</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    ],</span><br><span class="line">                    <span class="attr">"ovsdb:controller-entry"</span>: [</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="attr">"target"</span>: <span class="string">"ptcp:6655"</span>,</span><br><span class="line">                            <span class="attr">"controller-uuid"</span>: <span class="string">"2d5b98d2-7d06-4966-838e-5b7c952f2ea5"</span>,</span><br><span class="line">                            <span class="attr">"max_backoff"</span>: <span class="number">1000</span>,</span><br><span class="line">                            <span class="attr">"is-connected"</span>: <span class="literal">false</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="attr">"target"</span>: <span class="string">"tcp:127.0.0.1:6653"</span>,</span><br><span class="line">                            <span class="attr">"controller-uuid"</span>: <span class="string">"78e92dc1-2b61-44d8-b88a-6c16971081b3"</span>,</span><br><span class="line">                            <span class="attr">"max_backoff"</span>: <span class="number">1000</span>,</span><br><span class="line">                            <span class="attr">"is-connected"</span>: <span class="literal">true</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    ],</span><br><span class="line">                    <span class="attr">"termination-point"</span>: [</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="attr">"tp-id"</span>: <span class="string">"s2-eth1"</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:port-uuid"</span>: <span class="string">"86d796f1-2666-4478-941b-8942bf7c6735"</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ofport"</span>: <span class="number">1</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ifindex"</span>: <span class="number">9</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:interface-uuid"</span>: <span class="string">"f9396e27-c169-4374-b5eb-dc8859c82935"</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ofport_request"</span>: <span class="number">1</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:name"</span>: <span class="string">"s2-eth1"</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ingress-policing-rate"</span>: <span class="number">0</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ingress-policing-burst"</span>: <span class="number">0</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="attr">"tp-id"</span>: <span class="string">"s2-eth2"</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:port-uuid"</span>: <span class="string">"e58913a6-efbc-44b2-968f-b2ee3afebf13"</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ofport"</span>: <span class="number">2</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ifindex"</span>: <span class="number">11</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:interface-uuid"</span>: <span class="string">"49d9217b-f777-42b7-8c57-8a36a4efee5d"</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ofport_request"</span>: <span class="number">2</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:name"</span>: <span class="string">"s2-eth2"</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ingress-policing-rate"</span>: <span class="number">0</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ingress-policing-burst"</span>: <span class="number">0</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="attr">"tp-id"</span>: <span class="string">"s2"</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:port-uuid"</span>: <span class="string">"67fe006e-588d-495b-8bdc-15d42f0e715f"</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ofport"</span>: <span class="number">65534</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ifindex"</span>: <span class="number">15</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:interface-type"</span>: <span class="string">"ovsdb:interface-type-internal"</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:interface-uuid"</span>: <span class="string">"e526fe7c-b73c-4c77-b9c4-f9b2386cc889"</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:name"</span>: <span class="string">"s2"</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ingress-policing-rate"</span>: <span class="number">0</span>,</span><br><span class="line">                            <span class="attr">"ovsdb:ingress-policing-burst"</span>: <span class="number">0</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    ]</span><br><span class="line">                &#125;</span><br><span class="line">........................</span><br></pre></td></tr></table></figure>
+
+
+<p>下面正式开始创建QOS进行限速，<br>具体步骤如下：<br>1.向queue-entries中添加队列1：<br>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/config/network-topology:network-topology/topology/ovsdb:1/node/ovsdb:%2F%2F&lt;ovs-ip&gt;:&lt;ovsdb-manager-port&gt;/ovsdb:queues/1/</code><br>Method=PUT<br>Body:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">&quot;ovsdb:queues&quot;: [</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;queue-id&quot;: &quot;1&quot;,</span><br><span class="line">    &quot;queues-other-config&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;queue-other-config-key&quot;: &quot;max-rate&quot;,</span><br><span class="line">        &quot;queue-other-config-value&quot;: &quot;1000000&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><controller-ip>:127.0.0.1<br><ovs-ip>:127.0.0.1<br><ovsdb-manager-port>:6641</p>
+<p>查看下发的配置：<br>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/operational/network-topology:network-topology/topology/ovsdb:1/node/ovsdb:%2F%2F&lt;ovs-ip&gt;:&lt;ovsdb-manager-port&gt;/ovsdb:queues/1</code><br>Method=GET<br>Response:</p>
+<p><img src="http://img.bcoder.top/2018.03.14/6.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>我们发现QUEUE-1的uuid为：bfbfed77-1827-455a-af84-dae66e0316de</p>
+<p>2.向queue-entries中添加队列2：</p>
+<p>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/config/network-topology:network-topology/topology/ovsdb:1/node/ovsdb:%2F%2F&lt;ovs-ip&gt;:&lt;ovsdb-manager-port&gt;/ovsdb:queues/2/</code><br>Method=PUT<br>Body:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">&quot;ovsdb:queues&quot;: [</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;queue-id&quot;: &quot;2&quot;,</span><br><span class="line">    &quot;queues-other-config&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;queue-other-config-key&quot;: &quot;max-rate&quot;,</span><br><span class="line">        &quot;queue-other-config-value&quot;: &quot;10000000&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看下发的配置：<br>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/operational/network-topology:network-topology/topology/ovsdb:1/node/ovsdb:%2F%2F&lt;ovs-ip&gt;:&lt;ovsdb-manager-port&gt;/ovsdb:queues/2</code><br>Method=GET<br>Response:</p>
+<p><img src="http://img.bcoder.top/2018.03.14/7.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>我们发现QUEUE-2的uuid为：d66bce10-b96d-49cb-bdfd-e70e0bea6cde</p>
+<p>3.向queue-entries中添加队列3：</p>
+<p>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/config/network-topology:network-topology/topology/ovsdb:1/node/ovsdb:%2F%2F&lt;ovs-ip&gt;:&lt;ovsdb-manager-port&gt;/ovsdb:queues/3/</code><br>Method=PUT<br>Body:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">&quot;ovsdb:queues&quot;: [</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;queue-id&quot;: &quot;3&quot;,</span><br><span class="line">    &quot;queues-other-config&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;queue-other-config-key&quot;: &quot;max-rate&quot;,</span><br><span class="line">        &quot;queue-other-config-value&quot;: &quot;100000000&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看下发的配置：<br>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/operational/network-topology:network-topology/topology/ovsdb:1/node/ovsdb:%2F%2F&lt;ovs-ip&gt;:&lt;ovsdb-manager-port&gt;/ovsdb:queues/3</code><br>Method=GET<br>Response:</p>
+<p><img src="http://img.bcoder.top/2018.03.14/8.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>我们发现QUEUE-3的uuid为：7df55e52-1887-4da9-9295-9b74098e7dd1</p>
+<p>我们也可以在ovs上查看这三个队列：</p>
+<p><img src="http://img.bcoder.top/2018.03.14/13.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>4.将三条queue的配置加到QoS entry：</p>
+<p>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/config/network-topology:network-topology/topology/ovsdb:1/node/ovsdb:%2F%2F&lt;ovs-ip&gt;:&lt;ovsdb-manager-port&gt;/ovsdb:qos-entries/1/</code><br>Method=PUT<br>Body:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">&quot;ovsdb:qos-entries&quot;: [</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;qos-id&quot;: &quot;1&quot;,</span><br><span class="line">    &quot;qos-type&quot;:&quot;ovsdb:qos-type-linux-htb&quot;,</span><br><span class="line">    &quot;qos-other-config&quot;:[</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;other-config-key&quot;:&quot;max-rate&quot;,</span><br><span class="line">            &quot;other-config-value&quot;:&quot;100000000&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;queue-list&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;queue-number&quot;: &quot;1&quot;,</span><br><span class="line">            &quot;queue-uuid&quot;: &quot;bfbfed77-1827-455a-af84-dae66e0316de&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;queue-number&quot;: &quot;2&quot;,</span><br><span class="line">            &quot;queue-uuid&quot;: &quot;d66bce10-b96d-49cb-bdfd-e70e0bea6cde&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;queue-number&quot;: &quot;3&quot;,</span><br><span class="line">            &quot;queue-uuid&quot;: &quot;7df55e52-1887-4da9-9295-9b74098e7dd1&quot;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看下发的配置：<br>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/operational/network-topology:network-topology/topology/ovsdb:1/node/ovsdb:%2F%2F&lt;ovs-ip&gt;:&lt;ovsdb-manager-port&gt;/ovsdb:qos-entries/1/</code><br>Method=GET<br>Response:</p>
+<p><img src="http://img.bcoder.top/2018.03.14/9.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>我们发现QOS-1的uuid为：d6ab3967-74fc-48b8-89ff-c8eaaf842cb7</p>
+<p>5.将QOS 1应用到termination-point s1-eth1上<br>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/config/network-topology:network-topology/topology/ovsdb:1/node/ovsdb:%2F%2F&lt;ovs-ip&gt;:&lt;ovsdb-manager-port&gt;%2Fbridge%2Fs1/termination-point/s1-eth1</code><br>Method=PUT<br>Body:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">&quot;network-topology:termination-point&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">                      &quot;ovsdb:name&quot;: &quot;s1-eth1&quot;,</span><br><span class="line">                      &quot;tp-id&quot;: &quot;s1-eth1&quot;,</span><br><span class="line">                      &quot;qos&quot;: &quot;d6ab3967-74fc-48b8-89ff-c8eaaf842cb7&quot;</span><br><span class="line">              &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看下发的配置：<br>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/operational/network-topology:network-topology/topology/ovsdb:1/node/ovsdb:%2F%2F&lt;ovs-ip&gt;:&lt;ovsdb-manager-port&gt;%2Fbridge%2Fs1/termination-point/s1-eth1</code><br>Method=GET<br>Response:</p>
+<p><img src="http://img.bcoder.top/2018.03.14/10.png" alt="ODL开发笔记：QOS队列限速">            </p>
+<p>可以看到QOS-1已经应用成功。 </p>
+<p>也可以通过linxu来查看qos:</p>
+<p><img src="http://img.bcoder.top/2018.03.14/14.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>至此QOS队列已经设置完毕</p>
+<h3 id="测试QOS"><a href="#测试QOS" class="headerlink" title="测试QOS"></a>测试QOS</h3><p>设置流表，在网桥openflow:1添加流表命令，并设置流表的优先级和队列号，使流量在指定的队列上转发出去，并测试流量的带宽。 </p>
+<p>在测试之前，我们要确保拓扑中的h1和h2是通的，然后测试h2到h1的带宽(iperf)，具体如下：</p>
+<p><img src="http://img.bcoder.top/2018.03.14/12.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>1.测试队列1,在s1下发流表：<br>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/config/opendaylight-inventory:nodes/node/openflow:1/table/0/flow/1</code><br>Method=PUT<br>Body:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;flow&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;id&quot;: &quot;1&quot;,</span><br><span class="line">            &quot;match&quot;: &#123;</span><br><span class="line">                &quot;in-port&quot;: &quot;2&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;instructions&quot;: &#123;</span><br><span class="line">                &quot;instruction&quot;: [</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;order&quot;: &quot;0&quot;,</span><br><span class="line">                        &quot;apply-actions&quot;: &#123;</span><br><span class="line">                            &quot;action&quot;: [</span><br><span class="line">                                &#123;</span><br><span class="line">                                    &quot;order&quot;: &quot;0&quot;,</span><br><span class="line">                                    &quot;set-queue-action&quot;: &#123;</span><br><span class="line">                                        &quot;queue&quot;: &quot;test1&quot;,</span><br><span class="line">                                        &quot;queue-id&quot;: &quot;1&quot;</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125;,</span><br><span class="line">                                &#123;</span><br><span class="line">                                    &quot;order&quot;: &quot;1&quot;,</span><br><span class="line">                                    &quot;output-action&quot;: &#123;</span><br><span class="line">                                        &quot;output-node-connector&quot;: &quot;1&quot;</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125;</span><br><span class="line">                            ]</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                ]</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;flow-name&quot;: &quot;testflow&quot;,</span><br><span class="line">            &quot;priority&quot;: &quot;100&quot;,</span><br><span class="line">            &quot;idle-timeout&quot;: &quot;0&quot;,</span><br><span class="line">            &quot;hard-timeout&quot;: &quot;0&quot;,</span><br><span class="line">            &quot;cookie&quot;: &quot;0x11&quot;,</span><br><span class="line">            &quot;table_id&quot;: &quot;0&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们来查看下发的流表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ovs-ofctl dump-flows s1 -Oopenflow13</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://img.bcoder.top/2018.03.14/11.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>我们再来iperf打流一下：</p>
+<p><img src="http://img.bcoder.top/2018.03.14/13.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>2.测试队列2,在s1下发流表：<br>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/config/opendaylight-inventory:nodes/node/openflow:1/table/0/flow/1</code><br>Method=PUT<br>Body:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;flow&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;id&quot;: &quot;1&quot;,</span><br><span class="line">            &quot;match&quot;: &#123;</span><br><span class="line">                &quot;in-port&quot;: &quot;2&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;instructions&quot;: &#123;</span><br><span class="line">                &quot;instruction&quot;: [</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;order&quot;: &quot;0&quot;,</span><br><span class="line">                        &quot;apply-actions&quot;: &#123;</span><br><span class="line">                            &quot;action&quot;: [</span><br><span class="line">                                &#123;</span><br><span class="line">                                    &quot;order&quot;: &quot;0&quot;,</span><br><span class="line">                                    &quot;set-queue-action&quot;: &#123;</span><br><span class="line">                                        &quot;queue&quot;: &quot;test2&quot;,</span><br><span class="line">                                        &quot;queue-id&quot;: &quot;2&quot;</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125;,</span><br><span class="line">                                &#123;</span><br><span class="line">                                    &quot;order&quot;: &quot;1&quot;,</span><br><span class="line">                                    &quot;output-action&quot;: &#123;</span><br><span class="line">                                        &quot;output-node-connector&quot;: &quot;1&quot;</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125;</span><br><span class="line">                            ]</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                ]</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;flow-name&quot;: &quot;testflow&quot;,</span><br><span class="line">            &quot;priority&quot;: &quot;100&quot;,</span><br><span class="line">            &quot;idle-timeout&quot;: &quot;0&quot;,</span><br><span class="line">            &quot;hard-timeout&quot;: &quot;0&quot;,</span><br><span class="line">            &quot;cookie&quot;: &quot;0x11&quot;,</span><br><span class="line">            &quot;table_id&quot;: &quot;0&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们来查看下发的流表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ovs-ofctl dump-flows s1 -Oopenflow13</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://img.bcoder.top/2018.03.14/15.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>我们再来iperf打流一下：</p>
+<p><img src="http://img.bcoder.top/2018.03.14/16.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>3.测试队列3,在s1下发流表：<br>URL=<code>http://&lt;controller-ip&gt;:8181/restconf/config/opendaylight-inventory:nodes/node/openflow:1/table/0/flow/1</code><br>Method=PUT<br>Body:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;flow&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;id&quot;: &quot;1&quot;,</span><br><span class="line">            &quot;match&quot;: &#123;</span><br><span class="line">                &quot;in-port&quot;: &quot;2&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;instructions&quot;: &#123;</span><br><span class="line">                &quot;instruction&quot;: [</span><br><span class="line">                    &#123;</span><br><span class="line">                        &quot;order&quot;: &quot;0&quot;,</span><br><span class="line">                        &quot;apply-actions&quot;: &#123;</span><br><span class="line">                            &quot;action&quot;: [</span><br><span class="line">                                &#123;</span><br><span class="line">                                    &quot;order&quot;: &quot;0&quot;,</span><br><span class="line">                                    &quot;set-queue-action&quot;: &#123;</span><br><span class="line">                                        &quot;queue&quot;: &quot;test3&quot;,</span><br><span class="line">                                        &quot;queue-id&quot;: &quot;3&quot;</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125;,</span><br><span class="line">                                &#123;</span><br><span class="line">                                    &quot;order&quot;: &quot;1&quot;,</span><br><span class="line">                                    &quot;output-action&quot;: &#123;</span><br><span class="line">                                        &quot;output-node-connector&quot;: &quot;1&quot;</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125;</span><br><span class="line">                            ]</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                ]</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;flow-name&quot;: &quot;testflow&quot;,</span><br><span class="line">            &quot;priority&quot;: &quot;100&quot;,</span><br><span class="line">            &quot;idle-timeout&quot;: &quot;0&quot;,</span><br><span class="line">            &quot;hard-timeout&quot;: &quot;0&quot;,</span><br><span class="line">            &quot;cookie&quot;: &quot;0x11&quot;,</span><br><span class="line">            &quot;table_id&quot;: &quot;0&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们来查看下发的流表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ovs-ofctl dump-flows s1 -Oopenflow13</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://img.bcoder.top/2018.03.14/17.png" alt="ODL开发笔记：QOS队列限速"></p>
+<p>我们再来iperf打流一下：</p>
+<p><img src="http://img.bcoder.top/2018.03.14/18.png" alt="ODL开发笔记：QOS队列限速"></p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2018/03/14/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AQOS%E9%98%9F%E5%88%97%E9%99%90%E9%80%9F/>https://www.bcoder.top/2018/03/14/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AQOS%E9%98%9F%E5%88%97%E9%99%90%E9%80%9F/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/SDN/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>SDN</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Qos/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Qos</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/OpenDaylight/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>OpenDaylight</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E9%99%90%E9%80%9F/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>限速</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2018/03/14/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AQOS%E9%98%9F%E5%88%97%E9%99%90%E9%80%9F/&title=OpenDaylight开发笔记：ODL实现Qos队列限速 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2018/03/14/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AQOS%E9%98%9F%E5%88%97%E9%99%90%E9%80%9F/&title=OpenDaylight开发笔记：ODL实现Qos队列限速 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2018/03/14/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AQOS%E9%98%9F%E5%88%97%E9%99%90%E9%80%9F/&title=OpenDaylight开发笔记：ODL实现Qos队列限速 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2018/03/17/%E3%80%8A%E5%89%91%E6%8C%87offer%E3%80%8B%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>《剑指offer》算法笔记【置顶】</p>
+                <p class='content'>
+引言最近实习，闲着无聊，买了本《剑指offer》，看到里面的算法面试题不错，正好每天晚上闲着也没事，然后就打算拿来刷一刷，活跃一下思维，工作期间保证一天一题，双休日的话看心情刷题，所有题目的代...</p>
+              </a>
+            
+            
+              <a class='next' href='/2018/03/12/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%BC%80%E5%8F%91RPC%E8%8E%B7%E5%8F%96%E5%85%A8%E7%BD%91%E6%8B%93%E6%89%91%E5%92%8C%E7%BD%91%E5%8D%A1%E4%BF%A1%E6%81%AF/'>
+                <p class='title'>OpenDaylight开发笔记：开发RPC获取全网拓扑和网卡信息<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'OpenDaylight开发笔记：ODL实现Qos队列限速',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#环境准备"><span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#预备"><span class="toc-text">预备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#正式步骤"><span class="toc-text">正式步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试QOS"><span class="toc-text">测试QOS</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

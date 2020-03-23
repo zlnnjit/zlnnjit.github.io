@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>NIO学习总结 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="java,javase高级特性">
+  
+  
+    <meta name="description" content="前言最近一段时间忙着准备面试，终于有一点闲暇的时间学点新东西了，话不多少，正式进入正题。
+Java NIO 简介Java NIO（New IO）是从Java 1.4版本开始引入的一个新的IO API，可以替代标准的Java IO API。NIO与原来的IO有同样的作用和目的，但是使用的方式完全不同，NIO支持面向...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/10/16/NIO%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/">
+        NIO学习总结
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/java/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>java</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-10-16 13:59:21</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近一段时间忙着准备面试，终于有一点闲暇的时间学点新东西了，话不多少，正式进入正题。</p>
+<h2 id="Java-NIO-简介"><a href="#Java-NIO-简介" class="headerlink" title="Java NIO 简介"></a>Java NIO 简介</h2><p>Java NIO（New IO）是从Java 1.4版本开始引入的一个新的IO API，可以替代标准的Java IO API。NIO与原来的IO有同样的作用和目的，但是使用的方式完全不同，NIO支持面向缓冲区的、基于通道的IO操作。NIO将以更加高效的方式进行文件的读写操作。</p>
+<a id="more"></a>
+
+<p>那么IO和NIO到底有什么区别的，下面通过几张图来看一下：</p>
+<p><img src="http://img.bcoder.top/2017.10.10/2.png" alt="NIO学习总结"></p>
+<p><img src="http://img.bcoder.top/2017.10.10/3.png" alt="NIO学习总结"></p>
+<p><img src="http://img.bcoder.top/2017.10.10/1.png" alt="NIO学习总结"></p>
+<h2 id="通道Channel与缓冲区Buffer"><a href="#通道Channel与缓冲区Buffer" class="headerlink" title="通道Channel与缓冲区Buffer"></a>通道Channel与缓冲区Buffer</h2><p>Java NIO系统的核心在于：通道(Channel)和缓冲区(Buffer)。通道表示打开到 IO 设备(例如：文件、套接字)的连接。若需要使用 NIO 系统，需要获取用于连接 IO 设备的通道以及用于容纳数据的缓冲区。然后操作缓冲区，对数据进行处理。<br><strong>简而言之，Channel负责传输，Buffer负责存储</strong> </p>
+<h2 id="缓冲区Buffer"><a href="#缓冲区Buffer" class="headerlink" title="缓冲区Buffer"></a>缓冲区Buffer</h2><p>缓冲区Buffer：一个用于特定基本数据类型的容器。由java.nio包定义的，所有缓冲区都是 Buffer 抽象类的子类。</p>
+<p>Java NIO 中的 Buffer主要用于与NIO通道进行交互，数据是从通道读入缓冲区，从缓冲区写入通道中的。</p>
+<p>Buffer 就像一个数组，可以保存多个相同类型的数据。根据数据类型不同(boolean 除外) ，有以下 Buffer 常用子类：</p>
+<ul>
+<li>ByteBuffer</li>
+<li>CharBuffer</li>
+<li>ShortBuffer</li>
+<li>IntBuffer</li>
+<li>LongBuffer</li>
+<li>FloatBuffer</li>
+<li>DoubleBuffer</li>
+</ul>
+<p>上述 Buffer 类 他们都采用相似的方法进行管理数据，只是各自管理的数据类型不同而已。都是通过如下方法获取一个 Buffer对象：<br><code>static XxxBuffer allocate(int capacity)</code>:创建一个容量为capacity的XxxBuffer 对象</p>
+<h3 id="缓冲区的基本属性"><a href="#缓冲区的基本属性" class="headerlink" title="缓冲区的基本属性"></a>缓冲区的基本属性</h3><p><strong>Buffer 中的核心属性：</strong></p>
+<ul>
+<li><strong>容量(capacity)</strong>：表示 Buffer 最大数据容量，缓冲区容量不能为负，并且创建后不能更改。</li>
+<li><strong>限制(limit)</strong>：第一个不应该读取或写入的数据的索引，即位于 limit后的数据<br>不可读写。缓冲区的限制不能为负，并且不能大于其容量。</li>
+<li><strong>位置(position)</strong>：下一个要读取或写入的数据的索引。缓冲区的位置不能为负，并且不能大于其限制</li>
+<li><strong>标记(mark)与重置(reset)</strong>：标记是一个索引，通过Buffer中的mark()方法指定Buffer中一个特定的position，之后可以通过调用reset()方法恢复到这个position.</li>
+</ul>
+<p>标记、位置、限制、容量遵守以下不变式： 0 &lt;= mark &lt;= position &lt;= limit &lt;= capacity</p>
+<p><img src="http://img.bcoder.top/2017.10.10/4.png" alt="NIO学习总结"></p>
+<h3 id="Buffer的常用方法"><a href="#Buffer的常用方法" class="headerlink" title="Buffer的常用方法"></a>Buffer的常用方法</h3><p><img src="http://img.bcoder.top/2017.10.10/5.png" alt="NIO学习总结"></p>
+<h3 id="缓冲区的数据操作"><a href="#缓冲区的数据操作" class="headerlink" title="缓冲区的数据操作"></a>缓冲区的数据操作</h3><p>Buffer 所有子类提供了两个用于数据操作的方法：get()<br>与 put() 方法</p>
+<p><strong>获取Buffer中的数据:</strong></p>
+<ul>
+<li>get()：读取单个字节</li>
+<li>get(byte[] dst)：批量读取多个字节到 dst 中</li>
+<li>get(int index)：读取指定索引位置的字节(不会移动 position)</li>
+</ul>
+<br>
+
+<p><strong>存数据到Buffer中：</strong></p>
+<ul>
+<li>put(byte b)：将给定单个字节写入缓冲区的当前位置</li>
+<li>put(byte[] src)：将 src 中的字节写入缓冲区的当前位置</li>
+<li>put(int index, byte b)：将指定字节写入缓冲区的索引位置(不会移动 position)</li>
+</ul>
+<p>代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        String str = <span class="string">"abcde"</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//分配缓冲区</span></span><br><span class="line">        System.out.println(<span class="string">"---------------allocate()-----------------"</span>);</span><br><span class="line">        ByteBuffer byteBuffer = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"position:"</span> + byteBuffer.position());<span class="comment">//0</span></span><br><span class="line">        System.out.println(<span class="string">"linit:"</span> + byteBuffer.limit());<span class="comment">//1024</span></span><br><span class="line">        System.out.println(<span class="string">"capacity:"</span> + byteBuffer.capacity());<span class="comment">//1024</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//利用put方法缓冲区存入数据</span></span><br><span class="line">        System.out.println(<span class="string">"---------------put()-----------------"</span>);</span><br><span class="line">        byteBuffer.put(str.getBytes());</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"position:"</span> + byteBuffer.position());<span class="comment">//5</span></span><br><span class="line">        System.out.println(<span class="string">"linit:"</span> + byteBuffer.limit());<span class="comment">//1024</span></span><br><span class="line">        System.out.println(<span class="string">"capacity:"</span> + byteBuffer.capacity());<span class="comment">//1024</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//filp转换成读数据模式</span></span><br><span class="line">        System.out.println(<span class="string">"---------------flip()-----------------"</span>);</span><br><span class="line">        byteBuffer.flip();</span><br><span class="line">        System.out.println(<span class="string">"position:"</span> + byteBuffer.position());<span class="comment">//0</span></span><br><span class="line">        System.out.println(<span class="string">"linit:"</span> + byteBuffer.limit());<span class="comment">//5</span></span><br><span class="line">        System.out.println(<span class="string">"capacity:"</span> + byteBuffer.capacity());<span class="comment">//1024</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//利用get方法缓冲区读取数据</span></span><br><span class="line">        System.out.println(<span class="string">"---------------get()-----------------"</span>);</span><br><span class="line">        <span class="keyword">byte</span>[] dst = <span class="keyword">new</span> <span class="keyword">byte</span>[byteBuffer.limit()];</span><br><span class="line">        byteBuffer.get(dst);</span><br><span class="line">        System.out.println(<span class="keyword">new</span> String(dst, <span class="number">0</span>, dst.length));</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"position:"</span> + byteBuffer.position());<span class="comment">//5</span></span><br><span class="line">        System.out.println(<span class="string">"linit:"</span> + byteBuffer.limit());<span class="comment">//5</span></span><br><span class="line">        System.out.println(<span class="string">"capacity:"</span> + byteBuffer.capacity());<span class="comment">//1024</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//可以进行重复读</span></span><br><span class="line">        System.out.println(<span class="string">"---------------rewind()-----------------"</span>);</span><br><span class="line">        byteBuffer.rewind();</span><br><span class="line">        System.out.println(<span class="string">"position:"</span> + byteBuffer.position());<span class="comment">//5</span></span><br><span class="line">        System.out.println(<span class="string">"linit:"</span> + byteBuffer.limit());<span class="comment">//5</span></span><br><span class="line">        System.out.println(<span class="string">"capacity:"</span> + byteBuffer.capacity());<span class="comment">//1024</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//clear清空缓冲区(里面的数据还在，处于被遗忘的状态)</span></span><br><span class="line">        System.out.println(<span class="string">"---------------clear()-----------------"</span>);</span><br><span class="line">        byteBuffer.clear();</span><br><span class="line">        System.out.println(<span class="string">"position:"</span> + byteBuffer.position());<span class="comment">//0</span></span><br><span class="line">        System.out.println(<span class="string">"linit:"</span> + byteBuffer.limit());<span class="comment">//1024</span></span><br><span class="line">        System.out.println(<span class="string">"capacity:"</span> + byteBuffer.capacity());<span class="comment">//1024</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        System.out.println((<span class="keyword">char</span>) byteBuffer.get());<span class="comment">//position所在位置的数据,position位置+1</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//mark记录当前position位置</span></span><br><span class="line">        System.out.println(<span class="string">"---------------mark()-----------------"</span>);</span><br><span class="line">        byteBuffer.rewind();</span><br><span class="line">        byteBuffer.get(dst, <span class="number">0</span>, <span class="number">2</span>);</span><br><span class="line">        System.out.println(<span class="keyword">new</span> String(dst, <span class="number">0</span>, <span class="number">2</span>));</span><br><span class="line">        System.out.println(<span class="string">"position:"</span> + byteBuffer.position());</span><br><span class="line">        byteBuffer.mark();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"---------------reset()-----------------"</span>);</span><br><span class="line">        <span class="comment">//将position回退到mark位置</span></span><br><span class="line">        byteBuffer.get(dst, <span class="number">2</span>, <span class="number">2</span>);</span><br><span class="line">        System.out.println(<span class="keyword">new</span> String(dst, <span class="number">2</span>, <span class="number">2</span>));</span><br><span class="line">        System.out.println(<span class="string">"position:"</span> + byteBuffer.position());</span><br><span class="line">        byteBuffer.reset();</span><br><span class="line">        System.out.println(<span class="string">"position:"</span> + byteBuffer.position());</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"---------------xxxRemaining()-----------------"</span>);</span><br><span class="line">        <span class="comment">//判断缓冲区是否还有数量</span></span><br><span class="line">        <span class="keyword">if</span> (byteBuffer.hasRemaining())&#123;</span><br><span class="line">            System.out.println(<span class="string">"remaining:"</span>+byteBuffer.remaining());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">---------------allocate()-----------------</span><br><span class="line">position:0</span><br><span class="line">linit:1024</span><br><span class="line">capacity:1024</span><br><span class="line">---------------put()-----------------</span><br><span class="line">position:5</span><br><span class="line">linit:1024</span><br><span class="line">capacity:1024</span><br><span class="line">---------------flip()-----------------</span><br><span class="line">position:0</span><br><span class="line">linit:5</span><br><span class="line">capacity:1024</span><br><span class="line">---------------get()-----------------</span><br><span class="line">abcde</span><br><span class="line">position:5</span><br><span class="line">linit:5</span><br><span class="line">capacity:1024</span><br><span class="line">---------------rewind()-----------------</span><br><span class="line">position:0</span><br><span class="line">linit:5</span><br><span class="line">capacity:1024</span><br><span class="line">---------------clear()-----------------</span><br><span class="line">position:0</span><br><span class="line">linit:1024</span><br><span class="line">capacity:1024</span><br><span class="line">a</span><br><span class="line">---------------mark()-----------------</span><br><span class="line">ab</span><br><span class="line">position:2</span><br><span class="line">---------------reset()-----------------</span><br><span class="line">cd</span><br><span class="line">position:4</span><br><span class="line">position:2</span><br><span class="line">---------------xxxRemaining()-----------------</span><br><span class="line">remaining:1022</span><br></pre></td></tr></table></figure>
+
+<h3 id="直接与非直接缓冲区"><a href="#直接与非直接缓冲区" class="headerlink" title="直接与非直接缓冲区"></a>直接与非直接缓冲区</h3><ul>
+<li>字节缓冲区要么是直接的，要么是非直接的。如果为直接字节缓冲区，则Java虚拟机会尽最大努力直接在此缓冲区上执行本机I/O操作。也就是说，在每次调用基础操作系统的一个本机 I/O 操作之前（或之后），虚拟机都会尽量避免将缓冲区的内容复制到中间缓冲区中（或从中间缓冲区中复制内容）。</li>
+<li>直接字节缓冲区可以通过调用此类的allocateDirect()工厂方法来创建。此方法返回的缓冲区进行分配和取消分配所需成本通常高于非直接缓冲区。直接缓冲区的内容可以驻留在常规的垃圾回收堆之外，因此，它们对应用程序的内存需求量造成的影响可能并不明显。所以，建议将直接缓冲区主要分配给那些易受基础系统的本机 I/O  操作影响的大型、持久的缓冲区。一般情况下，最好仅在直接缓冲区能在程序性能方面带来明显好处时分配它们。</li>
+<li>直接字节缓冲区还可以过通过FileChannel的map()方法将文件区域直接映射到内存中来创建 。该方法返回MappedByteBuffer。Java平台的实现有助于通过JNI从本机代码创建直接字节缓冲区。如果以上这些缓冲区中的某个缓冲区实例指的是不可访问的内存区域，则试图访问该区域不会更改该缓冲区的内容，并且将会在访问期间或稍后的某个时间导致抛出不确定的异常。</li>
+<li>字节缓冲区是直接缓冲区还是非直接缓冲区可通过调用其isDirect()方法来确定。提供此方法是为了能够在性能关键型代码中执行显式缓冲区管理 </li>
+</ul>
+<p><img src="http://img.bcoder.top/2017.10.10/6.png" alt="NIO学习总结"></p>
+<p><img src="http://img.bcoder.top/2017.10.10/7.png" alt="NIO学习总结"></p>
+<h2 id="通道Channel"><a href="#通道Channel" class="headerlink" title="通道Channel"></a>通道Channel</h2><p>通道（Channel）：由<code>java.nio.channels</code>包定义的。Channel表示IO源与目标打开的连接。Channel类似于传统的“流”。只不过Channel本身不能直接访问数据，Channel只能与Buffer进行交互。</p>
+<p>下面通过几幅图来说说通道：</p>
+<p>最原始的IO：</p>
+<p><img src="http://img.bcoder.top/2017.10.10/8.png" alt="NIO学习总结"></p>
+<p>改进后的IO：</p>
+<p><img src="http://img.bcoder.top/2017.10.10/9.png" alt="NIO学习总结"></p>
+<p>最终的NIO：</p>
+<p><img src="http://img.bcoder.top/2017.10.10/10.png" alt="NIO学习总结"></p>
+<h3 id="通道的实现类"><a href="#通道的实现类" class="headerlink" title="通道的实现类"></a>通道的实现类</h3><p>Java为Channel接口提供的最主要实现类如下：</p>
+<ul>
+<li>FileChannel：用于读取、写入、映射和操作文件的通道。</li>
+<li>DatagramChannel：通过 UDP 读写网络中的数据通道。</li>
+<li>SocketChannel：通过 TCP 读写网络中的数据。</li>
+<li>ServerSocketChannel：可以监听新进来的 TCP 连接，对每一个新进来<br>的连接都会创建一个 SocketChanne</li>
+</ul>
+<h3 id="获取通道的三种方式"><a href="#获取通道的三种方式" class="headerlink" title="获取通道的三种方式"></a>获取通道的三种方式</h3><p>1.获取通道的一种方式是对支持通道的对象调用getChannel() 方法。支持通道的类如下：</p>
+<p><strong>本地IO</strong>：FileInputStream、FileOutputStream、RandomAccessFile</p>
+<p><strong>网络IO</strong>:DatagramSocket、Socket、ServerSocket</p>
+<ol start="2">
+<li><p>在 JDK 1.7 中的 NIO.2 针对各个通道提供了静态方法 open()</p>
+</li>
+<li><p>在 JDK 1.7 中的 NIO.2 的 Files 工具类的 newByteChannel()</p>
+</li>
+</ol>
+<h3 id="通道的数据传输"><a href="#通道的数据传输" class="headerlink" title="通道的数据传输"></a>通道的数据传输</h3><p>首先，我们来看一看FileChannel的常用的方法：</p>
+<p><img src="http://img.bcoder.top/2017.10.10/13.png" alt="NIO学习总结"></p>
+<p>1.利用通道传输数据，兼顾IO流(非直接缓冲区)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    FileInputStream fileInputStream = <span class="keyword">null</span>;</span><br><span class="line">    FileOutputStream fileOutputStream = <span class="keyword">null</span>;</span><br><span class="line">    FileChannel inChannel = <span class="keyword">null</span>;</span><br><span class="line">    FileChannel outChannel = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        fileInputStream = <span class="keyword">new</span> FileInputStream(<span class="string">"1.png"</span>);</span><br><span class="line">        fileOutputStream = <span class="keyword">new</span> FileOutputStream(<span class="string">"2.png"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//1.获取通道</span></span><br><span class="line">        inChannel = fileInputStream.getChannel();</span><br><span class="line">        outChannel = fileOutputStream.getChannel();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//2.分配指定大小的缓冲区</span></span><br><span class="line">        ByteBuffer buf = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//3.将通道中的数据存入缓冲</span></span><br><span class="line">        <span class="keyword">while</span> (inChannel.read(buf) != -<span class="number">1</span>) &#123;</span><br><span class="line"></span><br><span class="line">            buf.flip();<span class="comment">//切换到读数据模式</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            <span class="comment">//4.将缓冲区的数据写入通道中</span></span><br><span class="line">            outChannel.write(buf);</span><br><span class="line"></span><br><span class="line">            buf.clear();<span class="comment">//清空缓冲区</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (outChannel != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                outChannel.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (inChannel != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                inChannel.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (fileOutputStream != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                fileOutputStream.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (fileInputStream != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                fileInputStream.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>2.使用直接缓冲区完成文件的复制（内存映射文件方式）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test2</span><span class="params">()</span>  </span>&#123;</span><br><span class="line">    FileChannel inChannel = <span class="keyword">null</span>;</span><br><span class="line">    FileChannel outChannel = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        inChannel = FileChannel.open(Paths.get(<span class="string">"1.png"</span>), StandardOpenOption.READ);</span><br><span class="line">        outChannel = FileChannel.open(Paths.get(<span class="string">"2.png"</span>), StandardOpenOption.WRITE,StandardOpenOption.READ, StandardOpenOption.CREATE);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//内存映射文件</span></span><br><span class="line">        MappedByteBuffer inMap = inChannel.map(FileChannel.MapMode.READ_ONLY, <span class="number">0</span>, inChannel.size());</span><br><span class="line">        MappedByteBuffer outMap = outChannel.map(FileChannel.MapMode.READ_WRITE, <span class="number">0</span>, inChannel.size());</span><br><span class="line"></span><br><span class="line">        <span class="comment">//直接对缓冲区进行读写操作</span></span><br><span class="line">        <span class="keyword">byte</span>[] dst = <span class="keyword">new</span> <span class="keyword">byte</span>[inMap.limit()];</span><br><span class="line">        inMap.get(dst);</span><br><span class="line">        outMap.put(dst);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            inChannel.close();</span><br><span class="line">            outChannel.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>3.通道之间的数据传输</p>
+<ul>
+<li>transferFrom()</li>
+<li>transferTo()</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test3</span><span class="params">()</span>  </span>&#123;</span><br><span class="line">    FileChannel inChannel = <span class="keyword">null</span>;</span><br><span class="line">    FileChannel outChannel = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        inChannel = FileChannel.open(Paths.get(<span class="string">"1.png"</span>), StandardOpenOption.READ);</span><br><span class="line">        outChannel = FileChannel.open(Paths.get(<span class="string">"2.png"</span>), StandardOpenOption.WRITE,StandardOpenOption.READ, StandardOpenOption.CREATE);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//inChannel.transferTo(0,inChannel.size(),outChannel);</span></span><br><span class="line">        outChannel.transferFrom(inChannel,<span class="number">0</span>,inChannel.size());</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            inChannel.close();</span><br><span class="line">            outChannel.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="分散-Scatter-和聚集-Gather"><a href="#分散-Scatter-和聚集-Gather" class="headerlink" title="分散 (Scatter) 和聚集 (Gather)"></a>分散 (Scatter) 和聚集 (Gather)</h3><p>分散读取（Scattering Reads）是指从Channel中读取的数据“分散”到多个Buffer中。</p>
+<p><img src="http://img.bcoder.top/2017.10.10/11.png" alt="NIO学习总结"></p>
+<p>注意：按照缓冲区的顺序，从 Channel 中读取的数据依次将 Buffer 填满。</p>
+<p>聚集写入（Gathering Writes）是指将多个 Buffer 中的数据“聚集”<br>到 Channel。</p>
+<p><img src="http://img.bcoder.top/2017.10.10/12.png" alt="NIO学习总结"></p>
+<p>注意：按照缓冲区的顺序，写入 position 和 limit 之间的数据到 Channel 。</p>
+<p>代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test4</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        RandomAccessFile randomAccessFile1 = <span class="keyword">new</span> RandomAccessFile(<span class="string">"1.png"</span>, <span class="string">"rw"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//获取通道</span></span><br><span class="line">        FileChannel channel1 = randomAccessFile1.getChannel();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//分配指定大小的缓冲区</span></span><br><span class="line">        ByteBuffer byteBuffer = ByteBuffer.allocate(<span class="number">100</span>);</span><br><span class="line">        ByteBuffer byteBuffer2 = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//分散读取</span></span><br><span class="line">        ByteBuffer[] bufs = &#123;byteBuffer, byteBuffer2&#125;;</span><br><span class="line">        channel1.read(bufs);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (ByteBuffer buffer : bufs) &#123;</span><br><span class="line">            buffer.flip();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="keyword">new</span> String(bufs[<span class="number">0</span>].array(), <span class="number">0</span>, bufs[<span class="number">0</span>].limit()));</span><br><span class="line">        System.out.println(<span class="string">"---------------------------------------"</span>);</span><br><span class="line">        System.out.println(<span class="keyword">new</span> String(bufs[<span class="number">1</span>].array(), <span class="number">0</span>, bufs[<span class="number">1</span>].limit()));</span><br><span class="line"></span><br><span class="line">        <span class="comment">//聚集写入</span></span><br><span class="line">        RandomAccessFile randomAccessFile2 = <span class="keyword">new</span> RandomAccessFile(<span class="string">"2.png"</span>, <span class="string">"rw"</span>);</span><br><span class="line">        <span class="comment">//获取通道</span></span><br><span class="line">        FileChannel channel2 = randomAccessFile2.getChannel();</span><br><span class="line"></span><br><span class="line">        channel2.write(bufs);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="NIO中的编码与解码"><a href="#NIO中的编码与解码" class="headerlink" title="NIO中的编码与解码"></a>NIO中的编码与解码</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test5</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">//查看所有编码</span></span><br><span class="line">    <span class="comment">/*SortedMap&lt;String, Charset&gt; map = Charset.availableCharsets();</span></span><br><span class="line"><span class="comment">    for (Map.Entry&lt;String,Charset&gt; entry:map.entrySet())&#123;</span></span><br><span class="line"><span class="comment">        System.out.println(entry.getKey()+":"+entry.getValue());</span></span><br><span class="line"><span class="comment">    &#125;*/</span></span><br><span class="line"></span><br><span class="line">    Charset cs1 = Charset.forName(<span class="string">"GBK"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取编码器</span></span><br><span class="line">    CharsetEncoder  ce = cs1.newEncoder();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取解码器</span></span><br><span class="line">    CharsetDecoder cd = cs1.newDecoder();</span><br><span class="line"></span><br><span class="line">    CharBuffer cbuf = CharBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line">    cbuf.put(<span class="string">"火影忍者"</span>);</span><br><span class="line">    cbuf.flip();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//编码</span></span><br><span class="line">        ByteBuffer byteBuffer = ce.encode(cbuf);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i =<span class="number">0</span>;i&lt;byteBuffer.limit();i++)&#123;</span><br><span class="line">            System.out.print(byteBuffer.get()+<span class="string">"\t\t"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"\n-----------------------"</span>);</span><br><span class="line">        <span class="comment">//解码</span></span><br><span class="line">        byteBuffer.flip();</span><br><span class="line">        CharBuffer charBuffer = cd.decode(byteBuffer);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i =<span class="number">0</span>;i&lt;charBuffer.limit();i++)&#123;</span><br><span class="line">            System.out.print(charBuffer.get()+<span class="string">"\t"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">catch</span> (CharacterCodingException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-69		-16		-45		-80		-56		-52		-43		-33		</span><br><span class="line">-----------------------</span><br><span class="line">火	影	忍	者</span><br></pre></td></tr></table></figure>
+
+<h2 id="NIO的非阻塞式网络通信"><a href="#NIO的非阻塞式网络通信" class="headerlink" title="NIO的非阻塞式网络通信"></a>NIO的非阻塞式网络通信</h2><h3 id="阻塞与非阻塞"><a href="#阻塞与非阻塞" class="headerlink" title="阻塞与非阻塞"></a>阻塞与非阻塞</h3><p>传统的 IO 流都是阻塞式的。也就是说，当一个线程调用read()或write()时，该线程被阻塞，直到有一些数据被读取或写入，该线程在此期间不能执行其他任务。因此，在完成网络通信进行IO操作时，由于线程会阻塞，所以服务器端必须为每个客户端都提供一个独立的线程进行处理，当服务器端需要处理大量客户端时，性能急剧下降。</p>
+<p><img src="http://img.bcoder.top/2017.10.10/14.png" alt="NIO学习总结"></p>
+<p>Java NIO 是非阻塞模式的。当线程从某通道进行读写数据时，若没有数据可用时，该线程可以进行其他任务。线程通常将非阻塞 IO 的空闲时间用于在其他通道上执行 IO 操作，所以单独的线程可以管理多个输入和输出通道。因此，NIO可以让服务器端使用一个或有限几个线程来同时处理连接到服务器端的所有客户端。</p>
+<p><img src="http://img.bcoder.top/2017.10.10/15.png" alt="NIO学习总结"></p>
+<h3 id="NIO完成阻塞式传输"><a href="#NIO完成阻塞式传输" class="headerlink" title="NIO完成阻塞式传输"></a>NIO完成阻塞式传输</h3><p>1.客户端向服务器发送一张图片：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//客户端</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">client</span><span class="params">()</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">	<span class="comment">//1. 获取通道</span></span><br><span class="line">	SocketChannel sChannel = SocketChannel.open(<span class="keyword">new</span> InetSocketAddress(<span class="string">"127.0.0.1"</span>, <span class="number">9898</span>));</span><br><span class="line">	</span><br><span class="line">	FileChannel inChannel = FileChannel.open(Paths.get(<span class="string">"1.jpg"</span>), StandardOpenOption.READ);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//2. 分配指定大小的缓冲区</span></span><br><span class="line">	ByteBuffer buf = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//3. 读取本地文件，并发送到服务端</span></span><br><span class="line">	<span class="keyword">while</span>(inChannel.read(buf) != -<span class="number">1</span>)&#123;</span><br><span class="line">		buf.flip();</span><br><span class="line">		sChannel.write(buf);</span><br><span class="line">		buf.clear();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//4. 关闭通道</span></span><br><span class="line">	inChannel.close();</span><br><span class="line">	sChannel.close();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//服务端</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">server</span><span class="params">()</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">	<span class="comment">//1. 获取通道</span></span><br><span class="line">	ServerSocketChannel ssChannel = ServerSocketChannel.open();</span><br><span class="line">	</span><br><span class="line">	FileChannel outChannel = FileChannel.open(Paths.get(<span class="string">"2.jpg"</span>), StandardOpenOption.WRITE, StandardOpenOption.CREATE);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//2. 绑定连接</span></span><br><span class="line">	ssChannel.bind(<span class="keyword">new</span> InetSocketAddress(<span class="number">9898</span>));</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//3. 获取客户端连接的通道</span></span><br><span class="line">	SocketChannel sChannel = ssChannel.accept();</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//4. 分配指定大小的缓冲区</span></span><br><span class="line">	ByteBuffer buf = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//5. 接收客户端的数据，并保存到本地</span></span><br><span class="line">	<span class="keyword">while</span>(sChannel.read(buf) != -<span class="number">1</span>)&#123;</span><br><span class="line">		buf.flip();</span><br><span class="line">		outChannel.write(buf);</span><br><span class="line">		buf.clear();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//6. 关闭通道</span></span><br><span class="line">	sChannel.close();</span><br><span class="line">	outChannel.close();</span><br><span class="line">	ssChannel.close();</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通信流程如下图所示：</p>
+<p><img src="http://img.bcoder.top/2017.10.10/16.png" alt="NIO学习总结"></p>
+<p> 2.客户端向服务器发送一张图片，服务端保存成功并返回消息给客户端：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//客户端</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">client</span><span class="params">()</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">	SocketChannel sChannel = SocketChannel.open(<span class="keyword">new</span> InetSocketAddress(<span class="string">"127.0.0.1"</span>, <span class="number">9898</span>));</span><br><span class="line">	</span><br><span class="line">	FileChannel inChannel = FileChannel.open(Paths.get(<span class="string">"1.jpg"</span>), StandardOpenOption.READ);</span><br><span class="line">	</span><br><span class="line">	ByteBuffer buf = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">while</span>(inChannel.read(buf) != -<span class="number">1</span>)&#123;</span><br><span class="line">		buf.flip();</span><br><span class="line">		sChannel.write(buf);</span><br><span class="line">		buf.clear();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	sChannel.shutdownOutput();</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//接收服务端的反馈</span></span><br><span class="line">	<span class="keyword">int</span> len = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">while</span>((len = sChannel.read(buf)) != -<span class="number">1</span>)&#123;</span><br><span class="line">		buf.flip();</span><br><span class="line">		System.out.println(<span class="keyword">new</span> String(buf.array(), <span class="number">0</span>, len));</span><br><span class="line">		buf.clear();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	inChannel.close();</span><br><span class="line">	sChannel.close();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//服务端</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">server</span><span class="params">()</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">	ServerSocketChannel ssChannel = ServerSocketChannel.open();</span><br><span class="line">	</span><br><span class="line">	FileChannel outChannel = FileChannel.open(Paths.get(<span class="string">"2.jpg"</span>), StandardOpenOption.WRITE, StandardOpenOption.CREATE);</span><br><span class="line">	</span><br><span class="line">	ssChannel.bind(<span class="keyword">new</span> InetSocketAddress(<span class="number">9898</span>));</span><br><span class="line">	</span><br><span class="line">	SocketChannel sChannel = ssChannel.accept();</span><br><span class="line">	</span><br><span class="line">	ByteBuffer buf = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">while</span>(sChannel.read(buf) != -<span class="number">1</span>)&#123;</span><br><span class="line">		buf.flip();</span><br><span class="line">		outChannel.write(buf);</span><br><span class="line">		buf.clear();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//发送反馈给客户端</span></span><br><span class="line">	buf.put(<span class="string">"服务端接收数据成功"</span>.getBytes());</span><br><span class="line">	buf.flip();</span><br><span class="line">	sChannel.write(buf);</span><br><span class="line">	</span><br><span class="line">	sChannel.close();</span><br><span class="line">	outChannel.close();</span><br><span class="line">	ssChannel.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="NIO完成非阻塞式传输"><a href="#NIO完成非阻塞式传输" class="headerlink" title="NIO完成非阻塞式传输"></a>NIO完成非阻塞式传输</h3><h4 id="选择器（Selector）"><a href="#选择器（Selector）" class="headerlink" title="选择器（Selector）"></a>选择器（Selector）</h4><p>选择器（Selector） 是SelectableChannle对象的多路复用器，Selector可以同时监控多个SelectableChannel的IO状况，也就是说，利用Selector可使一个单独的线程管理多个Channel。Selector 是非阻塞 IO 的核心。</p>
+<p>SelectableChannle 的结构如下图：</p>
+<p><img src="http://img.bcoder.top/2017.10.10/17.png" alt="NIO学习总结"></p>
+<p>Selector的常用方法:</p>
+<p><img src="http://img.bcoder.top/2017.10.10/19.png" alt="NIO学习总结"></p>
+<p><br><br></p>
+<h4 id="选择器的使用"><a href="#选择器的使用" class="headerlink" title="选择器的使用"></a>选择器的使用</h4><p>当调用register(Selector sel, int ops)将通道注册选择器时，选择器<br>对通道的监听事件，需要通过第二个参数 ops 指定。</p>
+<p>可以监听的事件类型（用可使用SelectionKey的四个常量表示）：</p>
+<ul>
+<li>读 : SelectionKey.OP_READ （1）</li>
+<li>写 : SelectionKey.OP_WRITE （4）</li>
+<li>连接 : SelectionKey.OP_CONNECT （8）</li>
+<li>接收 : SelectionKey.OP_ACCEPT （16）</li>
+</ul>
+<p>若注册时不止监听一个事件，则可以使用“位或”操作符连接。</p>
+<p>下面来看一下SelectionKey：<br>SelectionKey：表示 SelectableChannel和Selector之间的注册关系。每次向选择器注册通道时就会选择一个事件(选择键)。选择键包含两个表示为整数值的操作集。操作集的每一位都表示该键的通道所支持的一类可选择操作</p>
+<p><img src="http://img.bcoder.top/2017.10.10/18.png" alt="NIO学习总结"></p>
+<p><strong>SocketChannel</strong>: Java NIO中的SocketChannel是一个连接到TCP网<br>络套接字的通道。<br>操作步骤：打开 SocketChannel、读写数据、关闭 SocketChannel</p>
+<p><strong>SocketChannel</strong>：Java NIO中的ServerSocketChannel是一个可以监听新进来的TCP连接的通道，就像标准IO中<br>的ServerSocket一样。</p>
+<p><strong>DatagramChannel</strong>：Java NIO中的DatagramChannel是一个能收发UDP包的通道。操作步骤：打开 DatagramChannel、接收/发送数据</p>
+<p>下面來看看完成一个非阻塞传输TCP的实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//NIO 非阻塞通信</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">client3</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="comment">//1.获取通道</span></span><br><span class="line">    SocketChannel socketChannel = SocketChannel.open(<span class="keyword">new</span> InetSocketAddress(<span class="string">"127.0.0.1"</span>,<span class="number">9989</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">//2.切换为非缓冲模式</span></span><br><span class="line">    socketChannel.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//3.分配指定大小的缓冲区</span></span><br><span class="line">    ByteBuffer byteBuffer = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//4发送数据到客户端</span></span><br><span class="line">    byteBuffer.put(LocalDateTime.now().toString().getBytes());</span><br><span class="line">    byteBuffer.flip();</span><br><span class="line">    socketChannel.write(byteBuffer);</span><br><span class="line">    byteBuffer.clear();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//关闭通道</span></span><br><span class="line">    socketChannel.close();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//NIO非阻塞通信</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">server3</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取通道</span></span><br><span class="line">    ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//切换非阻塞模式</span></span><br><span class="line">    serverSocketChannel.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//绑定连接</span></span><br><span class="line">    serverSocketChannel.bind(<span class="keyword">new</span> InetSocketAddress(<span class="number">9989</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取选择器</span></span><br><span class="line">    Selector selector = Selector.open();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//将通道注册到选择器上,并且指定监听事件（接收事件）</span></span><br><span class="line">    serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//轮询式的获取选择器上已经准备就绪的事件</span></span><br><span class="line">    <span class="keyword">while</span> (selector.select()&gt;<span class="number">0</span>)&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//获取当前选择器中的所有注册的选择键（已就绪的监听事件）</span></span><br><span class="line">        Iterator&lt;SelectionKey&gt; iterator = selector.selectedKeys().iterator();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//迭代获取</span></span><br><span class="line">        <span class="keyword">while</span> (iterator.hasNext())&#123;</span><br><span class="line">            <span class="comment">//获取准备的事件</span></span><br><span class="line">            SelectionKey sk = iterator.next();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//判断具体是什么事件准备就绪</span></span><br><span class="line">            <span class="keyword">if</span> (sk.isAcceptable())&#123;</span><br><span class="line"></span><br><span class="line">                <span class="comment">//若接受就绪，获取客户端连接</span></span><br><span class="line">                SocketChannel socketChannel = serverSocketChannel.accept();</span><br><span class="line"></span><br><span class="line">                <span class="comment">//切换非阻塞模式</span></span><br><span class="line">                socketChannel.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">                <span class="comment">//将该通道注册到选择器</span></span><br><span class="line">                socketChannel.register(selector,SelectionKey.OP_READ);</span><br><span class="line"></span><br><span class="line">            &#125;<span class="keyword">else</span> <span class="keyword">if</span> (sk.isReadable())&#123;</span><br><span class="line"></span><br><span class="line">                <span class="comment">//获取当前选择器读就绪的通道</span></span><br><span class="line">                SocketChannel socketChannel  = (SocketChannel) sk.channel();</span><br><span class="line"></span><br><span class="line">                <span class="comment">//读取数据</span></span><br><span class="line">                ByteBuffer byteBuffer = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> len = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">while</span> ((len = socketChannel.read(byteBuffer))&gt;<span class="number">0</span>)&#123;</span><br><span class="line">                    byteBuffer.flip();</span><br><span class="line">                    System.out.println(<span class="keyword">new</span> String(byteBuffer.array(),<span class="number">0</span>,len));</span><br><span class="line">                    byteBuffer.clear();</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//取消选择键SelectionKey</span></span><br><span class="line">            iterator.remove();</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p> 下面來看看完成一个非阻塞传输UDP的实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">//NIO udp非阻塞模式</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">client4</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    DatagramChannel datagramChannel = DatagramChannel.open();</span><br><span class="line"></span><br><span class="line">    datagramChannel.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">    ByteBuffer byteBuffer = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line"></span><br><span class="line">    byteBuffer.put(<span class="string">"我发起了一个UDP连接"</span>.getBytes());</span><br><span class="line">    byteBuffer.flip();</span><br><span class="line">    datagramChannel.send(byteBuffer,<span class="keyword">new</span> InetSocketAddress(<span class="string">"127.0.0.1"</span>,<span class="number">9989</span>));</span><br><span class="line">    byteBuffer.clear();</span><br><span class="line"></span><br><span class="line">    datagramChannel.close();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">server4</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    DatagramChannel datagramChannel = DatagramChannel.open();</span><br><span class="line"></span><br><span class="line">    datagramChannel.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">    datagramChannel.bind(<span class="keyword">new</span> InetSocketAddress(<span class="number">9989</span>));</span><br><span class="line"></span><br><span class="line">    Selector selector = Selector.open();</span><br><span class="line"></span><br><span class="line">    datagramChannel.register(selector,SelectionKey.OP_READ);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (selector.select()&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        Iterator&lt;SelectionKey&gt; iterator = selector.selectedKeys().iterator();</span><br><span class="line">        <span class="keyword">while</span> (iterator.hasNext())&#123;</span><br><span class="line">            SelectionKey selectionKey = iterator.next();</span><br><span class="line">            <span class="keyword">if</span> (selectionKey.isReadable())&#123;</span><br><span class="line">                ByteBuffer byteBuffer = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line">                datagramChannel.receive(byteBuffer);</span><br><span class="line">                byteBuffer.flip();</span><br><span class="line">                System.out.println(<span class="keyword">new</span> String(byteBuffer.array(),<span class="number">0</span>,byteBuffer.limit()));</span><br><span class="line">                byteBuffer.clear();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        iterator.remove();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="管道-Pipe"><a href="#管道-Pipe" class="headerlink" title="管道 (Pipe)"></a>管道 (Pipe)</h2><p>Java NIO 管道是2个线程之间的单向数据连接。Pipe有一个source通道和一个sink通道。数据会被写到sink通道，从source通道读取.</p>
+<p><img src="http://img.bcoder.top/2017.10.10/20.png" alt="NIO学习总结"></p>
+<p>代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="comment">//获取管道</span></span><br><span class="line">    Pipe pipe = Pipe.open();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//将缓冲区的数据写入管道</span></span><br><span class="line"></span><br><span class="line">    Pipe.SinkChannel sink = pipe.sink();</span><br><span class="line">    ByteBuffer byteBuffer = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line">    byteBuffer.put(<span class="string">"单向管道发送数据"</span>.getBytes());</span><br><span class="line">    byteBuffer.flip();</span><br><span class="line"></span><br><span class="line">    sink.write(byteBuffer);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//读取数据</span></span><br><span class="line">    Pipe.SourceChannel source = pipe.source();</span><br><span class="line">    byteBuffer.flip();</span><br><span class="line">   source.read(byteBuffer);</span><br><span class="line">    System.out.println(<span class="keyword">new</span> String(byteBuffer.array(),<span class="number">0</span>,byteBuffer.limit()));</span><br><span class="line">    source.close();</span><br><span class="line">    sink.close();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/10/16/NIO%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/>https://www.bcoder.top/2017/10/16/NIO%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/java/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>java</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/javase%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>javase高级特性</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/10/16/NIO%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/&title=NIO学习总结 - zln's blog&summary=前言最近一段时间忙着准备面试，终于有一点闲暇的时间学点新东西了，话不多少，正式进入正题。
+Java NIO 简介Java NIO（New IO）是从Java 1.4版本开始引入的一个新的IO API，可以替代标准的Java IO API。NIO与原来的IO有同样的作用和目的，但是使用的方式完全不同，NIO支持面向缓冲区的、基于通道的IO操作。NIO将以更加高效的方式进行文件的读写操作。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/10/16/NIO%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/&title=NIO学习总结 - zln's blog&summary=前言最近一段时间忙着准备面试，终于有一点闲暇的时间学点新东西了，话不多少，正式进入正题。
+Java NIO 简介Java NIO（New IO）是从Java 1.4版本开始引入的一个新的IO API，可以替代标准的Java IO API。NIO与原来的IO有同样的作用和目的，但是使用的方式完全不同，NIO支持面向缓冲区的、基于通道的IO操作。NIO将以更加高效的方式进行文件的读写操作。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/10/16/NIO%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/&title=NIO学习总结 - zln's blog&summary=前言最近一段时间忙着准备面试，终于有一点闲暇的时间学点新东西了，话不多少，正式进入正题。
+Java NIO 简介Java NIO（New IO）是从Java 1.4版本开始引入的一个新的IO API，可以替代标准的Java IO API。NIO与原来的IO有同样的作用和目的，但是使用的方式完全不同，NIO支持面向缓冲区的、基于通道的IO操作。NIO将以更加高效的方式进行文件的读写操作。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/10/28/%C2%96%E4%BB%80%E4%B9%88%E6%98%AFVxlan/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>什么是Vxlan</p>
+                <p class='content'>为什么需要Vxlan?1、服务器虚拟化技术，允许在物理机上运行多个MAC地址各不相同的虚拟机，随着数量的增加，交换机上的MAC地址表将剧烈膨胀，甚至需要MAC覆盖。
+2、数据中心多以VLAN为虚...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/09/02/%C2%96ArrayList%E3%80%81LinkedList%E3%80%81Vector%E7%9A%84%E5%8C%BA%E5%88%AB/'>
+                <p class='title'>ArrayList、LinkedList、Vector的区别<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>首先我们来看一下继承关系：
+
+从上图我们可以看出，ArrayList、LinkedList、Vector都实现了List的接口。
+
+ArrayList①.类的定义：
+12public class...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'NIO学习总结',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-NIO-简介"><span class="toc-text">Java NIO 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#通道Channel与缓冲区Buffer"><span class="toc-text">通道Channel与缓冲区Buffer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#缓冲区Buffer"><span class="toc-text">缓冲区Buffer</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#缓冲区的基本属性"><span class="toc-text">缓冲区的基本属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Buffer的常用方法"><span class="toc-text">Buffer的常用方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缓冲区的数据操作"><span class="toc-text">缓冲区的数据操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#直接与非直接缓冲区"><span class="toc-text">直接与非直接缓冲区</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#通道Channel"><span class="toc-text">通道Channel</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#通道的实现类"><span class="toc-text">通道的实现类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取通道的三种方式"><span class="toc-text">获取通道的三种方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#通道的数据传输"><span class="toc-text">通道的数据传输</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分散-Scatter-和聚集-Gather"><span class="toc-text">分散 (Scatter) 和聚集 (Gather)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NIO中的编码与解码"><span class="toc-text">NIO中的编码与解码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NIO的非阻塞式网络通信"><span class="toc-text">NIO的非阻塞式网络通信</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#阻塞与非阻塞"><span class="toc-text">阻塞与非阻塞</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NIO完成阻塞式传输"><span class="toc-text">NIO完成阻塞式传输</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NIO完成非阻塞式传输"><span class="toc-text">NIO完成非阻塞式传输</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#选择器（Selector）"><span class="toc-text">选择器（Selector）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#选择器的使用"><span class="toc-text">选择器的使用</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#管道-Pipe"><span class="toc-text">管道 (Pipe)</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

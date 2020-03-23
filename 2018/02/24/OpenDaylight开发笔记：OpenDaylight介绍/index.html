@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>OpenDaylight开发笔记：OpenDaylight介绍 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="SDN,Controller,OpenDaylight">
+  
+  
+    <meta name="description" content="
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+
+SDN 介绍SDN的定义作为...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2018/02/24/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E4%BB%8B%E7%BB%8D/">
+        OpenDaylight开发笔记：OpenDaylight介绍
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/SDN/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>SDN</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2018-02-24 00:18:25</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言<br>SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。</p>
+</blockquote>
+<h2 id="SDN-介绍"><a href="#SDN-介绍" class="headerlink" title="SDN 介绍"></a>SDN 介绍</h2><h3 id="SDN的定义"><a href="#SDN的定义" class="headerlink" title="SDN的定义"></a>SDN的定义</h3><p>作为二十一世纪科技精神象征，坐落于硅谷的斯坦福大学有着浓厚的创新精神。2006年Nick McKeown教授为首的研究团队提出OpenFlow的概念用于校园网络的试验创新，后续基于OpenFlow给网络带来可编程的特性，SDN概念营运而生。</p>
+<a id="more"></a>
+
+<p>软件定义网络（Software Defined Networking,SDN）是一种新型的网络技术，其设计理念是将网络的控制平面与数据转发平面进行分离，并实现可编程化的集中控制。 </p>
+<p>传统网络设备紧耦合的网络架构被分拆成应用、控制、转发三层分离的架构。控制功能被转移到了服务器，上层应用、底层转发设施被抽象成多个逻辑实体。</p>
+<h3 id="SDN的特征"><a href="#SDN的特征" class="headerlink" title="SDN的特征"></a>SDN的特征</h3><p>集中控制：集中控制使得全局优化成为可能，比如流量工程、负载均衡。集中控制使得整个网络可以当作一台设备进行维护，设备零配置即插即用，大大降低运维成本。</p>
+<p>开放接口：应用和网络的无缝集成，应用告诉网络如何运行才能更好地满足应用的需求，比如业务的带宽、时延需求，计费对路由的影响等。用户可以自行开发网络新功能，加快新功能面世周期。理论上NOS和转发硬件的开放标准接口使得硬件完全PC化。</p>
+<p>网络虚拟化：逻辑网络和物理网络的分离，逻辑网络可以根据业务需要配置、迁移，不受物理位置的限制。多租户支持，每个租户可以自行定义带宽需求和私有编址。</p>
+<p><strong>SDN关键技术体系：</strong></p>
+<p><img src="http://img.bcoder.top/2018.02.24/1.png" alt="ODL介绍"></p>
+<h3 id="SDN南向接口"><a href="#SDN南向接口" class="headerlink" title="SDN南向接口"></a>SDN南向接口</h3><p>SDN南向接口的关键技术是转发面开放协议，该协议允许网络控制器控制交换机的配置以及相关转发行为。</p>
+<p>Openflow是ONF定义的一个转发面控制协议，它将转发面抽象为一个由多级流表组成的转发模型，网络控制器通过Openflow协议下发Openflow流表到具体交换机，从而定义、控制交换机的具体行为。</p>
+<p>OpenFlow是一整套软件应用程序接口，OpenFlow 控制器可以通过规范与支持OpenFlow 交换机沟通配置信息，决定数据转发平面的转发表，控制器与交换机间通过SSL 加密传输。</p>
+<p>OF-CONFIG （OpenFlow配置和管理协议）由ONF控制和管理工作组制定和维护，是OpenFlow协议的同伴协议，是在包含OpenFlow交换机的运营环境下，除OpenFlow协议之外的接口配置和管理协议规范，目前采用NETCONF协议进行传输。 </p>
+<p>Openflow以及OF-Config提供了灵活、开放的手段，但是也有许多尚待改进的地方：<br>1.现有转发面硬件芯片无法在所有Openflow流表中支持协议中定义的匹配字段，导致Openflow协议灵活性大打折扣，也为网络控制器控制异构Openflow交换机增加了难度；<br>2.Openflow协议中仅仅支持了部分现有网络封包格式，后续对于协议的扩展也会存在类似标准化周期过长的问题。</p>
+<h3 id="SDN北向接口"><a href="#SDN北向接口" class="headerlink" title="SDN北向接口"></a>SDN北向接口</h3><p>SDN控制层将网络能力封装为开放的REST API，供上层业务调用。</p>
+<p>ONF当前只定义了OpenFlow作为南向API，而回避了北向API标准化问题，因此不同的控制器具备有不同的北向API集合。</p>
+<h2 id="OpenDaylight简介"><a href="#OpenDaylight简介" class="headerlink" title="OpenDaylight简介"></a>OpenDaylight简介</h2><h3 id="OpenDaylight概述"><a href="#OpenDaylight概述" class="headerlink" title="OpenDaylight概述"></a>OpenDaylight概述</h3><p>OpenDaylight项目在2013年初由Linux协会联合业内18家企业（包括Cisco、Juniper、Broadcom等多家传统网络的巨头公司）创立，旨在推出一个开源的通用SDN平台。</p>
+<p>OpenDaylight项目的设计目标是降低网络运营的复杂度，扩展现有网络架构中硬件的生命期，同时还能够支持SDN新业务和新能力的创新。OpenDaylight开源项目希望能够提供开放的北向API，同时支持包括OpenFlow在内的多种南向接口协议，底层支持传统交换机和OpenFlow交换机。OpenDaylight拥有一套模块化、可插拔且极为灵活的控制器，能够被部署在任何支持Java的平台上。</p>
+<h3 id="OpenDaylight架构介绍"><a href="#OpenDaylight架构介绍" class="headerlink" title="OpenDaylight架构介绍"></a>OpenDaylight架构介绍</h3><p>目前，OpenDaylight的基本版本已经实现了传统二、三层交换机的基本转发功能，并支持任意网络拓扑和最优路径转发。</p>
+<p>OpenDaylight使用模块化方式来实现控制器的功能和应用。目前已发布了多个版本，但都继承了最初的设计思想和设计目标。在OpenDaylight总体架构中，南向接口通过插件的方式来支持多种协议，包括OpenFlow v1.0/v1.3、OVSDB、NETCONF、LISP（Locator ID Separation Protocol，位置标识分离协议）、BGP、PCEP、SNMP等。</p>
+<p>服务抽象层（Service Abstraction Layer，SAL）一方面可以为模块和应用提供一致性的服务；另一方面支持多种南向协议，可以将来自上层的调用转换为适合底层网络设备的协议格式。</p>
+<p>在SAL之上，OpenDaylight提供了网络服务的基本功能和拓展功能，基本网络服务功能主要包括拓扑管理、状态管理、交换机管理、主机监测以及最短路径转发等；</p>
+<p>拓展网络服务功能主要包括DOVE（Distributed Overlay Virtual Ethernet，分布式覆盖虚拟以太网）管理、Affinity服务（上层应用向控制器下发网络需求的API）、流量重定向、LISP服务、VTN（Virtual Tenant Network，虚拟租户网络）管理等。</p>
+<p>OpenDaylight采用了OSGi（Open Service Gateway initiative，开放服务网关规范）体系结构，实现了众多网络功能的隔离，极大地增强了控制平面的可扩展性。</p>
+<p>OpenDaylight控制器部分模块功能介绍：</p>
+<p><img src="http://img.bcoder.top/2018.02.24/3.png" alt="ODL介绍"></p>
+<p>OpenDaylight总体架构如下图所示：</p>
+<p><img src="http://img.bcoder.top/2018.02.24/2.png" alt="ODL介绍"></p>
+<p>那么，我们通过OpenDaylight的设计原则来更好理解OpenDaylight：<br>1.运行时模块化和扩展化(Runtime Modularity and Extensibility):支持在控制器运行<br>时进行服务的安装、删除和更新;<br>2.多协议的南向支持(Multiprotocol Southbound):南向支持多种协议;<br>3.服务抽象层(Service Abstraction Layer):南向多种协议对上提供统一的北向服务接<br>口。<br>4.开放的可扩展北向API(Open Extensible Northbound API):提供可扩展的应用API,<br>通过REST或者函数调用方式。两者提供的功能要一致;<br>5.支持多租户、切片(Support for Multitenancy/Slicing):允许网络在逻辑上(或物理上)划<br>分成不同的切片或租户。控制器的部分功能和模块可以管理指定切片。控制器根据所管理的分片来呈现不同的控制观测面;<br>6.集群(Consistent Clustering):集群化以满足冗余和网络横向扩展需求。</p>
+<h2 id="AD-SAL-amp-amp-MD-SAL"><a href="#AD-SAL-amp-amp-MD-SAL" class="headerlink" title="AD-SAL&amp;&amp;MD-SAL"></a>AD-SAL&amp;&amp;MD-SAL</h2><p>首先，我们来解释一下SAL:<br>SAL：Service Abstraction Layer，服务抽象层</p>
+<p>SAL隶属于ODL Controller Platform。由运行在OSGI Framework上的Bundle实现。在ODL Controller Platform和Protocol Plugin之间实<br>现抽象层的功能。是ODL Controller Platform的最核心模块之一。<br>控制模块间数据交互,数据存储读取,API调用。</p>
+<p>SAL分为两类：AD-SAL (API–Driven SAL)和MD-SAL (Model-Driven SAL)，AD-SAL已经被MD-SAL所替代而废弃掉，目前在早期的版本仍然可以看到AD-SAL的身影。</p>
+<p><strong>SAL中的一些用语：</strong><br>Plugin：通过SAL实现的ODL Controller Framework的功能模块。运行在ODL OSGI Framework上,与ODL控制器共享同一个JVM资源。<br>南向Plugin (Southbound Plugin , SB Plugin)：向SAL提供管理、控制南向设备或服务的操作接口。</p>
+<p>北向Plugin (Northbound Plugin, NB Plugin)：通过利用SAL所提供的北向服务API,实现某些网络功能,并向应用提供统一的抽象服务和相应的API。</p>
+<p><strong>抽象服务(Abstraction Service)：</strong><br>1.SAL所提供的网络抽象化服务。<br>E.g. Topology Service, Flow Service, Statistics Service…</p>
+<p>2.南向服务API(Southbound Service API, SB API)：通过南向Plugin实现管理、控制南向设备或服务。</p>
+<p>3.北向服务API(Northbound Service API, NB API)：向北向Plugin开放抽象服务。</p>
+<p>控制器角度所说的内部应用就是SAL的北向Plugin,只是用语不同而已</p>
+<p>从ODL 控制器的角度来看,ODL应用(Application, APP)分为内部应用和外部应用两种。<br>1.外部应用 (External APP)：运行在ODL OSGI Framework外。<br>利用ODL控制器和内部应用所提供的北向Rest API来实现的控制器外部应用。<br>2.内部应用(Internal APP)：和ODL Controller Platform运行在<br>同一OSGI Framework,分享相同的JVM资源。利用ODL控制器和其他内部应用<br>所提供的API来实现的控制器内部应用。</p>
+<h3 id="AD-SAL简介"><a href="#AD-SAL简介" class="headerlink" title="AD-SAL简介"></a>AD-SAL简介</h3><p>1.定义抽象服务,吸收南向协议差异,提供统一的抽象服务和API,并提供相应的Request Routing。<br>2.北向Plugin可以通过调用AD-SAL的北向API来实现对南向Plugin的调用,操作其所管理的设备和服务。<br>3.AD-SAL中,抽象服务由南向和北向API实现,南北向API是一对一映射关系。<br>4.开发者在使用AD-SAL开发时需要考虑到下层协议Plugin对抽象层所提供的功能的支持程度。</p>
+<p>我们来看看AD-SAL的服务架构图：</p>
+<p><img src="http://img.bcoder.top/2018.02.24/4.png" alt="ODL介绍"></p>
+<p>AD-SAL中,南北向API是1:1的对应关系,同一API无法被复用。所有南北向Plugin的功能都需要定义相应的AD-SALAPI来承载,造成AD-SAL模块肥大化、实现复杂化、维护集中化,影响整个软件架构的可扩展性和可维护性。</p>
+<h3 id="MD-SAL简介"><a href="#MD-SAL简介" class="headerlink" title="MD-SAL简介"></a>MD-SAL简介</h3><p>MD-SAL提供Request Routing和用来定义抽象服务和相应API的基础框架。</p>
+<p>MD-SAL主要特点如下：<br>1.抽象服务和相应API是由各个Plugin通过yang model和service来定义,而不是由MD-SAL定义。</p>
+<p>2.Yang Tools Plugin通过各个Plugin的model定义来自动生成API、Service Interface和相应Java代码。</p>
+<p>3.开发者通过实现自动生成的Service Interface来实现具体的API和服务内容。</p>
+<p>4.Plugin通过MD-SAL和生成的API(RPC,Notification)、DataStore去利用其他各个Plugin的服务和数据。</p>
+<p>MD-SAL内部实现的抽象架构如下图所示。，其主要分为几个角色：Consumer、Provider、Broker。这三种角色，依据其访问Data Store的不同方式，又分为Binding-Aware和Binding-Independent两大类。角色与类别相组合就可得到如下系列的子系统(subsystem):</p>
+<p><img src="http://img.bcoder.top/2018.02.24/1.jpg" alt="ODL介绍"></p>
+<p><strong>1.Provider</strong><br>a)Binding Independent Providers:与实现语言无关的数据提供者<br>b)Binding Aware Providers：与实现语言(如Java)相关的数据提供者</p>
+<p><strong>2.Consumer</strong><br>a)Binding Independent Consumer: 与实现语言无关的数据消费者<br>b)Binding Aware Consumers: 与实现语言(如Java)相关的数据消费者</p>
+<p><strong>3.Broker</strong><br>a)Binding Independent Broker: MD-SAL的核心部分，实现在Provider/Consumer间路由RPC、Notification、Data Change等消息。<br>b)Binding Aware Broker: 提供与实现语言(如Java)有关的访问Data Store的API</p>
+<p>另外还有三个附属的子系统，即:<br>1)BI Data Repository：存储Yang Model所定义的配置和临时性数据。<br>2)Binding Schema Repository：配置Java-Yang之间关系和转换规则的库<br>3)Binding Generator：实现由Yang自动生成对应Java API的函数库。</p>
+<h3 id="MD-SAL与AD-SAL区别"><a href="#MD-SAL与AD-SAL区别" class="headerlink" title="MD-SAL与AD-SAL区别"></a>MD-SAL与AD-SAL区别</h3><p><img src="http://img.bcoder.top/2018.02.24/6.png" alt="ODL介绍"></p>
+<p>MD-SAL与AD-SAL设计结构上的差别主要如下：</p>
+<p>1.不同于AD-SAL，MD-SAL引入了Data Store的概念，在其提供的Data Store中，存储由北向Application和南向Device所定义的Yang Model数据。</p>
+<p>2.北向Plugin、南向Plugin均可对这些Yang Model定义的数据进行存取操作。</p>
+<p>3.不同于AD-SAL，在MD-SAL中，北向Plugin与南向Plugin之间的适配由单独的适配Plugin(Adaptation Plugin)来完成。该适配Plugin仅在北向API与南向API不同时才需求。如果北向API与南向API是1:1的关系，那二者就可以通过访问共同的Data Store来实现数据交互，这就避免了AD-SAL中必需的南北向API静态绑定的问题。</p>
+<p>引入Data Store及Model的概念后，MD-SAL所完成的主要工作就是数据提供者(provider)和数据消费者(consumer)之间的连通工作：数据提供者/数据消费者均需向MD-SAL注册；数据提供者在提供数据后，会产生Notification;数据消费者可以向MD-SAL订阅数据，在收到数据发生变化的Noticifaction后，其可以从MD-SAL的Data Store获取数据。</p>
+<p>在MD-SAL中的另外一个关键理念是访问Data Store的API是基于Yang Model，通过OpenDaylight提供的Yang Tools Plugin自动生成，这样就避免了AD-SAL中，完全由人工生成对应API可能带来的一些错误风险。</p>
+<h3 id="MD-SAL-Plugin"><a href="#MD-SAL-Plugin" class="headerlink" title="MD-SAL Plugin"></a>MD-SAL Plugin</h3><p>MD-SAL本身不提供任何的Model，所有的Model都是由对应的Plugin来提供。MD-SAL只是提供了相应的注册机制以及Plugin之间的连接机制。</p>
+<p>在MD-SAL中，所有Plugin，包括定制的协议、应用、适配层及其它都有相同的生命周期，这个生命周期主要分为两大阶段：设计和运行。</p>
+<p>在设计阶段，各Plugin主要需要完成如下的事情：<br>1.设计者需首先确定待设计的Plugin需要消费哪些数据以及其对应的Yang Model<br>2.引入由上述所依赖Yang Model自动生成的Java API(SAL API)。<br>3.设计者确定待设计的Plugin准备提供哪些数据和服务，依据此来设计对应的Yang Model，再利用Yang Tools来生成对应的Java API(SAL API)。<br>4.针对自动生成的Java API，定制实现设计者所需要的功能。与其它辅助的Helper Class一起打包成OSGI对应的Bundle。</p>
+<p><img src="http://img.bcoder.top/2018.02.24/7.png" alt="ODL介绍"></p>
+<p><strong>上图简单列出了整个过程的流程示意：</strong><br>1.借助于Yang Tools，即可基于设计者定义的Yang Model生成Java API；<br>2.借助于Maven Build Tools，即可生成“API”、“Plugin”的OSGI Bundle。<br>3.将这些Bundle集成到Controller中，即可由这些Plugin动态提供相应的功能。</p>
+<p>当这些Bundle被动态集成到Controller中时，Plugin的运行阶段就被激活了。它就可以通过MD-SAL与其它的Plugin进行交互，操作Data Store中基于各类Yang Model定义的数据了。</p>
+<p>具体的流程可通过如下的一个实例(Flow Programmer Service/Plugin)来解释：</p>
+<p><img src="http://img.bcoder.top/2018.02.24/8.png" alt="ODL介绍"></p>
+<p><strong>该Plugin的运行流程如下(依图中所示步骤)：</strong></p>
+<p>1.Flow Programmer Service向MD-SAL注册 “Flow Deleted”Notification，该注册过程在OpenDaylight Controll和这个Plugin启动的时候就已完成。</p>
+<p>2.“Flow Deleted” OpenFlow包到达Controller。该包是通过Controller与交换机的TCP/TLS连接，由OpenFlow的库函数接收并传递给OpenFlow Plugin.</p>
+<p>3.OpenFlow Plugin解析这个数据包，由解析得到的数据包创建一个 “Flow Deleted” Notification. 该Notification实际上是一个不可改变(Immutable)的 “Flow Deleted” DTO(Data Transfer Object)，是通过基于Model自动生成的API(Model-generated OF Plugin API)来创建和填充。</p>
+<p>4.OpenFlow Plugin将该Notification发送给SAL，由SAL路由到在第1步中注册侦听这个消息的Consumer，也即Flow Programmer Service/Plugiin</p>
+<p>5.Flow Programmer Service/Plugin接收到包含Notification DTO的Notification.<br>Flow Programmer Service/Plugin基于该DTO，通过Model-generated OF Plugin API来获取到被删除的流数据信息。</p>
+<p>对于其它Packet-In的场景，也就是由交换机发送数据包给Controller，如ARP或者LLDP数据包，其过程与上述流程基本类似，也是感兴趣的App注册相应的Notification。当Openflow Plugin基于所收到的数据包生成对应的Notification时，该Notification会被发送给SAL，由SAL路由给之前注册的接收者。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2018/02/24/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E4%BB%8B%E7%BB%8D/>https://www.bcoder.top/2018/02/24/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E4%BB%8B%E7%BB%8D/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/SDN/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>SDN</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Controller/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Controller</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/OpenDaylight/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>OpenDaylight</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2018/02/24/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E4%BB%8B%E7%BB%8D/&title=OpenDaylight开发笔记：OpenDaylight介绍 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+
+SDN 介绍SDN的定义作为二十一世纪科技精神象征，坐落于硅谷的斯坦福大学有着浓厚的创新精神。2006年Nick McKeown教授为首的研究团队提出OpenFlow的概念用于校园网络的试验创新，后续基于OpenFlow给网络带来可编程的特性，SDN概念营运而生。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2018/02/24/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E4%BB%8B%E7%BB%8D/&title=OpenDaylight开发笔记：OpenDaylight介绍 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+
+SDN 介绍SDN的定义作为二十一世纪科技精神象征，坐落于硅谷的斯坦福大学有着浓厚的创新精神。2006年Nick McKeown教授为首的研究团队提出OpenFlow的概念用于校园网络的试验创新，后续基于OpenFlow给网络带来可编程的特性，SDN概念营运而生。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2018/02/24/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E4%BB%8B%E7%BB%8D/&title=OpenDaylight开发笔记：OpenDaylight介绍 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+
+SDN 介绍SDN的定义作为二十一世纪科技精神象征，坐落于硅谷的斯坦福大学有着浓厚的创新精神。2006年Nick McKeown教授为首的研究团队提出OpenFlow的概念用于校园网络的试验创新，后续基于OpenFlow给网络带来可编程的特性，SDN概念营运而生。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2018/02/26/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E5%BC%80%E5%8F%91%E5%AE%9E%E4%BE%8B/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>ODL开发笔记：OpenDaylight开发实例</p>
+                <p class='content'>
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关...</p>
+              </a>
+            
+            
+              <a class='next' href='/2018/02/22/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E6%B7%B1%E5%85%A5%EF%BC%88%E4%B8%89%EF%BC%89/'>
+                <p class='title'>MySQL数据库深入（三）<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言数据库对于程序员来说至关重要，数据库的学习不能仅仅停留在SQL语句的书写上，应当数据库的底层原理、架构、SQL优化等方面有一个全面的了解。下面对关系型数据库MySQL进行较为深入的学习。
+...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'OpenDaylight开发笔记：OpenDaylight介绍',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SDN-介绍"><span class="toc-text">SDN 介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SDN的定义"><span class="toc-text">SDN的定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SDN的特征"><span class="toc-text">SDN的特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SDN南向接口"><span class="toc-text">SDN南向接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SDN北向接口"><span class="toc-text">SDN北向接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OpenDaylight简介"><span class="toc-text">OpenDaylight简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#OpenDaylight概述"><span class="toc-text">OpenDaylight概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OpenDaylight架构介绍"><span class="toc-text">OpenDaylight架构介绍</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AD-SAL-amp-amp-MD-SAL"><span class="toc-text">AD-SAL&amp;&amp;MD-SAL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#AD-SAL简介"><span class="toc-text">AD-SAL简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MD-SAL简介"><span class="toc-text">MD-SAL简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MD-SAL与AD-SAL区别"><span class="toc-text">MD-SAL与AD-SAL区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MD-SAL-Plugin"><span class="toc-text">MD-SAL Plugin</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

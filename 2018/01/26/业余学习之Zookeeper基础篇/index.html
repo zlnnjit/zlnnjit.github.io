@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>业余学习之Zookeeper基础篇 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="分布式,Zookeeper,集群">
+  
+  
+    <meta name="description" content="
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2018/01/26/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BZookeeper%E5%9F%BA%E7%A1%80%E7%AF%87/">
+        业余学习之Zookeeper基础篇
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/deep/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>deep</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2018-01-26 21:18:41</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言<br>本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="Zookeeper简介"><a href="#Zookeeper简介" class="headerlink" title="Zookeeper简介"></a>Zookeeper简介</h2><h3 id="什么是Zookeeper"><a href="#什么是Zookeeper" class="headerlink" title="什么是Zookeeper"></a>什么是Zookeeper</h3><p>ZooKeeper是一个开放源代码的分布式协调服务，由知名互联网公司雅虎创建，是Google的Chubby的开源实现。ZooKeeper的设计目标是将那些复杂且容易出错的分布一致性服务封装起来，构成一个高效可靠的原语集，并以一系列简单易用的接口提供给用户使用。</p>
+<p>ZooKeeper是一个高效的分布式协调服务，它暴露了一些公用服务，比如命名/配置管理/同步控制/群组服务等。我们可以使用ZK来实现比如达成共识/集团管理/leader选举等。</p>
+<p>ZooKeeper是基于对Paxos算法的实现（也是基于ZAB算法进行实现,原子消息广播协议），使该框架保证了分布式环境中数据的强一致性，也正是基于这样的特性，使得zookeeper能够应用于很多场景。需要注意的是，ZK并不是生来就为这些场景设计，都是后来众多开发者根据框架的特性，摸索出来的典型使用方法。因此，我们也可以根据自己的需要来设计相应的场景实现。正如前文所提到的，ZooKeeper实现的任何功能都离不开ZooKeeper的数据结构，任何功能的实现都是利用”Znode结构特性+节点关联的数据”来实现的。</p>
+<p>我们来看看Zookeeper具有哪些特性？</p>
+<ul>
+<li><strong>顺序一致性</strong>。从同一个客户端发起的事务请求，最终将会严格地按照其发起顺序被应用到Zookeeper中去。</li>
+<li><strong>原子性</strong>。所有事务请求的处理结果在整个集群中所有机器上的应用情况是一致的，也就是说，要么整个集群所有机器都成功应用了某一个事务，要么都没应用，一定不会出现集群中部分机器应用了事务，而另外一部分没有应用的情况。</li>
+<li><strong>单一视图</strong>。无论客户端连接的是哪个Zookeeper服务器，其看到的服务器端数据模型都是一致的。</li>
+<li><strong>可靠性</strong>。一旦服务器端成功应用了一个事务，并完成对客户端的响应，那么该事务所引起的服务器端状态的改变将会一直保留下去，除非有另一个事务又对其进行了变更。</li>
+<li><strong>实时性</strong>。通常人们看到实时性的第一发应是，一旦一个事务被创建成功，那么客户端能够立即从服务器端上读取到这个事务变更后的最新数据状态。这里需要注意的是，Zookeeper仅仅保证在一定时间段内，客户端最终一定能够从服务器端读取到最新的数据状态。</li>
+</ul>
+<h3 id="Zookeeper的设计目标"><a href="#Zookeeper的设计目标" class="headerlink" title="Zookeeper的设计目标"></a>Zookeeper的设计目标</h3><p>Zookeeper致力于提供一个高性能、高可用且具<strong>有严格的顺序访问控制能力</strong>(主要是写操作的严格顺序性)的分布式协调服务。高性能使得Zookeeper能够应用于那些对系统吞吐有明确要求的大型分布式系统中，高可用使得分布式的单点问题得到了很好地解决，而严格的顺序访问控制使得客户端能够基于Zookeeper实现复杂的同步原语。下面我们来具体看一下Zookeeper的四个设计目标。</p>
+<blockquote>
+<p><strong>目标一：简单的数据模型</strong><br>Zookeeper使得分布式程序能够通过一个人共享的、树型结构的名字空间来进行相互协调。这里所说的树型结构的命名空间，是指Zookeeper服务器内存中的一个数据模型，其由一系列被称为ZNode的数据节点组成，总的来说，其数据模型类似于一个文件系统，而ZNode之间的层级关系，就像文件系统的目录结构一样。不过和传统的磁盘文件系统不同的是，Zookeeper讲全量数据存储在内存中，以此来实现提高服务器吞吐、减少延迟的目的。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p><strong>目标二：可以构建集群</strong><br>一个Zookeeper集群通常由一组机器组成，一般3~5台机器就可以组成一个可用的Zookeeper集群了.<br>组成Zookeeper集群的每台机器都会在内存中维护当前的服务器状态，并且每台机器之间保持着通信。值得一提的是，主要集群中存在超过一半的机器能够正常工作，那么整个集群就能正常对外提供服务。<br>Zookeeper的客户端会选择集群中任意一台机器共同创建一个TCP连接，而一旦客户端和某台Zookeeper服务器之间连接断开后，客户端会自动连接到集群中的其它机器。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p><strong>目标三：顺序访问</strong><br>       对于来自客户端的每一个更新请求，Zookeeper都会分配一个全局唯一的递增编号，这个编号反映了所有事务操作的先后顺序，应用程序可以使用Zookeeper的这个特性来实现更高层次的同步原语。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p><strong>目标四：高性能</strong><br>由于Zookeeper将全量数据存储在内存中，并直接服务于客户端的所有非事务请求，因此它尤其适用于以读操作为主的场景。</p>
+</blockquote>
+<h3 id="Zookeeper结构"><a href="#Zookeeper结构" class="headerlink" title="Zookeeper结构"></a>Zookeeper结构</h3><p>Zookeeper会维护一个具有层次关系的数据结构，它非常类似于一个标准的文件系统。</p>
+<p><img src="http://img.bcoder.top/2018.01.26/1.png" alt="业余学习之Zookeeper基础篇"></p>
+<p><img src="http://img.bcoder.top/2018.01.26/2.png" alt="业余学习之Zookeeper基础篇"></p>
+<p>数据模型介绍：</p>
+<p>1、每个子目录项如 NameService都被称作为znode，这个znode是被它所在的路径唯一标识，如 Server1 这个 znode 的标识为 /NameService/Server1<br>2、znode 可以有子节点目录，并且每个 znode 可以存储数据，注意 EPHEMERAL 类型的目录节点不能有子节点目录<br>3、znode 是有版本的，每个 znode 中存储的数据可以有多个版本，也就是一个访问路径中可以存储多份数据<br>4、znode 可以是临时节点，一旦创建这个 znode 的客户端与服务器失去联系，这个 znode 也将自动删除，Zookeeper的客户端和服务器通信采用长连接方式，每个客户端和服务器通过心跳来保持连接，这个连接状态称为session，如果znode是临时节点，这个 session 失效，znode 也就删除了<br>5、znode 的目录名可以自动编号，如 App1 已经存在，再创建的话，将会自动命名为 App2<br>6、znode 可以被监控，包括这个目录节点中存储的数据的修改，子节点目录的变化等，一旦变化可以通知设置监控的客户端，这个是Zookeeper的核心特性，Zookeeper的很多功能都是基于这个特性实现的，后面在典型的应用场景中会有实例介绍。</p>
+<h3 id="Zookeeper组成"><a href="#Zookeeper组成" class="headerlink" title="Zookeeper组成"></a>Zookeeper组成</h3><p>Zookeeper根据其身份特性分为三种：leader，Follower，Observer，其中Follower和Observer又统称Learner（学习者）。</p>
+<p><strong>Leader</strong>：负责客户端的writer类型请求<br><strong>Follower</strong>：负责客户端的reader类型请求，参与leader选举等<br><strong>Observer</strong>：特殊的“Follower”，其可以接受客户端reader请求，但不参与选举。（扩容系统支撑能力，提高了读取速度。因为它不接受任何同步的写入请求，只负责与leader同步数据）</p>
+<h3 id="Zookeeper应用场景"><a href="#Zookeeper应用场景" class="headerlink" title="Zookeeper应用场景"></a>Zookeeper应用场景</h3><p>Zookeeper从设计模式角度来看，是一个基于观察者模式设计的分布式服务管理框架，它负责存储和管理大家都关心的数据，然后接受观察者的注册，一旦这些数据的状态发生变化，Zookeeper就将负责通知已经在Zookeeper上注册的那些观察者做出相应的反应，从而实现集群中类似 Master/Slave 管理模式。</p>
+<p>Zookeeper主要应用于统一命名服务（Name Service）、配置管理（Configuration Management）、集群管理（Group Membership）、共享锁（Locks）、发布与订阅、数据库切换、分布式日志收集、队列管理等</p>
+<p>下面分别主要的这几种应用场景做一个说明：</p>
+<p><strong>1.统一命名服务（Name Service）：</strong><br>分布式应用中，通常需要有一套完整的命名规则，既能够产生唯一的名称又便于人识别和记住，通常情况下用树形的名称结构是一个理想的选择，树形的名称结构是一个有层次的目录结构，既对人友好又不会重复。说到这里你可能想到了JNDI，没错Zookeeper 的 Name Service与JNDI能够完成的功能是差不多的，它们都是将有层次的目录结构关联到一定资源上，但是 Zookeeper 的 Name Service更加是广泛意义上的关联，也许你并不需要将名称关联到特定资源上，你可能只需要一个不会重复名称，就像数据库中产生一个唯一的数字主键一样。<br>Name Service 已经是Zookeeper内置的功能，你只要调用Zookeeper的API就能实现。如调用 create 接口就可以很容易创建一个目录节点。</p>
+<p><strong>2.配置管理（Configuration Management）</strong></p>
+<p><img src="http://img.bcoder.top/2018.01.26/3.png" alt="业余学习之Zookeeper基础篇"></p>
+<p>配置的管理在分布式应用环境中很常见，例如同一个应用系统需要多台 PC Server 运行，但是它们运行的应用系统的某些配置项是相同的，如果要修改这些相同的配置项，那么就必须同时修改每台运行这个应用系统的 PC Server，这样非常麻烦而且容易出错。像这样的配置信息完全可以交给Zookeeper来管理，将配置信息保存在Zookeeper的某个目录节点中，然后将所有需要修改的应用机器监控配置信息的状态，一旦配置信息发生变化，每台应用机器就会收到Zookeeper的通知，然后从 Zookeeper 获取新的配置信息应用到系统中。<br>全局配置信息通常具备以下3个特性：<br>1.数据量比较小；<br>2.数据内容在运行时动态发生变化；<br>3.集群中各个节点共享信息与配置一致；</p>
+<p><strong>3、集群管理（Group Membership）</strong></p>
+<p>Zookeeper 能够很容易的实现集群管理的功能，如有多台Server组成一个服务集群，那么必须要一个“总管”知道当前集群中每台机器的服务状态，一旦有机器不能提供服务，集群中其它集群必须知道，从而做出调整重新分配服务策略。同样当增加集群的服务能力时，就会增加一台或多台 Server，同样也必须让“总管”知道。</p>
+<p>Zookeeper 不仅能够帮你维护当前的集群中机器的服务状态，而且能够帮你选出一个“总管”，让这个总管来管理集群，这就是 Zookeeper 的另一个功能 Leader Election。</p>
+<p>我们所希望的集群功能主要有以下几点：<br>1.希望知道当前集群中究竟有多少机器在工作；<br>2.对集群中每天集群的运行状态进行数据收集；<br>3.对集群中每台机器进行上下线操作。</p>
+<p><strong>4.发布与订阅</strong><br>zookeeper是一个典型的发布、订阅模式分布式数控管理与协调框架，开发人员可以使用它来进行分布式数据的发布与订阅。</p>
+<p><strong>5.数据库切换</strong><br>比如我们初始化zookeeper的时候读取其节点上的数据库配置文件，当配置一旦发生变更时，zookeeper就能帮助我们把变更的通知发送到各个客户端，每个客户端接收到这个变更通知后就可以从zookeeper、获取最新数据。</p>
+<p><strong>6.分布式日志收集</strong><br>我们可以做一个日志系统收集集群中的所有的日志信息，进行统一管理。</p>
+<p><strong>7.分布式锁、队列管理。</strong><br>zookeeper的特性就是在分布式场景下高可用，但是原生的api实现分布式功能非常困难，团队去实现也太浪费时间，及时实现了也未必稳定。那么采用第三方的客户端可以完美实现，比如Curator框架，它是apache的顶级项目。</p>
+<h2 id="Zookeeper集群搭建及应用"><a href="#Zookeeper集群搭建及应用" class="headerlink" title="Zookeeper集群搭建及应用"></a>Zookeeper集群搭建及应用</h2><h3 id="Zookeeper集群搭建"><a href="#Zookeeper集群搭建" class="headerlink" title="Zookeeper集群搭建"></a>Zookeeper集群搭建</h3><p>Zookeeper集群一般来说为奇数个节点，偶数个节点不利用paxos算法的选举，会一定程度上降低Zookeeper的性能，我们本次搭建集群用3个节点,Zookeeper版本为3.4.5。</p>
+<p>节点方案如下图所示：</p>
+<p><img src="http://img.bcoder.top/2018.01.26/4.png" alt="业余学习之Zookeeper基础篇"></p>
+<p>我们在三台机器同时放置jdk-8u73-linux-x64.gz(zookeeper需要java环境)，zookeeper-3.4.5.tar.gz，我放置安装包的目录是/usr/local/software/</p>
+<p>1.解压安装包并修改名字：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf zookeeper-3.4.5.tar.gz -C &#x2F;usr&#x2F;local&#x2F;</span><br><span class="line">tar -zxvf jdk-8u73-linux-x64.gz -C &#x2F;usr&#x2F;local&#x2F;</span><br><span class="line">cd &#x2F;usr&#x2F;local&#x2F;</span><br><span class="line">mv jdk1.8.0_73 jdk</span><br><span class="line">mv zookeeper-3.4.5&#x2F; zookeeper</span><br></pre></td></tr></table></figure>
+
+<p>2.配置环境变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim &#x2F;etc&#x2F;profile</span><br></pre></td></tr></table></figure>
+
+<p>添加一下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">export ZOOKEEPER&#x3D;&#x2F;usr&#x2F;local&#x2F;zookeeper</span><br><span class="line">export PATH&#x3D;$&#123;ZOOKEEPER&#125;&#x2F;bin:$RUBY_HOME&#x2F;bin:$PATH</span><br><span class="line">export JAVA_HOME&#x3D;&#x2F;usr&#x2F;local&#x2F;jdk</span><br><span class="line">export JRE_HOME&#x3D;&#x2F;usr&#x2F;local&#x2F;jdk&#x2F;jre</span><br><span class="line">export CLASSPATH&#x3D;.:$&#123;JAVA_HOME&#125;&#x2F;lib:$&#123;JRE_HOME&#125;&#x2F;lib</span><br><span class="line">export PATH&#x3D;$&#123;ZOOKEEPER&#125;&#x2F;bin:$&#123;JAVA_HOME&#125;&#x2F;bin:$PATH</span><br></pre></td></tr></table></figure>
+
+<p>使配置立即生效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source &#x2F;etc&#x2F;profile</span><br></pre></td></tr></table></figure>
+
+<p>测试java环境：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">java</span><br><span class="line">javac</span><br></pre></td></tr></table></figure>
+
+<p>3.修改zookeeper配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;conf</span><br><span class="line">mv zoo_sample.cfg zoo.cfg</span><br><span class="line">vim zoo.cfg</span><br></pre></td></tr></table></figure>
+
+<p>修改一下内容（存在则修改,不存在则添加）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dataDir&#x3D;&#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;data</span><br><span class="line">server.0&#x3D;192.168.1.111:2888:3888</span><br><span class="line">server.1&#x3D;192.168.1.112:2888:3888</span><br><span class="line">server.2&#x3D;192.168.1.113:2888:3888</span><br></pre></td></tr></table></figure>
+
+<p>增加data文件夹</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;</span><br><span class="line">mkdir data</span><br></pre></td></tr></table></figure>
+
+<p>新建myid文件，host111,112,113分别在文件中添加0,1,2</p>
+<p>4.运行zookeeper</p>
+<p><code>zkServer.sh start</code></p>
+<p>返回结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@zln111 local]# zkServer.sh start</span><br><span class="line">JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Starting zookeeper ... STARTED</span><br></pre></td></tr></table></figure>
+
+<p>我们来分别查看一下状态：<br>host111:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@zln111 local]# zkServer.sh status</span><br><span class="line">JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Mode: follower</span><br></pre></td></tr></table></figure>
+
+<p>host112:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@zln112 local]# zkServer.sh status</span><br><span class="line">JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Mode: follower</span><br></pre></td></tr></table></figure>
+
+<p>host113:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@zln113 local]# zkServer.sh status</span><br><span class="line">JMX enabled by default</span><br><span class="line">Using config: &#x2F;usr&#x2F;local&#x2F;zookeeper&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg</span><br><span class="line">Mode: leader</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看出host113为zookeeper的leader节点。</p>
+<p>我们运行host111的客户端，如下图所示：</p>
+<p><img src="http://img.bcoder.top/2018.01.26/5.png" alt="业余学习之Zookeeper基础篇"></p>
+<h3 id="zkCli操作"><a href="#zkCli操作" class="headerlink" title="zkCli操作"></a>zkCli操作</h3><p>(1)使用ls命令查看当前Zookeeper中所包含的内容：ls /</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 0] ls &#x2F;</span><br><span class="line">[zookeeper]</span><br><span class="line">[zk: localhost:2181(CONNECTED) 1]</span><br></pre></td></tr></table></figure>
+
+<p>(2)创建一个新的Znode节点”zk”，以及和它相关字符，执行命令：create /zk myData</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 1] create &#x2F;zk myData</span><br><span class="line">Created &#x2F;zk</span><br><span class="line">[zk: localhost:2181(CONNECTED) 2]</span><br></pre></td></tr></table></figure>
+<p>(3) 再次使用ls命令来查看现在Zookeeper的中所包含的内容：ls /</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 2] ls &#x2F;</span><br><span class="line">[zk, zookeeper]</span><br><span class="line">[zk: localhost:2181(CONNECTED) 3]</span><br></pre></td></tr></table></figure>
+<p>此时看到，zk节点已经被创建。　　</p>
+<p>(4) 使用get命令来确认第二步中所创建的Znode是否包含我们创建的字符串，执行命令：get /zk</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 3] get &#x2F;zk</span><br><span class="line">myData</span><br><span class="line">cZxid &#x3D; 0x50000001b</span><br><span class="line">ctime &#x3D; Fri Jan 26 11:24:25 CST 2018</span><br><span class="line">mZxid &#x3D; 0x50000001b</span><br><span class="line">mtime &#x3D; Fri Jan 26 11:24:25 CST 2018</span><br><span class="line">pZxid &#x3D; 0x50000001b</span><br><span class="line">cversion &#x3D; 0</span><br><span class="line">dataVersion &#x3D; 0</span><br><span class="line">aclVersion &#x3D; 0</span><br><span class="line">ephemeralOwner &#x3D; 0x0</span><br><span class="line">dataLength &#x3D; 6</span><br><span class="line">numChildren &#x3D; 0</span><br><span class="line">[zk: localhost:2181(CONNECTED) 4]</span><br></pre></td></tr></table></figure>
+
+<p>(5) 接下来通过set命令来对zk所关联的字符串进行设置，执行命令：set /zk zln</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 4] set &#x2F;zk zln</span><br><span class="line">cZxid &#x3D; 0x50000001b</span><br><span class="line">ctime &#x3D; Fri Jan 26 11:24:25 CST 2018</span><br><span class="line">mZxid &#x3D; 0x50000001c</span><br><span class="line">mtime &#x3D; Fri Jan 26 11:27:02 CST 2018</span><br><span class="line">pZxid &#x3D; 0x50000001b</span><br><span class="line">cversion &#x3D; 0</span><br><span class="line">dataVersion &#x3D; 1</span><br><span class="line">aclVersion &#x3D; 0</span><br><span class="line">ephemeralOwner &#x3D; 0x0</span><br><span class="line">dataLength &#x3D; 3</span><br><span class="line">numChildren &#x3D; 0</span><br><span class="line">[zk: localhost:2181(CONNECTED) 5]</span><br></pre></td></tr></table></figure>
+<p>(6) 再次使用get命令来查看，上次修改的内容，执行命令：get /zk</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 5] get &#x2F;zk</span><br><span class="line">zln</span><br><span class="line">cZxid &#x3D; 0x50000001b</span><br><span class="line">ctime &#x3D; Fri Jan 26 11:24:25 CST 2018</span><br><span class="line">mZxid &#x3D; 0x50000001c</span><br><span class="line">mtime &#x3D; Fri Jan 26 11:27:02 CST 2018</span><br><span class="line">pZxid &#x3D; 0x50000001b</span><br><span class="line">cversion &#x3D; 0</span><br><span class="line">dataVersion &#x3D; 1</span><br><span class="line">aclVersion &#x3D; 0</span><br><span class="line">ephemeralOwner &#x3D; 0x0</span><br><span class="line">dataLength &#x3D; 3</span><br><span class="line">numChildren &#x3D; 0</span><br><span class="line">[zk: localhost:2181(CONNECTED) 6]</span><br></pre></td></tr></table></figure>
+
+<p>(7) 下面我们将刚才创建的Znode删除，执行命令：delete /zk</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 6] delete &#x2F;zk</span><br><span class="line">[zk: localhost:2181(CONNECTED) 7]</span><br></pre></td></tr></table></figure>
+
+<p>(7) 如果/zk下节点补位空，不能用delete进行删除，应使用命令：rmr /zk</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 7] create &#x2F;zk aaa</span><br><span class="line">Created &#x2F;zk</span><br><span class="line">[zk: localhost:2181(CONNECTED) 8] create &#x2F;zk&#x2F;zkch bbb</span><br><span class="line">Created &#x2F;zk&#x2F;zkch</span><br><span class="line">[zk: localhost:2181(CONNECTED) 9] delete &#x2F;zk</span><br><span class="line">Node not empty: &#x2F;zk</span><br><span class="line">[zk: localhost:2181(CONNECTED) 10] ls &#x2F;</span><br><span class="line">[zk, zookeeper]</span><br><span class="line">[zk: localhost:2181(CONNECTED) 11] rmr &#x2F;zk</span><br><span class="line">[zk: localhost:2181(CONNECTED) 12] ls &#x2F;</span><br><span class="line">[zookeeper]</span><br><span class="line">[zk: localhost:2181(CONNECTED) 13]</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Zookeeper配置说明（zoo-cfg）"><a href="#Zookeeper配置说明（zoo-cfg）" class="headerlink" title="Zookeeper配置说明（zoo.cfg）"></a>Zookeeper配置说明（zoo.cfg）</h2><p>我们来看我们上面示例中的zoo.cfg文件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> The number of milliseconds of each tick</span></span><br><span class="line">tickTime=2000</span><br><span class="line"><span class="meta">#</span><span class="bash"> The number of ticks that the initial </span></span><br><span class="line"><span class="meta">#</span><span class="bash"> synchronization phase can take</span></span><br><span class="line">initLimit=10</span><br><span class="line"><span class="meta">#</span><span class="bash"> The number of ticks that can pass between </span></span><br><span class="line"><span class="meta">#</span><span class="bash"> sending a request and getting an acknowledgement</span></span><br><span class="line">syncLimit=5</span><br><span class="line"><span class="meta">#</span><span class="bash"> the directory <span class="built_in">where</span> the snapshot is stored.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="keyword">do</span> not use /tmp <span class="keyword">for</span> storage, /tmp here is just </span></span><br><span class="line"><span class="meta">#</span><span class="bash"> example sakes.</span></span><br><span class="line">dataDir=/usr/local/zookeeper/data</span><br><span class="line"><span class="meta">#</span><span class="bash"> the port at <span class="built_in">which</span> the clients will connect</span></span><br><span class="line">clientPort=2181</span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Be sure to <span class="built_in">read</span> the maintenance section of the </span></span><br><span class="line"><span class="meta">#</span><span class="bash"> administrator guide before turning on autopurge.</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> http://zookeeper.apache.org/doc/current/zookeeperAdmin.html<span class="comment">#sc_maintenance</span></span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> The number of snapshots to retain <span class="keyword">in</span> dataDir</span></span><br><span class="line"><span class="meta">#</span><span class="bash">autopurge.snapRetainCount=3</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Purge task interval <span class="keyword">in</span> hours</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Set to <span class="string">"0"</span> to <span class="built_in">disable</span> auto purge feature</span></span><br><span class="line"><span class="meta">#</span><span class="bash">autopurge.purgeInterval=1</span></span><br><span class="line">server.0=192.168.1.111:2888:3888</span><br><span class="line">server.1=192.168.1.112:2888:3888</span><br><span class="line">server.2=192.168.1.113:2888:3888</span><br></pre></td></tr></table></figure>
+<p>下面分别来解释一下：</p>
+<p><strong>tickTime</strong>： 基本事件单元，以毫秒为单位。这个时间是作为Zookeeper服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每隔tickTime时间就会发送一个心跳。</p>
+<p><strong>dataDir</strong>：存储内存中数据库快照的位置，顾名思义就是Zookeeper保存数据的目录，默认情况下，Zookeeper将写数据的日志文件也保存在这个目录里。</p>
+<p><strong>clientPort</strong>： 这个端口就是客户端连接Zookeeper服务器的端口，Zookeeper会监听这个端口，接受客户端的访问请求。</p>
+<p><strong>initLimit</strong>： 这个配置项是用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已经超过 10 个心跳的时间（也就是 tickTime）长度后<br>Zookeeper 服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度就是10*2000=20 秒</p>
+<p><strong>syncLimit</strong>： 这个配置项标识Leader与Follower之间发送消息，请求和应答时间长度，最长不能超过多少个 tickTime的时间长度，总的时间长度就是 5*2000=10 秒</p>
+<p><strong>server.A = B:C:D :</strong><br>A 表示这个是第几号服务器；<br>B 是这个服务器的 ip 地址；<br>C 表示的是这个服务器与集群中的Leader服务器交换信息的端口；<br>D 表示的是万一集群中的Leader服务器挂了，需要一个端口来重新进行选举，选出一个新的Leader。</p>
+<h2 id="利用java-API操作Zookeeper"><a href="#利用java-API操作Zookeeper" class="headerlink" title="利用java API操作Zookeeper"></a>利用java API操作Zookeeper</h2><p><strong>引入相应Jar包</strong><br>解压下载的zookeeper-3.4.5.tar.gz的根目录就有相应jar：zookeeper-3.4.5.jar</p>
+<p>若是maven构建的项目，加入以下依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.zookeeper<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>zookeeper<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.4.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="创建连接和回调接口"><a href="#创建连接和回调接口" class="headerlink" title="创建连接和回调接口"></a>创建连接和回调接口</h3><p>首先需要创建ZooKeeper对象, 后续的一切操作都是基于该对象进行的.<br><code>ZooKeeper(String connectString, int sessionTimeout, Watcher watcher) throws IOException</code></p>
+<p>以下为各个参数的详细说明：<br><strong>connectString</strong>：zookeeper server列表, 以逗号隔开. ZooKeeper对象初始化后, 将从server列表中选择一个server,并尝试与其建立连接.如果连接建立失败,则会从列表的剩余项中选择一个server, 并再次尝试建立连接.<br><strong>sessionTimeout</strong>：指定连接的超时时间.<br><strong>watcher</strong>：事件回调接口.<br>注意, 创建ZooKeeper对象时, 只要对象完成初始化便立刻返回. 建立连接是以异步的形式进行的, 当连接成功建立后, 会回调watcher的process方法. 如果想要同步建立与server的连接, 需要自己进一步封装.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** zookeeper地址 */</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> String CONNECT_ADDR = <span class="string">"192.168.1.111:2181,192.168.1.112:2181,192.168.1.113:2181"</span>;</span><br><span class="line"><span class="comment">/** session超时时间 */</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SESSION_OUTTIME = <span class="number">2000</span>;<span class="comment">//ms </span></span><br><span class="line"><span class="comment">/** 信号量，阻塞程序执行，用于等待zookeeper连接成功，发送成功信号 */</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> CountDownLatch connectedSemaphore = <span class="keyword">new</span> CountDownLatch(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">	</span><br><span class="line">	ZooKeeper zk = <span class="keyword">new</span> ZooKeeper(CONNECT_ADDR, SESSION_OUTTIME, <span class="keyword">new</span> Watcher()&#123;</span><br><span class="line">		<span class="meta">@Override</span></span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent event)</span> </span>&#123;</span><br><span class="line">			<span class="comment">//获取事件的状态</span></span><br><span class="line">			KeeperState keeperState = event.getState();</span><br><span class="line"></span><br><span class="line">			<span class="comment">//获取事件的类型</span></span><br><span class="line">			EventType eventType = event.getType();</span><br><span class="line">			<span class="comment">//如果是建立连接</span></span><br><span class="line">			<span class="keyword">if</span>(KeeperState.SyncConnected == keeperState)&#123;</span><br><span class="line">				<span class="keyword">if</span>(EventType.None == eventType)&#123;</span><br><span class="line">					<span class="comment">//如果建立连接成功，则发送信号量，让后续阻塞程序向下执行</span></span><br><span class="line">					connectedSemaphore.countDown();</span><br><span class="line">					System.out.println(<span class="string">"zk 建立连接"</span>);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//进行阻塞</span></span><br><span class="line">connectedSemaphore.await();</span><br><span class="line">System.out.println(<span class="string">"执行zk客户端操作"</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="创建节点znode"><a href="#创建节点znode" class="headerlink" title="创建节点znode"></a>创建节点znode</h3><p>原生的zookeeper API提供了两种创建节点的方法，<strong>同步和异步创建节点方式</strong>。</p>
+<p><strong>同步方式：</strong><br>ZooKeeper对象的create方法用于创建znode.<br><code>String create(String path, byte[] data, List acl, CreateMode createMode);</code><br>以下为各个参数的详细说明：<br><strong>path</strong>：节点路径（名称）：/nodeName。<strong>不允许递归创建节点</strong>，在父节点不存在的情况下，不允许创建子节点。<br><strong>data</strong>：节点内容：要求类型是字节数组，也就是说<strong>不支持序列化方式</strong>，如果需要实现序列化，可使用java相关序列化框架，如Hessian，Kryo。<br><strong>acl</strong>：指定权限信息, 如果不想指定权限, 可以传入Ids.OPEN_ACL_UNSAFE.<br><strong>createMode</strong>：指定znode类型. CreateMode是一个枚举类,从中选择一个成员传入即可；<br>提供了如下所示的四种节点类型：</p>
+<ul>
+<li>CreateMode.PERSISTENT    永久性节点</li>
+<li>CreateMode.PERSISTENT_SEQUENTIAL    永久性序列节点</li>
+<li>CreateMode.EPHEMERAL    临时节点，会话断开或过期时会删除此节点</li>
+<li>CreateMode.PERSISTENT_SEQUENTIAL 临时序列节点，会话断开或过期时会删除此节点</li>
+</ul>
+<p><strong>其中，CreateMode.EPHEMERAL是会话级节点，可以用于分布式锁</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 创建临时节点</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">create</span><span class="params">(String nodePath, <span class="keyword">byte</span>[] data)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    zk.create(nodePath, data, Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>异步方式</strong>（在同步方法参数的基础上增加两个参数）：<br><code>void create(String path, byte[] data, List&lt;ACL&gt; acl, CreateMode createMode, StringCallback cb, Object ctx)</code><br><strong>cb</strong>:回调方法：注册一个异步回调方法，要实现AsynCallBack.StringCallBack接口，重写processResult(int rc, String path, Object ctx, String name)方法，当节点创建完成后执行此方法。<br>①rc：服务端响应码，0表示调用成功、-4表示端口连接、-110表示指定节点存在、-112表示会话已过期。<br>②path：接口调用时传入的数据节点的路径参数。<br>③ctx：调用接口传入的ctx值。<br>④name：实际在服务端创建的节点的名称。</p>
+<p><strong>ctx</strong>:传递给回调方法的参数，一般为上下文（Context）信息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//同步创建节点</span></span><br><span class="line"><span class="comment">//String s = zk.create("/testRoot", "val".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span></span><br><span class="line"><span class="comment">//System.out.println(s);</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//异步创建节点</span></span><br><span class="line">zk.create(<span class="string">"/testRoot"</span>, <span class="string">"val"</span>.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT, <span class="keyword">new</span> AsyncCallback.StringCallback() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processResult</span><span class="params">(<span class="keyword">int</span> rc, String path, Object ctx, String name)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"异步创建节点，创建成功,参数如下："</span>);</span><br><span class="line">        System.out.println(<span class="string">"rx:"</span> + rc);</span><br><span class="line">        System.out.println(<span class="string">"path:"</span> + path);</span><br><span class="line">        System.out.println(<span class="string">"ctx:"</span> + ctx);</span><br><span class="line">        System.out.println(<span class="string">"name:"</span> + name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;,<span class="string">"我是上下文"</span>);</span><br><span class="line">Thread.sleep(<span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建临时节点，断开连接删除临时节点</span></span><br><span class="line"><span class="comment">// zk.create("/testRoot", "children1 data".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);</span></span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">异步创建节点，创建成功,参数如下：</span><br><span class="line">rx:0</span><br><span class="line">path:&#x2F;testRoot</span><br><span class="line">ctx:我是上下文</span><br><span class="line">name:&#x2F;testRoot</span><br></pre></td></tr></table></figure>
+
+<h3 id="删除znode"><a href="#删除znode" class="headerlink" title="删除znode"></a>删除znode</h3><p>ZooKeeper对象的delete方法用于删除znode.</p>
+<p><strong>同步方式：</strong><br><code>void delete(final String path, int version);</code><br>path：节点名称 /deletePath<br>version：版本号，即本次删除操作时针对该数据的某个版本进行的操作。（-1，代表忽略该版本号）  </p>
+<p><strong>异步方式：（和delete方法一致）</strong><br><code>void delete(String path, int version, VoidCallback cb, Object ctx)</code><br><strong>cb</strong>：一个异步回调函数<br><strong>ctx</strong>：用于传递上下文信息的对象  </p>
+<p>注意：在zookeeper中，只允许删除叶子节点信息，也就是说如果当前节点不是叶子节点则无法删除，或者必须先删除旗下所有子节点</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//同步删除节点</span></span><br><span class="line"><span class="comment">// zk.delete("/testRoot", -1);</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//异步删除节点</span></span><br><span class="line">zk.delete(<span class="string">"/testRoot"</span>, -<span class="number">1</span>, <span class="keyword">new</span> AsyncCallback.VoidCallback() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processResult</span><span class="params">(<span class="keyword">int</span> rc, String path, Object ctx)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"异步删除节点，删除成功,参数如下："</span>);</span><br><span class="line">        System.out.println(<span class="string">"rx:"</span> + rc);</span><br><span class="line">        System.out.println(<span class="string">"path:"</span> + path);</span><br><span class="line">        System.out.println(<span class="string">"ctx:"</span> + ctx);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;,<span class="string">"我是上下文"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">异步删除节点，删除成功,参数如下：</span><br><span class="line">rx:0</span><br><span class="line">path:&#x2F;testRoot</span><br><span class="line">ctx:我是上下文</span><br></pre></td></tr></table></figure>
+
+<h3 id="获取node中关联的数据"><a href="#获取node中关联的数据" class="headerlink" title="获取node中关联的数据"></a>获取node中关联的数据</h3><p>ZooKeeper对象的getData方法用于获取node关联的数据。<br><code>byte[] getData(String path, boolean watch, Stat stat);</code><br><strong>watch参数</strong>用于指定是否监听path node的删除事件, 以及数据更新事件, 注意, 不监听path node的创建事件,因为如果path node不存在,该方法将抛出KeeperException.NoNodeException异常.<br><strong>stat参数</strong>是个传出参数, getData方法会将path node的状态信息设置到该参数中.</p>
+<p>另外一种异步获取的节点中数据的方式：<br><code>void getData(String path, Watcher watcher, DataCallback cb, Object ctx)</code></p>
+<p>注意：该方法和getChildren方法基本相同。主要是注册的watcher有所不同，客户端在获取一个阶段数据内容时，是可以进行watcher注册的，一旦节点发生变更，则服务器会发送给客户端一个NodeDateChanged的事件通知。  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zk.create(<span class="string">"/testRoot"</span>, <span class="string">"aaa"</span>.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line"></span><br><span class="line"><span class="comment">//同步获取节点的信息</span></span><br><span class="line"><span class="keyword">byte</span>[] data = zk.getData(<span class="string">"/testRoot"</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</span><br><span class="line">System.out.println(<span class="keyword">new</span> String(data));</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aaa</span><br></pre></td></tr></table></figure>
+<h3 id="获取子node列表"><a href="#获取子node列表" class="headerlink" title="获取子node列表"></a>获取子node列表</h3><p>ZooKeeper对象的getChildren方法用于获取子node列表.</p>
+<p><code>List getChildren(String path, boolean watch);</code><br><strong>watch参数</strong>用于指定是否监听path node的子node的增加和删除事件, 以及path node本身的删除事件.</p>
+<p>另一种异步获取的方式：<br><code>void getChildren(String path, Watcher watcher, ChildrenCallback cb, Object ctx)</code></p>
+<p>注意：当我们获取指定节点的子节点列表后，还需要订阅这个子节点列表的变换通知，这时候就可以通过注册一个watcher来实现，当子节点被添加或删除时，服务器端就是会触发一个NodeChildrenChanged类型的事件通知，需要注意的是服务器端发送给客户端的事件通知中，是不包含最新的节点列表的，客户端必须主动从新进行获取。通常在客户端接收到这个事件后，就可以再次主动获取最新的子节点列表了。也就是说，zookeeper服务器在向客户端发送NodeChildrenChange事件通知的时候，仅仅只是发了一个通知不会把节点变化情况发送个客户端，需要客户端自己重新获取，另外Watcher通知是一次性的，即触发后失效，因此客户端需要反复注册watcher才行。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">zk.create(<span class="string">"/testRoot"</span>, <span class="string">"AAA"</span>.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line">zk.create(<span class="string">"/testRoot/a"</span>, <span class="string">"111"</span>.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line">zk.create(<span class="string">"/testRoot/b"</span>, <span class="string">"222"</span>.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line">zk.create(<span class="string">"/testRoot/c"</span>, <span class="string">"333"</span>.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line"></span><br><span class="line">List&lt;String&gt; children = zk.getChildren(<span class="string">"/testRoot"</span>, <span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (String child : children) &#123;</span><br><span class="line">    <span class="keyword">byte</span>[] data = zk.getData(<span class="string">"/testRoot/"</span> + child, <span class="keyword">false</span>, <span class="keyword">null</span>);</span><br><span class="line">    System.out.println(child+<span class="string">":"</span>+<span class="keyword">new</span> String(data));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a:111</span><br><span class="line">b:222</span><br><span class="line">c:333</span><br></pre></td></tr></table></figure>
+
+<h3 id="更新node中关联的数据"><a href="#更新node中关联的数据" class="headerlink" title="更新node中关联的数据"></a>更新node中关联的数据</h3><p>ZooKeeper对象的setData方法用于更新node关联的数据.<br><code>Stat setData(final String path, byte data[], int version);</code><br><strong>data</strong>为待更新的数据.<br><strong>version</strong>参数指定要更新的数据的版本, 如果version和真实的版本不同, 更新操作将失败. 指定version为-1则忽略版本检查.<br>返回path node的状态信息.</p>
+<p>另外一种异步更新的节点中数据的方式：<br><code>void setData(String path, byte[] data, int version, StatCallback cb, Object ctx)</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//修改节点的值</span></span><br><span class="line">zk.create(<span class="string">"/testRoot"</span>, <span class="string">"AAA"</span>.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line"><span class="keyword">byte</span>[] data = zk.getData(<span class="string">"/testRoot"</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</span><br><span class="line">System.out.println(<span class="keyword">new</span> String(data));</span><br><span class="line">zk.setData(<span class="string">"/testRoot"</span>, <span class="string">"modify data root"</span>.getBytes(), -<span class="number">1</span>);</span><br><span class="line"> data = zk.getData(<span class="string">"/testRoot"</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</span><br><span class="line">System.out.println(<span class="keyword">new</span> String(data));</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AAA</span><br><span class="line">modify data root</span><br></pre></td></tr></table></figure>
+
+<h3 id="判断znode是否存在"><a href="#判断znode是否存在" class="headerlink" title="判断znode是否存在"></a>判断znode是否存在</h3><p>ZooKeeper对象的exists方法用于判断指定znode是否存在.<br><code>Stat exists(String path, boolean watch);</code><br><strong>watch参数</strong>:用于指定是否监听path node的创建, 删除事件, 以及数据更新事件. 如果该node存在, 则返回该node的状态信息, 否则返回null.</p>
+<p>另外一种异步的方式：<br><code>void exists(String path, Watcher watcher, StatCallback cb, Object ctx)</code></p>
+<p>注意：exists方法存在的意义在于无论节点是否存在，都可以进行注册Watcher。能够对节点的创建、删除、修改进行监听，但是其子节点发生各种变化都不会通知客户端。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//判断节点是否存在</span></span><br><span class="line">zk.create(<span class="string">"/testRoot"</span>, <span class="string">"AAA"</span>.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line">System.out.println(zk.exists(<span class="string">"/testRoot"</span>, <span class="keyword">false</span>));</span><br><span class="line">System.out.println(zk.exists(<span class="string">"/testRoot/children"</span>, <span class="keyword">false</span>));</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">21474836662,21474836662,1516966745340,1516966745340,0,0,0,0,3,0,21474836662</span><br><span class="line">null</span><br></pre></td></tr></table></figure>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2018/01/26/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BZookeeper%E5%9F%BA%E7%A1%80%E7%AF%87/>https://www.bcoder.top/2018/01/26/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BZookeeper%E5%9F%BA%E7%A1%80%E7%AF%87/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>分布式</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Zookeeper/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Zookeeper</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E9%9B%86%E7%BE%A4/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>集群</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2018/01/26/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BZookeeper%E5%9F%BA%E7%A1%80%E7%AF%87/&title=业余学习之Zookeeper基础篇 - zln's blog&summary=
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2018/01/26/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BZookeeper%E5%9F%BA%E7%A1%80%E7%AF%87/&title=业余学习之Zookeeper基础篇 - zln's blog&summary=
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2018/01/26/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BZookeeper%E5%9F%BA%E7%A1%80%E7%AF%87/&title=业余学习之Zookeeper基础篇 - zln's blog&summary=
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2018/01/27/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BZookeeper%E6%B7%B1%E5%85%A5%E7%AF%87/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>业余学习之Zookeeper深入篇</p>
+                <p class='content'>
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+
+Zookeeper watcherookeeper有watch事件，是一次性触发的。当watch监...</p>
+              </a>
+            
+            
+              <a class='next' href='/2018/01/25/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRocketMQ%E9%AB%98%E7%BA%A7%E7%AF%87/'>
+                <p class='title'>业余学习之RocketMQ高级篇<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+
+consumer详解在Rocket MQ里，consumer被分为2类：MQPullConsume...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '业余学习之Zookeeper基础篇',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Zookeeper简介"><span class="toc-text">Zookeeper简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是Zookeeper"><span class="toc-text">什么是Zookeeper</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zookeeper的设计目标"><span class="toc-text">Zookeeper的设计目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zookeeper结构"><span class="toc-text">Zookeeper结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zookeeper组成"><span class="toc-text">Zookeeper组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zookeeper应用场景"><span class="toc-text">Zookeeper应用场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Zookeeper集群搭建及应用"><span class="toc-text">Zookeeper集群搭建及应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Zookeeper集群搭建"><span class="toc-text">Zookeeper集群搭建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#zkCli操作"><span class="toc-text">zkCli操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Zookeeper配置说明（zoo-cfg）"><span class="toc-text">Zookeeper配置说明（zoo.cfg）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#利用java-API操作Zookeeper"><span class="toc-text">利用java API操作Zookeeper</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#创建连接和回调接口"><span class="toc-text">创建连接和回调接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建节点znode"><span class="toc-text">创建节点znode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除znode"><span class="toc-text">删除znode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取node中关联的数据"><span class="toc-text">获取node中关联的数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取子node列表"><span class="toc-text">获取子node列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更新node中关联的数据"><span class="toc-text">更新node中关联的数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#判断znode是否存在"><span class="toc-text">判断znode是否存在</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

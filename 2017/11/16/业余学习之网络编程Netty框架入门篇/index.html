@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>业余学习之网络编程Netty框架入门篇 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="Netty,NIO,TCP,UDP">
+  
+  
+    <meta name="description" content="
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/11/16/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8BNetty%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8%E7%AF%87/">
+        业余学习之网络编程Netty框架入门篇
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/deep/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>deep</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-11-16 22:51:29</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言</p>
+</blockquote>
+<p>本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。</p>
+<a id="more"></a>
+
+<h2 id="初识Netty框架"><a href="#初识Netty框架" class="headerlink" title="初识Netty框架"></a>初识Netty框架</h2><h3 id="为什么选择Netty"><a href="#为什么选择Netty" class="headerlink" title="为什么选择Netty"></a>为什么选择Netty</h3><p> Netty是一个NIO client-server(客户端服务器)框架，使用Netty可以快速开发网络应用，例如服务器和客户端协议。Netty提供了一种新的方式来使开发网络应用程序，这种新的方式使得它很容易使用和有很强的扩展性。Netty的内部实现时很复杂的，但是Netty提供了简单易用的api从网络处理代码中解耦业务逻辑。Netty是完全基于NIO实现的，所以整个Netty都是异步的。</p>
+<p>网络应用程序通常需要有较高的可扩展性，无论是Netty还是其他的基于Java NIO的框架，都会提供可扩展性的解决方案。Netty中一个关键组成部分是它的异步特性.</p>
+<p>作为一个NIO client-server框架，Netty提供了这样的一个间接的解决方法。Netty提供了高层次的抽象来简化TCP和UDP服务器的编程，但是你仍然可以使用底层地API。</p>
+<p>Netty是业界最流行的NIO框架之一，它的健壮性、功能、性能、可定制性和可扩展性在同类框架中都是首屈一指的，它已经得到成百上千的商用项目验证，例如Hadoop的RPC框架avro使用Netty作为底层通信框架；很多其他业界主流的RPC框架，也使用Netty来构建高性能的异步通信能力</p>
+<br>
+
+<p>通过对Netty的分析，我们将它的优点总结如下:</p>
+<ul>
+<li>API使用简单，开发门槛低；</li>
+<li>功能强大，预置了多种编解码功能，支持多种主流协议；</li>
+<li>定制能力强，可以通过ChannelHandler对通信框架进行灵活地扩展；</li>
+<li>性能高，通过与其他业界主流的NIO框架对比，Netty的综合性能最优；</li>
+<li>成熟、稳定，Netty修复了已经发现的所有JDK NIO BUG，业务开发人员不需要再为NIO的BUG而烦恼；</li>
+<li>社区活跃，版本迭代周期短，发现的BUG可以被及时修复，同时，更多的新功能会加入；</li>
+<li>经历了大规模的商业应用考验，质量得到验证。在互联网、大数据、网络游戏、企业应用、电信软件等众多行业得到成功商用，证明了它已经完全能够满足不同行业的商业应用了。</li>
+</ul>
+<h3 id="Netty框架组成"><a href="#Netty框架组成" class="headerlink" title="Netty框架组成"></a>Netty框架组成</h3><p><img src="http://img.bcoder.top/2017.11.16/1.png" alt="业余学习之网络编程Netty框架入门篇"></p>
+<p>Netty除了提供传输和协议，在其他各领域都有发展。Netty为开发者提供了一套完整的工具，看下面表格：</p>
+<p><img src="http://img.bcoder.top/2017.11.16/2.png" alt="业余学习之网络编程Netty框架入门篇"></p>
+<h2 id="Netty之Hello-World"><a href="#Netty之Hello-World" class="headerlink" title="Netty之Hello World"></a>Netty之Hello World</h2><p>在学习Netty之前，先来回顾一下NIO的通信步骤：</p>
+<p>①创建ServerSocketChannel，为其配置非阻塞模式。</p>
+<p>②绑定监听，配置TCP参数，录入backlog大小等。</p>
+<p>③创建一个独立的IO线程，用于轮询多路复用器Selector。</p>
+<p>④创建Selector，将之前创建的ServerSocketChannel注册到Selector上，并设置监听标识位SelectionKey.OP_ACCEPT。</p>
+<p>⑤启动IO线程，在循环体中执行Selector.select()方法，轮询就绪的通道。</p>
+<p>⑥当轮询到处于就绪状态的通道时，需要进行操作位判断，如果是ACCEPT状态，说明是新的客户端接入，则调用accept方法接收新的客户端。</p>
+<p>⑦设置新接入客户端的一些参数，如非阻塞，并将其继续注册到Selector上，设置监听标识位等。</p>
+<p>⑧如果轮询的通道标识位是READ，则进行读取，构造Buffer对象等。</p>
+<p>⑨更细节的问题还有数据没发送完成继续发送的问题……</p>
+<br>
+
+
+<p>一个Hello World级别的NIO程序竟然如此，下面我们来看一下Netty通信的步骤：</p>
+<p>①创建两个NIO线程组，一个专门用于网络事件处理（接受客户端的连接），另一个则进行网络通信的读写。</p>
+<p>②创建一个ServerBootstrap对象，配置Netty的一系列参数，例如接受传出数据的缓存大小等。</p>
+<p>③创建一个用于实际处理数据的类ChannelInitializer，进行初始化的准备工作，比如设置接受传出数据的字符集、格式以及实际处理数据的接口。</p>
+<p>④绑定端口，执行同步阻塞方法等待服务器端启动即可。</p>
+<p>下面开始真正的代码实现：</p>
+<p>首先老规矩，是Server端的代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Server</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="comment">//1 创建线两个程组</span></span><br><span class="line">		<span class="comment">//一个是用于处理服务器端接收客户端连接的</span></span><br><span class="line">		<span class="comment">//一个是进行网络通信的（网络读写的）</span></span><br><span class="line">		EventLoopGroup pGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		EventLoopGroup cGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//2 创建辅助工具类，用于服务器通道的一系列配置</span></span><br><span class="line">		ServerBootstrap b = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">		b.group(pGroup, cGroup)		<span class="comment">//绑定俩个线程组</span></span><br><span class="line">		.channel(NioServerSocketChannel<span class="class">.<span class="keyword">class</span>)		//指定<span class="title">NIO</span>的模式</span></span><br><span class="line"><span class="class">		.<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_BACKLOG</span>, 1024)		//设置<span class="title">tcp</span>缓冲区</span></span><br><span class="line"><span class="class">		.<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_SNDBUF</span>, 32*1024)	//设置发送缓冲大小</span></span><br><span class="line"><span class="class">		.<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_RCVBUF</span>, 32*1024)	//这是接收缓冲大小</span></span><br><span class="line"><span class="class">		.<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_KEEPALIVE</span>, <span class="title">true</span>)	//保持连接(默认为<span class="title">true</span>)</span></span><br><span class="line"><span class="class">        //此处与<span class="title">client</span>不同</span></span><br><span class="line"><span class="class">		.<span class="title">childHandler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">SocketChannel</span>&gt;() </span>&#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel sc)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">				<span class="comment">//3 在这里配置具体数据接收方法的处理</span></span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> ServerHandler());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//4 进行绑定 </span></span><br><span class="line">		ChannelFuture cf1 = b.bind(<span class="number">8765</span>).sync();</span><br><span class="line">	</span><br><span class="line"></span><br><span class="line">		<span class="comment">//5 等待关闭</span></span><br><span class="line">		cf1.channel().closeFuture().sync();</span><br><span class="line">	</span><br><span class="line"></span><br><span class="line">        pGroup.shutdownGracefully();</span><br><span class="line">		cGroup.shutdownGracefully();</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们来分析几个重要的知识点：</p>
+<p>1.NioEventLoopGroup是用来处理I/O操作的多线程事件循环器，Netty提供了许多不同的EventLoopGroup的实现用来处理不同传输协议。在这个例子中我们实现了一个服务端的应用，因此会有2个NioEventLoopGroup会被使用。</p>
+<p>第一个经常被叫做‘boss’，用来接收进来的连接。</p>
+<p>第二个经常被叫做‘worker’，用来处理已经被接收的连接，一旦‘boss’接收到连接，就会把连接信息注册到‘worker’上。</p>
+<p>如何知道多少个线程已经被使用，如何映射到已经创建的Channels上都需要依赖于EventLoopGroup的实现，并且可以通过构造函数来配置他们的关系。</p>
+<p>2.ServerBootstrap 是一个启动NIO服务的辅助启动类。你可以在这个服务中直接使用Channel，但是这会是一个复杂的处理过程，在很多情况下你并不需要这样做。</p>
+<p>3.我们指定使用NioServerSocketChannel类来举例说明一个新的Channel如何接收进来的连接。<br>例如客户端需要指定为：NioSocketChannel.class<br>UDP客户端和服务端需要指定为：NioDatagramChannel.class</p>
+<p>4.<code>new ChannelInitializer&lt;SocketChannel&gt;</code>介绍：<br>这个类为事件处理类，经常会被用来处理一个最近的已经接收的Channel。</p>
+<p>ChannelInitializer是一个特殊的处理类，他的目的是帮助使用者配置一个新的Channel。也许你想通过增加一些处理类比如DiscardServerHandle来配置一个新的Channel或者其对应的ChannelPipeline来实现你的网络程序。当你的程序变的复杂时，可能你会增加更多的处理类到<strong>pipline</strong>上，然后提取这些匿名类到最顶层的类上。</p>
+<p>5.上述代码中出现了option()和childOption()，这里介绍一下option()是提供给NioServerSocketChannel用来接收进来的连接。childOption()是提供给由父管道ServerChannel接收到的连接，在这个例子中也是NioServerSocketChannel。</p>
+<p>6.另外，需要特殊说明的是ChannelOption.SO_BACKLOG,这个相当于对TCP通道进行配置。可以这么理解：<br>服务器端TCP内核维护有两个队列，我们称之为A、B队列。<br>客户端向服务器端connect时，会发送带有SYN标志的包（第一次握手），<br>服务器端接收到客户端发送的SYN时，向客户端发送SYNACK确认（第二次握手），<br>此时TCP内核模块把客户端连接加入到A队列中，然后服务器接收到客户端发送的ACK时（第三次握手），<br>TCP内核模块把客户端连接从A队列移动到B队列，连接完成，应用程序的accept会返回。<br>也就是说accept 从B队列中取出完成了三次握手的连接。A队列和B队列的长度之和就是backlog。<br>当A、B队列的长度之和大于ChannelOption.SO_BACKLOG时，新的连接将会被TCP内核拒绝。所以，如果backlog过小，可能会出现accept速度跟不上，A、B队列满了，导致新的客户端无法连接。要注意的是，backlog对程序支持的连接数并无影响，<strong>backlog影响的只是还没有被accept取出的连接</strong> 。</p>
+<p>7.cf1.channel().closeFuture().sync();因为Netty是异步通信框架，因此启动后会继续往执行，而sync()，关闭操作会被阻塞。</p>
+<p>我们注意到这行sc.pipeline().addLast(new ServerHandler());这相当于一个TCP包的流水线，我们需要将我们想要处理的操作放在流水线的后方，这个与openflow协议中的流水线的功能类似。</p>
+<p>下面，我们来具体看一下ServerHandler的代码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerHandler</span> <span class="keyword">extends</span> <span class="title">ChannelHandlerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"server channel active... "</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">			ByteBuf buf = (ByteBuf) msg;</span><br><span class="line">			<span class="keyword">byte</span>[] req = <span class="keyword">new</span> <span class="keyword">byte</span>[buf.readableBytes()];</span><br><span class="line">			buf.readBytes(req);</span><br><span class="line">			String body = <span class="keyword">new</span> String(req, <span class="string">"utf-8"</span>);</span><br><span class="line">			System.out.println(<span class="string">"Server :"</span> + body );</span><br><span class="line">			String response = <span class="string">"进行返回给客户端的响应："</span> + body ;</span><br><span class="line">			ctx.writeAndFlush(Unpooled.copiedBuffer(response.getBytes()))</span><br><span class="line">                    .addListener(ChannelFutureListener.CLOSE);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"读完了"</span>);</span><br><span class="line">		ctx.flush();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable t)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		ctx.close();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们再来看一下这个类，此类继承了ChannelHandlerAdapter，其中ChannelHandlerAdapter又实现了ChannelHandler，也就是相当于ChannelHandlerAdapter已经帮将我们大部分方法实现好了，我们只需要对我们感兴趣的地方进行重写即可。</p>
+<p>我们接着对这个类进行分析：<br>1.channelRead方法很明显是读取客户端传来的TCP数据包，我们看一下这一句代码：<code>ByteBuf buf = (ByteBuf) msg；</code>很多小伙伴肯定会产生疑惑，为什么要将Object类的msg强转成ByteBuf</p>
+<p>2.ChannelHandlerContext对象提供了许多操作，使你能够触发各种各样的I/O事件和操作。这里我们调用了write(Object)方法来逐字地把接受到的消息写入。这是因为在Netty中传递的消息都是ByteBuf。</p>
+<p>3.我们需要注意这句<code>ctx.writeAndFlush(Unpooled.copiedBuffer(response.getBytes())).addListener(ChannelFutureListener.CLOSE);</code><br>首先，像ChannelHandlerContext支持链式编程，通俗的说是追加式编程，也就是这句等同于：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ChannelFuture f = ctx.writeAndFlush(Unpooled.copiedBuffer(response.getBytes()));</span><br><span class="line">f.addListener(ChannelFutureListener.CLOSE);</span><br></pre></td></tr></table></figure>
+<p>ctx.writeAndFlush();其实也是两个方法组合而来，分别是ctx.write(….)和ctx.flush(),因此上面那句话又可以等同于：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ChannelFuture f  = ctx.write(Unpooled.copiedBuffer(response.getBytes()));</span><br><span class="line">ctx.flush();</span><br><span class="line">f.addListener(ChannelFutureListener.CLOSE);</span><br></pre></td></tr></table></figure>
+
+<p>下面我们一一句一句分析：<br>ctx.write:表示将数据放入通道，准备发送给客户端，请注意，这里是准备发送给客户端，<br>当执行ctx.flush时数据才真正发送给客户端。</p>
+<p>一般来说，我们要把通常ChannelHandlerContext关闭，但是当我们执行write方法时，在方法中会进行关闭。</p>
+<p>那么f.addListener(ChannelFutureListener.CLOSE);这句的作用是什么呢?<br>我们知道Netty是异步编程，因此会继续往下执行，那么会产生一个问题，当我把数据发给客户端时，客户端和服务端的连接仍然存在（这里体现在控制台中的Client程序仍然在阻塞者），那么成千上万个客户端连接到服务器的话，会导致服务器的资源耗尽，而这句话的作用是当服务端发送数据完毕时，会拆除与客户端的连接。</p>
+<p>下面，我们来看一下Client的代码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Client</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">		</span><br><span class="line">		EventLoopGroup group = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		Bootstrap b = <span class="keyword">new</span> Bootstrap();</span><br><span class="line">		b.group(group)</span><br><span class="line">		.channel(NioSocketChannel<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">		.<span class="title">handler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">SocketChannel</span>&gt;() </span>&#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel sc)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> ClientHandler());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">		</span><br><span class="line">		ChannelFuture cf1 = b.connect(<span class="string">"127.0.0.1"</span>, <span class="number">8765</span>).sync();</span><br><span class="line">	</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		<span class="comment">//发送消息</span></span><br><span class="line">		Thread.sleep(<span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		cf1.channel().writeAndFlush(Unpooled.copiedBuffer(<span class="string">"777"</span>.getBytes()));</span><br><span class="line">	</span><br><span class="line"></span><br><span class="line">		cf1.channel().closeFuture().sync();</span><br><span class="line">		group.shutdownGracefully();</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ClientHandler代码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClientHandler</span> <span class="keyword">extends</span> <span class="title">ChannelHandlerAdapter</span></span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			ByteBuf buf = (ByteBuf) msg;</span><br><span class="line">			</span><br><span class="line">			<span class="keyword">byte</span>[] req = <span class="keyword">new</span> <span class="keyword">byte</span>[buf.readableBytes()];</span><br><span class="line">			buf.readBytes(req);</span><br><span class="line">			</span><br><span class="line">			String body = <span class="keyword">new</span> String(req, <span class="string">"utf-8"</span>);</span><br><span class="line">			System.out.println(<span class="string">"Client :"</span> + body );</span><br><span class="line">			String response = <span class="string">"收到服务器端的返回信息："</span> + body;</span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">			ReferenceCountUtil.release(msg);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		ctx.close();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p>服务端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">server channel active... </span><br><span class="line">Server :777</span><br><span class="line">读完了</span><br></pre></td></tr></table></figure>
+
+<p>客户端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Client :进行返回给客户端的响应：777</span><br></pre></td></tr></table></figure>
+
+<h2 id="Netty解决TCP粘包、拆包问题"><a href="#Netty解决TCP粘包、拆包问题" class="headerlink" title="Netty解决TCP粘包、拆包问题"></a>Netty解决TCP粘包、拆包问题</h2><h3 id="粘包、拆包介绍"><a href="#粘包、拆包介绍" class="headerlink" title="粘包、拆包介绍"></a>粘包、拆包介绍</h3><p>在基于流的传输里比如TCP/IP，接收到的数据会先被存储到一个socket接收缓冲里。不幸的是，基于流的传输并不是一个数据包队列，而是一个字节队列。即使你发送了2个独立的数据包，操作系统也不会作为2个消息处理而仅仅是作为一连串的字节而言。因此这是不能保证你远程写入的数据就会准确地读取。举个例子，让我们假设操作系统的TCP/TP协议栈已经接收了3个数据包：</p>
+<p><img src="http://img.bcoder.top/2017.11.16/3.png" alt="业余学习之网络编程Netty框架入门篇"></p>
+<p>由于基于流传输的协议的这种普通的性质，在你的应用程序里读取数据的时候会有很高的可能性被分成下面的片段。</p>
+<p><img src="http://img.bcoder.top/2017.11.16/4.png" alt="业余学习之网络编程Netty框架入门篇"></p>
+<p>因此，一个接收方不管他是客户端还是服务端，都应该把接收到的数据整理成一个或者多个更有意思并且能够让程序的业务逻辑更好理解的数据。在上面的例子中，接收到的数据应该被构造成下面的格式：</p>
+<p><img src="http://img.bcoder.top/2017.11.16/3.png" alt="业余学习之网络编程Netty框架入门篇"></p>
+<p>熟悉TCP编程的可能都知道，无论是服务器端还是客户端，当我们读取或者发送数据的时候，都需要考虑TCP底层的粘包/拆包机制。</p>
+<p>TCP是一个“流”协议，所谓流就是没有界限的遗传数据。大家可以想象一下，如果河水就好比数据，他们是连成一片的，没有分界线，TCP底层并不了解上层业务数据的具体含义，它会根据TCP缓冲区的具体情况进行包的划分，也就是说，在业务上一个完整的包可能会被TCP分成多个包进行发送，也可能把多个小包封装成一个大的数据包发送出去，这就是所谓的粘包/拆包问题。</p>
+<h3 id="复现粘包、拆包"><a href="#复现粘包、拆包" class="headerlink" title="复现粘包、拆包"></a>复现粘包、拆包</h3><p>我们将上方的Hello World代码中的Client进行如下修改：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Client</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line"></span><br><span class="line">		EventLoopGroup group = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		Bootstrap b = <span class="keyword">new</span> Bootstrap();</span><br><span class="line">		b.group(group)</span><br><span class="line">		.channel(NioSocketChannel<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">		.<span class="title">handler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">SocketChannel</span>&gt;() </span>&#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel sc)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> ClientHandler());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line"></span><br><span class="line">		ChannelFuture cf1 = b.connect(<span class="string">"127.0.0.1"</span>, <span class="number">8765</span>).sync();</span><br><span class="line">		<span class="comment">//ChannelFuture cf2 = b.connect("127.0.0.1", 8764).sync();</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		<span class="comment">//发送消息</span></span><br><span class="line">		Thread.sleep(<span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		cf1.channel().writeAndFlush(Unpooled.copiedBuffer(<span class="string">"777"</span>.getBytes()));</span><br><span class="line">		cf1.channel().writeAndFlush(Unpooled.copiedBuffer(<span class="string">"666"</span>.getBytes()));</span><br><span class="line">		cf1.channel().writeAndFlush(Unpooled.copiedBuffer(<span class="string">"888"</span>.getBytes()));</span><br><span class="line"></span><br><span class="line">		cf1.channel().closeFuture().sync();</span><br><span class="line">		group.shutdownGracefully();</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下所示：<br>客户端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Client :进行返回给客户端的响应：777666888</span><br></pre></td></tr></table></figure>
+
+<p>服务端：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">server channel active... </span><br><span class="line">Server :<span class="number">777666888</span></span><br><span class="line">读完了</span><br></pre></td></tr></table></figure>
+
+<p>我们代码明明执行了三次请求，最后三次合并成一次，当成一个包进行处理了。</p>
+<h3 id="Netty解决TCP粘包、拆包的方案"><a href="#Netty解决TCP粘包、拆包的方案" class="headerlink" title="Netty解决TCP粘包、拆包的方案"></a>Netty解决TCP粘包、拆包的方案</h3><p>此类问题，常见解决方案：</p>
+<p>①消息定长，例如每个报文的大小固定为200个字节，如果不够，空位补空格。<br>②在包尾部增加特殊字符进行分割，例如加回车等。<br>③将消息分为消息头和消息体，在消息头中包含表示消息总长度的字段，然后进行业务逻辑的处理。</p>
+<p>Netty已经对上述的前两种方案提供了支持。</p>
+<p><strong>Netty中解决TCP粘包/拆包的方法：</strong><br>①分隔符类：DelimiterBasedFrameDecoder（自定义分隔符）<br>②定长：FixedLengthFrameDecoder</p>
+<h4 id="分隔符解决TCP粘包、拆包-DelimiterBasedFrameDecoder"><a href="#分隔符解决TCP粘包、拆包-DelimiterBasedFrameDecoder" class="headerlink" title="分隔符解决TCP粘包、拆包(DelimiterBasedFrameDecoder)"></a>分隔符解决TCP粘包、拆包(DelimiterBasedFrameDecoder)</h4><p>客户端：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Client</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		</span><br><span class="line">		EventLoopGroup group = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		</span><br><span class="line">		Bootstrap b = <span class="keyword">new</span> Bootstrap();</span><br><span class="line">		b.group(group)</span><br><span class="line">		 .channel(NioSocketChannel<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">		 .<span class="title">handler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">SocketChannel</span>&gt;() </span>&#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel sc)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">				<span class="comment">//设置特殊分隔符</span></span><br><span class="line">				ByteBuf buf = Unpooled.copiedBuffer(<span class="string">"$_"</span>.getBytes());</span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> DelimiterBasedFrameDecoder(<span class="number">1024</span>, buf));</span><br><span class="line"></span><br><span class="line">				<span class="comment">//设置字符串形式的解码（消息变成String）--&gt;也就是msg</span></span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> StringDecoder());</span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> ClientHandler());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">		</span><br><span class="line">		ChannelFuture cf = b.connect(<span class="string">"127.0.0.1"</span>, <span class="number">8765</span>).sync();</span><br><span class="line">		</span><br><span class="line">		cf.channel().writeAndFlush(Unpooled.wrappedBuffer(<span class="string">"777$_"</span>.getBytes()));</span><br><span class="line">		cf.channel().writeAndFlush(Unpooled.wrappedBuffer(<span class="string">"666$_"</span>.getBytes()));</span><br><span class="line">        cf.channel().writeAndFlush(Unpooled.wrappedBuffer(<span class="string">"888$_"</span>.getBytes()));</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//等待客户端端口关闭</span></span><br><span class="line">		cf.channel().closeFuture().sync();</span><br><span class="line">		group.shutdownGracefully();</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>分析：<br>1.我们注意这两句：<br>ByteBuf buf = Unpooled.copiedBuffer(“$_”.getBytes());<br>sc.pipeline().addLast(new DelimiterBasedFrameDecoder(1024, buf));<br>这两句的作用是将我们的数据包添加<code>$_</code>后缀<br>2.    sc.pipeline().addLast(new StringDecoder());<br>这句话的意思是设置字符串形式的解码（消息变成String），也就是msg，之前是将msg转换成ByteBuf，然后将ByteBuf类型的msg转化成byte[]，最后才是String，这句的作用是可以将msg直接强转为String</p>
+<p>ClientHandler代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClientHandler</span> <span class="keyword">extends</span> <span class="title">ChannelHandlerAdapter</span></span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"client channel active... "</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			String response = (String)msg;</span><br><span class="line"></span><br><span class="line">            response = <span class="string">"收到服务器端的返回信息："</span> + response;</span><br><span class="line"></span><br><span class="line">			System.out.println(<span class="string">"Client: "</span> + response);</span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">			ReferenceCountUtil.release(msg);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		ctx.close();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">服务端:</span><br><span class="line">```java</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Server</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">		<span class="comment">//1 创建2个线程，一个是负责接收客户端的连接。一个是负责进行数据传输的</span></span><br><span class="line">		EventLoopGroup pGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		EventLoopGroup cGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//2 创建服务器辅助类</span></span><br><span class="line">		ServerBootstrap b = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">		b.group(pGroup, cGroup)</span><br><span class="line">		 .channel(NioServerSocketChannel<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">		 .<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_BACKLOG</span>, 1024)</span></span><br><span class="line"><span class="class">		 .<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_SNDBUF</span>, 32*1024)</span></span><br><span class="line"><span class="class">		 .<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_RCVBUF</span>, 32*1024)</span></span><br><span class="line"><span class="class">		 .<span class="title">childHandler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">SocketChannel</span>&gt;() </span>&#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel sc)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">				<span class="comment">//设置特殊分隔符</span></span><br><span class="line">				ByteBuf buf = Unpooled.copiedBuffer(<span class="string">"$_"</span>.getBytes());</span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> DelimiterBasedFrameDecoder(<span class="number">1024</span>, buf));</span><br><span class="line">				<span class="comment">//设置字符串形式的解码</span></span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> StringDecoder());</span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> ServerHandler());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//4 绑定连接</span></span><br><span class="line">		ChannelFuture cf = b.bind(<span class="number">8765</span>).sync();</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//等待服务器监听端口关闭</span></span><br><span class="line">		cf.channel().closeFuture().sync();</span><br><span class="line">		pGroup.shutdownGracefully();</span><br><span class="line">		cGroup.shutdownGracefully();</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ServerHandler代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerHandler</span> <span class="keyword">extends</span> <span class="title">ChannelHandlerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"server channel active... "</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">			ByteBuf buf = (ByteBuf) msg;</span><br><span class="line">			<span class="keyword">byte</span>[] req = <span class="keyword">new</span> <span class="keyword">byte</span>[buf.readableBytes()];</span><br><span class="line">			buf.readBytes(req);</span><br><span class="line">			String body = <span class="keyword">new</span> String(req, <span class="string">"utf-8"</span>);</span><br><span class="line">			System.out.println(<span class="string">"Server :"</span> + body );</span><br><span class="line">			String response = <span class="string">"进行返回给客户端的响应："</span> + body ;</span><br><span class="line">			ctx.writeAndFlush(Unpooled.copiedBuffer(response.getBytes()))</span><br><span class="line">                    .addListener(ChannelFutureListener.CLOSE);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"读完了"</span>);</span><br><span class="line">		ctx.flush();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable t)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		ctx.close();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：<br>服务端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">server channel active... </span><br><span class="line">Server :777</span><br><span class="line">Server :666</span><br><span class="line">Server :888</span><br><span class="line">读完了</span><br></pre></td></tr></table></figure>
+
+<p>客户端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">client channel active... </span><br><span class="line">Client: 收到服务器端的返回信息：进行返回给客户端的响应：777</span><br><span class="line">Client: 收到服务器端的返回信息：进行返回给客户端的响应：666</span><br><span class="line">Client: 收到服务器端的返回信息：进行返回给客户端的响应：888</span><br></pre></td></tr></table></figure>
+
+<h4 id="定长解决TCP粘包、拆包-FixedLengthFrameDecoder"><a href="#定长解决TCP粘包、拆包-FixedLengthFrameDecoder" class="headerlink" title="定长解决TCP粘包、拆包(FixedLengthFrameDecoder)"></a>定长解决TCP粘包、拆包(FixedLengthFrameDecoder)</h4><p>客户端：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Client</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		</span><br><span class="line">		EventLoopGroup group = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		</span><br><span class="line">		Bootstrap b = <span class="keyword">new</span> Bootstrap();</span><br><span class="line">		b.group(group)</span><br><span class="line">		 .channel(NioSocketChannel<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">		 .<span class="title">handler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">SocketChannel</span>&gt;() </span>&#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel sc)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> FixedLengthFrameDecoder(<span class="number">3</span>));</span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> StringDecoder());</span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> ClientHandler());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">		</span><br><span class="line">		ChannelFuture cf = b.connect(<span class="string">"127.0.0.1"</span>, <span class="number">8765</span>).sync();</span><br><span class="line">		</span><br><span class="line">		cf.channel().writeAndFlush(Unpooled.wrappedBuffer(<span class="string">"777"</span>.getBytes()));</span><br><span class="line">		cf.channel().writeAndFlush(Unpooled.copiedBuffer(<span class="string">"666"</span>.getBytes()));</span><br><span class="line">        cf.channel().writeAndFlush(Unpooled.copiedBuffer(<span class="string">"888"</span>.getBytes()));</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//等待客户端端口关闭</span></span><br><span class="line">		cf.channel().closeFuture().sync();</span><br><span class="line">		group.shutdownGracefully();</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意    sc.pipeline().addLast(new FixedLengthFrameDecoder(3));这句话是说TCP包的数据部分是三字符定长的，发送机制是满三字节发送一个数据包，如果不满，那么就一直等待，因此，如果我们最后发送的不足三字节，我们可以使用空格进行补足。</p>
+<p>ClientHandler代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClientHandler</span> <span class="keyword">extends</span> <span class="title">ChannelHandlerAdapter</span></span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"client channel active... "</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        String response = (String)msg;</span><br><span class="line"></span><br><span class="line">        response = <span class="string">"收到服务器端的返回信息："</span> + response;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"Client: "</span> + response);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>服务端：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Server</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">		<span class="comment">//1 创建2个线程，一个是负责接收客户端的连接。一个是负责进行数据传输的</span></span><br><span class="line">		EventLoopGroup pGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		EventLoopGroup cGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//2 创建服务器辅助类</span></span><br><span class="line">		ServerBootstrap b = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">		b.group(pGroup, cGroup)</span><br><span class="line">		 .channel(NioServerSocketChannel<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">		 .<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_BACKLOG</span>, 1024)</span></span><br><span class="line"><span class="class">		 .<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_SNDBUF</span>, 32*1024)</span></span><br><span class="line"><span class="class">		 .<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_RCVBUF</span>, 32*1024)</span></span><br><span class="line"><span class="class">		 .<span class="title">childHandler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">SocketChannel</span>&gt;() </span>&#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel sc)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">				<span class="comment">//设置定长字符串接收</span></span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> FixedLengthFrameDecoder(<span class="number">3</span>));</span><br><span class="line">				<span class="comment">//设置字符串形式的解码</span></span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> StringDecoder());</span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> ServerHandler());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//4 绑定连接</span></span><br><span class="line">		ChannelFuture cf = b.bind(<span class="number">8765</span>).sync();</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//等待服务器监听端口关闭</span></span><br><span class="line">		cf.channel().closeFuture().sync();</span><br><span class="line">		pGroup.shutdownGracefully();</span><br><span class="line">		cGroup.shutdownGracefully();</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>ServerHandler代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerHandler</span> <span class="keyword">extends</span> <span class="title">ChannelHandlerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">" server channel active... "</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        String request = (String)msg;</span><br><span class="line">        System.out.println(<span class="string">"Server :"</span> + request );</span><br><span class="line">        String response = request;</span><br><span class="line">		ctx.writeAndFlush(Unpooled.copiedBuffer(response.getBytes()));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"读完了"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable t)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p>服务端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">    server channel active... </span><br><span class="line">Server :777</span><br><span class="line">Server :666</span><br><span class="line">Server :888</span><br><span class="line">读完了</span><br></pre></td></tr></table></figure>
+
+<p>客户端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">client channel active... </span><br><span class="line">Client: 收到服务器端的返回信息：777</span><br><span class="line">Client: 收到服务器端的返回信息：666</span><br><span class="line">Client: 收到服务器端的返回信息：888</span><br></pre></td></tr></table></figure>
+
+<h2 id="Netty编解码技术"><a href="#Netty编解码技术" class="headerlink" title="Netty编解码技术"></a>Netty编解码技术</h2><p>编解码技术，我们可以理解成java序列化技术，序列化的目的只有两个，第一进行网络传输，第二就是持久化。</p>
+<p>虽然我们可以使用java对象进行对象序列化，netty只进行传输，但是java序列化的硬伤太多，比如java序列化没法跨语言、序列化后码流太大，序列化的性能太低等等。</p>
+<p>官方点说法就是将编码（Encode）成为序列化，它将数据序列化为字节数组，用于网络传输、数据持久化或者其他用途。反之，解码（Decode）/反序列化（deserialization）<br>把从网络、磁盘等读取的字节数组还原成原始对象（通常是原始对象的拷贝），以方便后续的业务逻辑操作。进行远程跨进程服务调用时（例如RPC调用），需要使用特定的编解码技术，对需要进行网络传输的对象做编码或者解码，以便完成远程调用。</p>
+<p>主流的编解码框架：<br>①JBoss的Marshalling包<br>②google的Protobuf<br>③基于Protobuf的Kyro<br>④MessagePack框架</p>
+<p>我们主要使用JBoss的Marshalling包进行编解码操作，该包配合Netty，非常的简单易用</p>
+<p>下面我们来看代码：</p>
+<p>首先，我们要导入jar包：<br>jboss-marshalling-serial-1.3.0.CR9.jar<br>jboss-marshalling-1.3.0.CR9.jar</p>
+<p>下面，我们来创建Jboss Marshalling解码器MarshallingDecoder和编码器MarshallingEncoder    </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">MarshallingCodeCFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建Jboss Marshalling解码器MarshallingDecoder</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> MarshallingDecoder</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> MarshallingDecoder <span class="title">buildMarshallingDecoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    	<span class="comment">//首先通过Marshalling工具类的精通方法获取Marshalling实例对象 参数serial标识创建的是java序列化工厂对象。</span></span><br><span class="line">		<span class="keyword">final</span> MarshallerFactory marshallerFactory = Marshalling.getProvidedMarshallerFactory(<span class="string">"serial"</span>);</span><br><span class="line">		<span class="comment">//创建了MarshallingConfiguration对象，配置了版本号为5 </span></span><br><span class="line">		<span class="keyword">final</span> MarshallingConfiguration configuration = <span class="keyword">new</span> MarshallingConfiguration();</span><br><span class="line">		configuration.setVersion(<span class="number">5</span>);</span><br><span class="line">		<span class="comment">//根据marshallerFactory和configuration创建provider</span></span><br><span class="line">		UnmarshallerProvider provider = <span class="keyword">new</span> DefaultUnmarshallerProvider(marshallerFactory, configuration);</span><br><span class="line">		<span class="comment">//构建Netty的MarshallingDecoder对象，俩个参数分别为provider和单个消息序列化后的最大长度</span></span><br><span class="line">		MarshallingDecoder decoder = <span class="keyword">new</span> MarshallingDecoder(provider, <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">1</span>);</span><br><span class="line">		<span class="keyword">return</span> decoder;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建Jboss Marshalling编码器MarshallingEncoder</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> MarshallingEncoder</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> MarshallingEncoder <span class="title">buildMarshallingEncoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">final</span> MarshallerFactory marshallerFactory = Marshalling.getProvidedMarshallerFactory(<span class="string">"serial"</span>);</span><br><span class="line">		<span class="keyword">final</span> MarshallingConfiguration configuration = <span class="keyword">new</span> MarshallingConfiguration();</span><br><span class="line">		configuration.setVersion(<span class="number">5</span>);</span><br><span class="line">		MarshallerProvider provider = <span class="keyword">new</span> DefaultMarshallerProvider(marshallerFactory, configuration);</span><br><span class="line">		<span class="comment">//构建Netty的MarshallingEncoder对象，MarshallingEncoder用于实现序列化接口的POJO对象序列化为二进制数组</span></span><br><span class="line">		MarshallingEncoder encoder = <span class="keyword">new</span> MarshallingEncoder(provider);</span><br><span class="line">		<span class="keyword">return</span> encoder;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个类相当于模板类，如果用到解编码相关的，我们直接拿来使用即可。</p>
+<p>接下来，我们来看客户端的实体bean:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Req</span> <span class="keyword">implements</span> <span class="title">Serializable</span></span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span>  SerialVersionUID = <span class="number">1L</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> String id ;</span><br><span class="line">	<span class="keyword">private</span> String name ;</span><br><span class="line">	<span class="keyword">private</span> String requestMessage ;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">byte</span>[] attachment;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.id = id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.name = name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getRequestMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> requestMessage;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setRequestMessage</span><span class="params">(String requestMessage)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.requestMessage = requestMessage;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">byte</span>[] getAttachment() &#123;</span><br><span class="line">		<span class="keyword">return</span> attachment;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAttachment</span><span class="params">(<span class="keyword">byte</span>[] attachment)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.attachment = attachment;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面我们来看一下，服务端的实体bean:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Resp</span> <span class="keyword">implements</span> <span class="title">Serializable</span></span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> String id;</span><br><span class="line">	<span class="keyword">private</span> String name;</span><br><span class="line">	<span class="keyword">private</span> String responseMessage;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.id = id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.name = name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getResponseMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> responseMessage;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setResponseMessage</span><span class="params">(String responseMessage)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.responseMessage = responseMessage;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面，来看服务端的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Server</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">		</span><br><span class="line">		EventLoopGroup pGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		EventLoopGroup cGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		</span><br><span class="line">		ServerBootstrap b = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">		b.group(pGroup, cGroup)</span><br><span class="line">		 .channel(NioServerSocketChannel<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">		 .<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_BACKLOG</span>, 1024)</span></span><br><span class="line"><span class="class">		 //设置日志</span></span><br><span class="line"><span class="class">		 .<span class="title">handler</span>(<span class="title">new</span> <span class="title">LoggingHandler</span>(<span class="title">LogLevel</span>.<span class="title">INFO</span>))</span></span><br><span class="line"><span class="class">		 .<span class="title">childHandler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">SocketChannel</span>&gt;() </span>&#123;</span><br><span class="line">			<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel sc)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">				sc.pipeline().addLast(MarshallingCodeCFactory.buildMarshallingDecoder());</span><br><span class="line">				sc.pipeline().addLast(MarshallingCodeCFactory.buildMarshallingEncoder());</span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> ServerHandler());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">		</span><br><span class="line">		ChannelFuture cf = b.bind(<span class="number">8765</span>).sync();</span><br><span class="line">		</span><br><span class="line">		cf.channel().closeFuture().sync();</span><br><span class="line">		pGroup.shutdownGracefully();</span><br><span class="line">		cGroup.shutdownGracefully();</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">这边代码和之前的HelloWord代码的唯一区别就是：多了日志处理，以及流水线上多了编解码的类</span><br><span class="line"></span><br><span class="line">下面来看客户端的代码：</span><br><span class="line">```java</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Client</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">		</span><br><span class="line">		EventLoopGroup group = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		Bootstrap b = <span class="keyword">new</span> Bootstrap();</span><br><span class="line">		b.group(group)</span><br><span class="line">		 .channel(NioSocketChannel<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">		 .<span class="title">handler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">SocketChannel</span>&gt;() </span>&#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel sc)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">				sc.pipeline().addLast(MarshallingCodeCFactory.buildMarshallingDecoder());</span><br><span class="line">				sc.pipeline().addLast(MarshallingCodeCFactory.buildMarshallingEncoder());</span><br><span class="line">				sc.pipeline().addLast(<span class="keyword">new</span> ClientHandler());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">		</span><br><span class="line">		ChannelFuture cf = b.connect(<span class="string">"127.0.0.1"</span>, <span class="number">8765</span>).sync();</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ )&#123;</span><br><span class="line">			Req req = <span class="keyword">new</span> Req();</span><br><span class="line">			req.setId(<span class="string">""</span> + i);</span><br><span class="line">			req.setName(<span class="string">"pro"</span> + i);</span><br><span class="line">			req.setRequestMessage(<span class="string">"数据信息"</span> + i);	</span><br><span class="line">			String path = System.getProperty(<span class="string">"user.dir"</span>) + File.separatorChar + <span class="string">"sources"</span> +  File.separatorChar + <span class="string">"001.jpg"</span>;</span><br><span class="line">			File file = <span class="keyword">new</span> File(path);</span><br><span class="line">	        FileInputStream in = <span class="keyword">new</span> FileInputStream(file);  </span><br><span class="line">	        <span class="keyword">byte</span>[] data = <span class="keyword">new</span> <span class="keyword">byte</span>[in.available()];  </span><br><span class="line">	        in.read(data);  </span><br><span class="line">	        in.close(); </span><br><span class="line">			req.setAttachment(GzipUtils.gzip(data));</span><br><span class="line">			cf.channel().writeAndFlush(req);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		cf.channel().closeFuture().sync();</span><br><span class="line">		group.shutdownGracefully();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以注意到有两个东西是我们之前没有见过的：<br>1.System.getProperty(“user.dir”)<br>这个是获得系统变量，这个变量意思是当前文件夹的位置，还有以下常用的系统变量如下面的程序所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestSystemProperty</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">		System.out.println(<span class="string">"java版本号："</span> + System.getProperty(<span class="string">"java.version"</span>)); <span class="comment">// java版本号</span></span><br><span class="line">		System.out.println(<span class="string">"Java提供商名称："</span> + System.getProperty(<span class="string">"java.vendor"</span>)); <span class="comment">// Java提供商名称</span></span><br><span class="line">		System.out.println(<span class="string">"Java提供商网站："</span> + System.getProperty(<span class="string">"java.vendor.url"</span>)); <span class="comment">// Java提供商网站</span></span><br><span class="line">		System.out.println(<span class="string">"jre目录："</span> + System.getProperty(<span class="string">"java.home"</span>)); <span class="comment">// Java，哦，应该是jre目录</span></span><br><span class="line">		System.out.println(<span class="string">"Java虚拟机规范版本号："</span> + System.getProperty(<span class="string">"java.vm.specification.version"</span>)); <span class="comment">// Java虚拟机规范版本号</span></span><br><span class="line">		System.out.println(<span class="string">"Java虚拟机规范提供商："</span> + System.getProperty(<span class="string">"java.vm.specification.vendor"</span>)); <span class="comment">// Java虚拟机规范提供商</span></span><br><span class="line">		System.out.println(<span class="string">"Java虚拟机规范名称："</span> + System.getProperty(<span class="string">"java.vm.specification.name"</span>)); <span class="comment">// Java虚拟机规范名称</span></span><br><span class="line">		System.out.println(<span class="string">"Java虚拟机版本号："</span> + System.getProperty(<span class="string">"java.vm.version"</span>)); <span class="comment">// Java虚拟机版本号</span></span><br><span class="line">		System.out.println(<span class="string">"Java虚拟机提供商："</span> + System.getProperty(<span class="string">"java.vm.vendor"</span>)); <span class="comment">// Java虚拟机提供商</span></span><br><span class="line">		System.out.println(<span class="string">"Java虚拟机名称："</span> + System.getProperty(<span class="string">"java.vm.name"</span>)); <span class="comment">// Java虚拟机名称</span></span><br><span class="line">		System.out.println(<span class="string">"Java规范版本号："</span> + System.getProperty(<span class="string">"java.specification.version"</span>)); <span class="comment">// Java规范版本号</span></span><br><span class="line">		System.out.println(<span class="string">"Java规范提供商："</span> + System.getProperty(<span class="string">"java.specification.vendor"</span>)); <span class="comment">// Java规范提供商</span></span><br><span class="line">		System.out.println(<span class="string">"Java规范名称："</span> + System.getProperty(<span class="string">"java.specification.name"</span>)); <span class="comment">// Java规范名称</span></span><br><span class="line">		System.out.println(<span class="string">"Java类版本号："</span> + System.getProperty(<span class="string">"java.class.version"</span>)); <span class="comment">// Java类版本号</span></span><br><span class="line">		System.out.println(<span class="string">"Java类路径："</span> + System.getProperty(<span class="string">"java.class.path"</span>)); <span class="comment">// Java类路径</span></span><br><span class="line">		System.out.println(<span class="string">"Java lib路径："</span> + System.getProperty(<span class="string">"java.library.path"</span>)); <span class="comment">// Java lib路径</span></span><br><span class="line">		System.out.println(<span class="string">"Java输入输出临时路径："</span> + System.getProperty(<span class="string">"java.io.tmpdir"</span>)); <span class="comment">// Java输入输出临时路径</span></span><br><span class="line">		System.out.println(<span class="string">"Java编译器："</span> + System.getProperty(<span class="string">"java.compiler"</span>)); <span class="comment">// Java编译器</span></span><br><span class="line">		System.out.println(<span class="string">"Java执行路径："</span> + System.getProperty(<span class="string">"java.ext.dirs"</span>)); <span class="comment">// Java执行路径</span></span><br><span class="line">		System.out.println(<span class="string">"操作系统名称："</span> + System.getProperty(<span class="string">"os.name"</span>)); <span class="comment">// 操作系统名称</span></span><br><span class="line">		System.out.println(<span class="string">"操作系统的架构："</span> + System.getProperty(<span class="string">"os.arch"</span>)); <span class="comment">// 操作系统的架构</span></span><br><span class="line">		System.out.println(<span class="string">"操作系统版本号："</span> + System.getProperty(<span class="string">"os.version"</span>)); <span class="comment">// 操作系统版本号</span></span><br><span class="line">		System.out.println(<span class="string">"文件分隔符："</span> + System.getProperty(<span class="string">"file.separator"</span>)); <span class="comment">// 文件分隔符</span></span><br><span class="line">		System.out.println(<span class="string">"路径分隔符："</span> + System.getProperty(<span class="string">"path.separator"</span>)); <span class="comment">// 路径分隔符</span></span><br><span class="line">		System.out.println(<span class="string">"直线分隔符："</span> + System.getProperty(<span class="string">"line.separator"</span>)); <span class="comment">// 直线分隔符</span></span><br><span class="line">		System.out.println(<span class="string">"操作系统用户名："</span> + System.getProperty(<span class="string">"user.name"</span>)); <span class="comment">// 用户名</span></span><br><span class="line">		System.out.println(<span class="string">"操作系统用户的主目录："</span> + System.getProperty(<span class="string">"user.home"</span>)); <span class="comment">// 用户的主目录</span></span><br><span class="line">		System.out.println(<span class="string">"当前程序所在目录："</span> + System.getProperty(<span class="string">"user.dir"</span>)); <span class="comment">// 当前程序所在目录</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下（每个人电脑运行结果不一样）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">java版本号：1.8.0_31</span><br><span class="line">Java提供商名称：Oracle Corporation</span><br><span class="line">Java提供商网站：http:&#x2F;&#x2F;java.oracle.com&#x2F;</span><br><span class="line">jre目录：C:\Program Files\Java\jdk1.8.0_31\jre</span><br><span class="line">Java虚拟机规范版本号：1.8</span><br><span class="line">Java虚拟机规范提供商：Oracle Corporation</span><br><span class="line">Java虚拟机规范名称：Java Virtual Machine Specification</span><br><span class="line">Java虚拟机版本号：25.31-b07</span><br><span class="line">Java虚拟机提供商：Oracle Corporation</span><br><span class="line">Java虚拟机名称：Java HotSpot(TM) 64-Bit Server VM</span><br><span class="line">Java规范版本号：1.8</span><br><span class="line">Java规范提供商：Oracle Corporation</span><br><span class="line">Java规范名称：Java Platform API Specification</span><br><span class="line">Java类版本号：52.0</span><br><span class="line">Java类路径：C:\Program Files\Java\jdk1.8.0_31\jre\lib\charsets.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\deploy.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\access-bridge-64.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\cldrdata.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\dnsns.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\jaccess.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\jfxrt.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\localedata.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\nashorn.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\sunec.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\sunjce_provider.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\sunmscapi.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\sunpkcs11.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext\zipfs.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\javaws.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\jce.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\jfr.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\jfxswt.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\jsse.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\management-agent.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\plugin.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\resources.jar;C:\Program Files\Java\jdk1.8.0_31\jre\lib\rt.jar;E:\Code\java\IDEA\HelloIdea\out\production\Adv;C:\Program Files\JetBrains\IntelliJ IDEA 2017.2.3\redist\annotations-java8.jar;E:\Code\java\IDEA\HelloIdea\lib\mysql-connector-java-5.1.7-bin.jar;E:\Code\java\IDEA\HelloIdea\lib\disruptor-3.3.2.jar;E:\Code\java\IDEA\HelloIdea\lib\netty-all-5.0.0.Alpha2.jar;E:\Code\java\IDEA\HelloIdea\lib\jboss-marshalling-1.3.0.CR9.jar;E:\Code\java\IDEA\HelloIdea\lib\jboss-marshalling-serial-1.3.0.CR9.jar;C:\Program Files\JetBrains\IntelliJ IDEA 2017.2.3\lib\idea_rt.jar</span><br><span class="line">Java lib路径：C:\Program Files\Java\jdk1.8.0_31\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;c:\gtk\bin;C:\Program Files\Java\jdk1.8.0_31\bin;C:\Program Files\Java\jdk1.8.0_31\jre\bin;C:\Program Files\TortoiseSVN\bin;C:\Program Files\MySQL\MySQL Server 5.0\bin;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\VSShell\Common7\IDE\;C:\Program Files (x86)\Microsoft Visual Studio 9.0\Common7\IDE\PrivateAssemblies\;C:\Program Files (x86)\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files\nodejs\;C:\Program Files (x86)\Bitvise SSH Client;C:\Windows\System32;C:\Users\zln\AppData\Local\Microsoft\WindowsApps;C:\Users\zln\AppData\Roaming\npm;C:\Program Files\Crucial\Crucial Storage Executive;C:\Python27;C:\Users\zln\AppData\Local\Microsoft\WindowsApps;C:\Users\zln\AppData\Roaming\npm;D:\apache-maven-3.3.9\bin;;.</span><br><span class="line">Java输入输出临时路径：C:\Users\zln\AppData\Local\Temp\</span><br><span class="line">Java编译器：null</span><br><span class="line">Java执行路径：C:\Program Files\Java\jdk1.8.0_31\jre\lib\ext;C:\Windows\Sun\Java\lib\ext</span><br><span class="line">操作系统名称：Windows 8.1</span><br><span class="line">操作系统的架构：amd64</span><br><span class="line">操作系统版本号：6.3</span><br><span class="line">文件分隔符：\</span><br><span class="line">路径分隔符：;</span><br><span class="line">直线分隔符：</span><br><span class="line"></span><br><span class="line">操作系统用户名：zln</span><br><span class="line">操作系统用户的主目录：C:\Users\zln</span><br><span class="line">当前程序所在目录：E:\Code\java\IDEA\HelloIdea</span><br></pre></td></tr></table></figure>
+
+<p>第二个就是GzipUtils.gzip(data)：<br>这个方法时压缩数据的，压缩数据传输后可以节省带宽资源，传输的效率也变的更高。<br>下面举一个文件压缩和解压缩的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GzipUtils</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] gzip(<span class="keyword">byte</span>[] data) <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        ByteArrayOutputStream bos = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        GZIPOutputStream gzip = <span class="keyword">new</span> GZIPOutputStream(bos);</span><br><span class="line">        gzip.write(data);</span><br><span class="line">        gzip.finish();</span><br><span class="line">        gzip.close();</span><br><span class="line">        <span class="keyword">byte</span>[] ret = bos.toByteArray();</span><br><span class="line">        bos.close();</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] ungzip(<span class="keyword">byte</span>[] data) <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        ByteArrayInputStream bis = <span class="keyword">new</span> ByteArrayInputStream(data);</span><br><span class="line">        GZIPInputStream gzip = <span class="keyword">new</span> GZIPInputStream(bis);</span><br><span class="line">        <span class="keyword">byte</span>[] buf = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        <span class="keyword">int</span> num = -<span class="number">1</span>;</span><br><span class="line">        ByteArrayOutputStream bos = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        <span class="keyword">while</span>((num = gzip.read(buf, <span class="number">0</span> , buf.length)) != -<span class="number">1</span> )&#123;</span><br><span class="line">            bos.write(buf, <span class="number">0</span>, num);</span><br><span class="line">        &#125;</span><br><span class="line">        gzip.close();</span><br><span class="line">        bis.close();</span><br><span class="line">        <span class="keyword">byte</span>[] ret = bos.toByteArray();</span><br><span class="line">        bos.flush();</span><br><span class="line">        bos.close();</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//读取文件</span></span><br><span class="line">        String readPath = System.getProperty(<span class="string">"user.dir"</span>) + File.separatorChar + <span class="string">"sources"</span> +  File.separatorChar + <span class="string">"006.jpg"</span>;</span><br><span class="line">        File file = <span class="keyword">new</span> File(readPath);</span><br><span class="line">        FileInputStream in = <span class="keyword">new</span> FileInputStream(file);</span><br><span class="line">        <span class="keyword">byte</span>[] data = <span class="keyword">new</span> <span class="keyword">byte</span>[in.available()];</span><br><span class="line">        in.read(data);</span><br><span class="line">        in.close();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"文件原始大小:"</span> + data.length);</span><br><span class="line">        <span class="comment">//测试压缩</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">byte</span>[] ret1 = GzipUtils.gzip(data);</span><br><span class="line">        System.out.println(<span class="string">"压缩之后大小:"</span> + ret1.length);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">byte</span>[] ret2 = GzipUtils.ungzip(ret1);</span><br><span class="line">        System.out.println(<span class="string">"还原之后大小:"</span> + ret2.length);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//写出文件</span></span><br><span class="line">        String writePath = System.getProperty(<span class="string">"user.dir"</span>) + File.separatorChar + <span class="string">"receive"</span> +  File.separatorChar + <span class="string">"006.jpg"</span>;</span><br><span class="line">        FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(writePath);</span><br><span class="line">        fos.write(ret2);</span><br><span class="line">        fos.close();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">文件原始大小:262152</span><br><span class="line">压缩之后大小:167661</span><br><span class="line">还原之后大小:262152</span><br></pre></td></tr></table></figure>
+
+<p>下面，我们回到正题，我们来看看ServerHandler的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerHandler</span> <span class="keyword">extends</span> <span class="title">ChannelHandlerAdapter</span></span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		Req req = (Req)msg;</span><br><span class="line">		System.out.println(<span class="string">"Server : "</span> + req.getId() + <span class="string">", "</span> + req.getName() + <span class="string">", "</span> + req.getRequestMessage());</span><br><span class="line">		<span class="keyword">byte</span>[] attachment = GzipUtils.ungzip(req.getAttachment());</span><br><span class="line">		</span><br><span class="line">		String path = System.getProperty(<span class="string">"user.dir"</span>) + File.separatorChar + <span class="string">"receive"</span> +  File.separatorChar + <span class="string">"001.jpg"</span>;</span><br><span class="line">        FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(path);</span><br><span class="line">        fos.write(attachment);</span><br><span class="line">        fos.close();</span><br><span class="line">		</span><br><span class="line">		Resp resp = <span class="keyword">new</span> Resp();</span><br><span class="line">		resp.setId(req.getId());</span><br><span class="line">		resp.setName(<span class="string">"resp"</span> + req.getId());</span><br><span class="line">		resp.setResponseMessage(<span class="string">"响应内容"</span> + req.getId());</span><br><span class="line">		ctx.writeAndFlush(resp);<span class="comment">//.addListener(ChannelFutureListener.CLOSE);</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		ctx.close();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ClientHandler:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClientHandler</span> <span class="keyword">extends</span> <span class="title">ChannelHandlerAdapter</span></span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			Resp resp = (Resp)msg;</span><br><span class="line">			System.out.println(<span class="string">"Client : "</span> + resp.getId() + <span class="string">", "</span> + resp.getName() + <span class="string">", "</span> + resp.getResponseMessage());			</span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">			ReferenceCountUtil.release(msg);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		ctx.close();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p>服务端：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">十一月 <span class="number">16</span>, <span class="number">2017</span> <span class="number">9</span>:<span class="number">53</span>:<span class="number">39</span> 下午 io.netty.handler.logging.LoggingHandler channelRegistered</span><br><span class="line">信息: [id: <span class="number">0x4cd0f017</span>] REGISTERED</span><br><span class="line">十一月 <span class="number">16</span>, <span class="number">2017</span> <span class="number">9</span>:<span class="number">53</span>:<span class="number">39</span> 下午 io.netty.handler.logging.LoggingHandler bind</span><br><span class="line">信息: [id: <span class="number">0x4cd0f017</span>] BIND: <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>/<span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">8765</span></span><br><span class="line">十一月 <span class="number">16</span>, <span class="number">2017</span> <span class="number">9</span>:<span class="number">53</span>:<span class="number">39</span> 下午 io.netty.handler.logging.LoggingHandler channelActive</span><br><span class="line">信息: [id: <span class="number">0x4cd0f017</span>, /<span class="number">0</span>:<span class="number">0</span>:<span class="number">0</span>:<span class="number">0</span>:<span class="number">0</span>:<span class="number">0</span>:<span class="number">0</span>:<span class="number">0</span>:<span class="number">8765</span>] ACTIVE</span><br><span class="line">十一月 <span class="number">16</span>, <span class="number">2017</span> <span class="number">9</span>:<span class="number">53</span>:<span class="number">53</span> 下午 io.netty.handler.logging.LoggingHandler channelRead</span><br><span class="line">信息: [id: <span class="number">0x4cd0f017</span>, /<span class="number">0</span>:<span class="number">0</span>:<span class="number">0</span>:<span class="number">0</span>:<span class="number">0</span>:<span class="number">0</span>:<span class="number">0</span>:<span class="number">0</span>:<span class="number">8765</span>] RECEIVED: [id: <span class="number">0x2b9a542e</span>, /<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">50903</span> =&gt; /<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8765</span>]</span><br><span class="line">Server : <span class="number">0</span>, pro0, 数据信息<span class="number">0</span></span><br><span class="line">Server : <span class="number">1</span>, pro1, 数据信息<span class="number">1</span></span><br><span class="line">Server : <span class="number">2</span>, pro2, 数据信息<span class="number">2</span></span><br><span class="line">Server : <span class="number">3</span>, pro3, 数据信息<span class="number">3</span></span><br><span class="line">Server : <span class="number">4</span>, pro4, 数据信息<span class="number">4</span></span><br></pre></td></tr></table></figure>
+
+<p>客户端：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Client : <span class="number">0</span>, resp0, 响应内容<span class="number">0</span></span><br><span class="line">Client : <span class="number">1</span>, resp1, 响应内容<span class="number">1</span></span><br><span class="line">Client : <span class="number">2</span>, resp2, 响应内容<span class="number">2</span></span><br><span class="line">Client : <span class="number">3</span>, resp3, 响应内容<span class="number">3</span></span><br><span class="line">Client : <span class="number">4</span>, resp4, 响应内容<span class="number">4</span></span><br></pre></td></tr></table></figure>
+
+<p>同时图片也传到了相应的位置。</p>
+<h2 id="UDP在netty中的使用"><a href="#UDP在netty中的使用" class="headerlink" title="UDP在netty中的使用"></a>UDP在netty中的使用</h2><p>由于UDP在实际的工程运用中并不多，此部分不在详细叙述。</p>
+<p>关于UDP的介绍，这里不在阐述。<br>相比于TCP而言，UDP不存在客户端和服务端的实际链接，因此不需要为连接(ChannelPipeline)设置handler。</p>
+<p>下面给出一个简单的UDP双向通信的例子，供大家参考学习<br>Server:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Server</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(<span class="keyword">int</span> port)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    	EventLoopGroup group = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">		    Bootstrap b = <span class="keyword">new</span> Bootstrap();</span><br><span class="line">		    b.group(group).channel(NioDatagramChannel<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">			    .<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_BROADCAST</span>, <span class="title">true</span>)</span></span><br><span class="line"><span class="class">			    .<span class="title">handler</span>(<span class="title">new</span> <span class="title">ServerHandler</span>())</span>;</span><br><span class="line">		    b.bind(port).sync().channel().closeFuture().await();</span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">		    group.shutdownGracefully();</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="keyword">new</span> Server().run(<span class="number">8765</span>);</span><br><span class="line">		<span class="keyword">new</span> Server().run(<span class="number">8764</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ServerHandler:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerHandler</span> <span class="keyword">extends</span></span></span><br><span class="line"><span class="class">	<span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">DatagramPacket</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 谚语列表</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String[] DICTIONARY = &#123; </span><br><span class="line">    	<span class="string">"只要功夫深，铁棒磨成针。"</span>,</span><br><span class="line">	    <span class="string">"旧时王谢堂前燕，飞入寻常百姓家。"</span>, </span><br><span class="line">	    <span class="string">"洛阳亲友如相问，一片冰心在玉壶。"</span>,</span><br><span class="line">	    <span class="string">"一寸光阴一寸金，寸金难买寸光阴。"</span>,</span><br><span class="line">	    <span class="string">"老骥伏枥，志在千里。烈士暮年，壮心不已!"</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">nextQuote</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">int</span> quoteId = ThreadLocalRandom.current().nextInt(DICTIONARY.length);</span><br><span class="line">		<span class="keyword">return</span> DICTIONARY[quoteId];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">messageReceived</span><span class="params">(ChannelHandlerContext ctx, DatagramPacket packet)</span></span></span><br><span class="line"><span class="function">	    <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		String req = packet.content().toString(CharsetUtil.UTF_8);</span><br><span class="line">		System.out.println(req);</span><br><span class="line">		<span class="keyword">if</span> (<span class="string">"谚语字典查询?"</span>.equals(req)) &#123;</span><br><span class="line">		    ctx.writeAndFlush(</span><br><span class="line">		    		<span class="keyword">new</span> DatagramPacket(Unpooled.copiedBuffer(<span class="string">"谚语查询结果: "</span> + nextQuote(),</span><br><span class="line">		    		CharsetUtil.UTF_8), packet.sender()));</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span></span></span><br><span class="line"><span class="function">	    <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		ctx.close();</span><br><span class="line">		cause.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Client:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Client</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(<span class="keyword">int</span> port)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		EventLoopGroup group = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">		    Bootstrap b = <span class="keyword">new</span> Bootstrap();</span><br><span class="line">		    b.group(group).channel(NioDatagramChannel<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">			    .<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_BROADCAST</span>, <span class="title">true</span>)</span></span><br><span class="line"><span class="class">			    .<span class="title">handler</span>(<span class="title">new</span> <span class="title">ClientHandler</span>())</span>;</span><br><span class="line"></span><br><span class="line">		    Channel ch = b.bind(<span class="number">0</span>).sync().channel();</span><br><span class="line"></span><br><span class="line">		    <span class="comment">// 向网段内的所有机器广播UDP消息</span></span><br><span class="line">		    ch.writeAndFlush(<span class="keyword">new</span> DatagramPacket(Unpooled.copiedBuffer(<span class="string">"谚语字典查询?"</span>, CharsetUtil.UTF_8), </span><br><span class="line">		    		<span class="keyword">new</span> InetSocketAddress(<span class="string">"255.255.255.255"</span>, port))).sync();</span><br><span class="line">		    <span class="keyword">if</span> (!ch.closeFuture().await(<span class="number">15000</span>)) &#123;</span><br><span class="line">		    	System.out.println(<span class="string">"查询超时!"</span>);</span><br><span class="line">		    &#125;</span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">		    group.shutdownGracefully();</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    	<span class="keyword">new</span> Client().run(<span class="number">8765</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>ClientHandler:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClientHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">DatagramPacket</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">messageReceived</span><span class="params">(ChannelHandlerContext ctx, DatagramPacket msg)</span></span></span><br><span class="line"><span class="function">	    <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		String response = msg.content().toString(CharsetUtil.UTF_8);</span><br><span class="line">		<span class="keyword">if</span> (response.startsWith(<span class="string">"谚语查询结果: "</span>)) &#123;</span><br><span class="line">		    System.out.println(response);</span><br><span class="line">		    ctx.close();</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span></span></span><br><span class="line"><span class="function">	    <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		cause.printStackTrace();</span><br><span class="line">		ctx.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p>服务端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">谚语字典查询?</span><br></pre></td></tr></table></figure>
+
+<p>客户端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">谚语查询结果: 旧时王谢堂前燕，飞入寻常百姓家。</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="websocket在netty中的使用"><a href="#websocket在netty中的使用" class="headerlink" title="websocket在netty中的使用"></a>websocket在netty中的使用</h2><h3 id="什么是WebSocket"><a href="#什么是WebSocket" class="headerlink" title="什么是WebSocket"></a>什么是WebSocket</h3><p>传统的Http协议只能客户端发起通信，而不能做到服务端主动通知。这里可能有人说可以采用long polling,也就是客户端不断的向服务端请求，获取新数据，虽然能解决问题，但效率低下，浪费资源，只能说是笨办法。所以WebSocket就出现了。</p>
+<p>webSocket协议是2008年诞生，2011年成为国际标准，所有浏览器都支持。他最大的特点就是服务端和客户端全双工通信，即客户端能主动给服务端发消息，服务端也能给客户端主动发消息。</p>
+<p>该协议默认端口80或者443 协议标识符是ws（如果加密，则为wss），服务器网址就是 URL,例如：<br>ws://example.com:8080/path</p>
+<p>不管是HTTP和Websocket都是建立在TCP协议之上, 如下图：</p>
+<p><img src="http://img.bcoder.top/2017.11.16/5.jpg" alt="业余学习之网络编程Netty框架入门篇"></p>
+<p>所不一样的就是与服务端交互流程上有所区别，如下图：</p>
+<p><img src="http://img.bcoder.top/2017.11.16/6.png" alt="业余学习之网络编程Netty框架入门篇"></p>
+<p>从图中可以看到，传统的Http只有请求和响应，而WebSocket分为这几个阶段。 </p>
+<ol>
+<li>握手阶段（handshake）</li>
+</ol>
+<p>客户端发起握手请求，如下报文： </p>
+<p><img src="http://img.bcoder.top/2017.11.16/7.png" alt="业余学习之网络编程Netty框架入门篇"></p>
+<p>服务端响应握手请求，如下报文： </p>
+<p><img src="http://img.bcoder.top/2017.11.16/8.png" alt="业余学习之网络编程Netty框架入门篇"></p>
+<p>可以看出握手阶段采用的是HTTP协议，能通过http的各种代理服务器，与http协议有良好的兼容性。 </p>
+<ol start="2">
+<li>长连接阶段<br>通过握手从http协议升级到了websocket协议,<br>这个时你可以向服务端发送任何消息，服务也可以向你主动推送消息。数据格式可以根据业务需要与服务端商议，灵活度高，通信效率高效。 </li>
+<li>连接关闭<br>客户端与服务端其中一方发起关闭即为关闭。</li>
+</ol>
+<h3 id="WebSocket应用"><a href="#WebSocket应用" class="headerlink" title="WebSocket应用"></a>WebSocket应用</h3><p>我们主要使用Netty框架来实现服务端，采用js来实现客户端。<br></p>
+<p>js端：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    Netty WebSocket 时间服务器</span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="actionscript">    <span class="keyword">var</span> socket;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">if</span> (!<span class="built_in">window</span>.WebSocket) &#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">window</span>.WebSocket = <span class="built_in">window</span>.MozWebSocket;</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="javascript">    <span class="keyword">if</span> (<span class="built_in">window</span>.WebSocket) &#123;</span></span><br><span class="line"><span class="actionscript">        socket = <span class="keyword">new</span> WebSocket(<span class="string">"ws://localhost:8765/websocket"</span>);</span></span><br><span class="line"><span class="actionscript">        socket.onmessage = <span class="function"><span class="keyword">function</span> <span class="params">(event)</span> </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> ta = <span class="built_in">document</span>.getElementById(<span class="string">'responseText'</span>);</span></span><br><span class="line"><span class="actionscript">            ta.value = <span class="string">""</span>;</span></span><br><span class="line">            ta.value = event.data</span><br><span class="line">        &#125;;</span><br><span class="line"><span class="actionscript">        socket.onopen = <span class="function"><span class="keyword">function</span> <span class="params">(event)</span> </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> ta = <span class="built_in">document</span>.getElementById(<span class="string">'responseText'</span>);</span></span><br><span class="line"><span class="actionscript">            ta.value = <span class="string">"打开WebSocket服务正常，浏览器支持WebSocket!"</span>;</span></span><br><span class="line">        &#125;;</span><br><span class="line"><span class="actionscript">        socket.onclose = <span class="function"><span class="keyword">function</span> <span class="params">(event)</span> </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> ta = <span class="built_in">document</span>.getElementById(<span class="string">'responseText'</span>);</span></span><br><span class="line"><span class="actionscript">            ta.value = <span class="string">""</span>;</span></span><br><span class="line"><span class="actionscript">            ta.value = <span class="string">"WebSocket 关闭!"</span>;</span></span><br><span class="line">        &#125;;</span><br><span class="line"><span class="actionscript">    &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="actionscript">        alert(<span class="string">"抱歉，您的浏览器不支持WebSocket协议!"</span>);</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="function"><span class="keyword">function</span> <span class="title">send</span><span class="params">(message)</span> </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">if</span> (!<span class="built_in">window</span>.WebSocket) &#123;</span></span><br><span class="line"><span class="actionscript">            <span class="keyword">return</span>;</span></span><br><span class="line">        &#125;</span><br><span class="line">        if (socket.readyState == WebSocket.OPEN) &#123;</span><br><span class="line">            socket.send(message);</span><br><span class="line"><span class="actionscript">        &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="actionscript">            alert(<span class="string">"WebSocket连接没有建立成功!"</span>);</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">onsubmit</span>=<span class="string">"return false;"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"message"</span> <span class="attr">value</span>=<span class="string">"Netty最佳实践"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">value</span>=<span class="string">"发送WebSocket请求消息"</span> <span class="attr">onclick</span>=<span class="string">"send(this.form.message.value)"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">hr</span> <span class="attr">color</span>=<span class="string">"blue"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h3</span>&gt;</span>服务端返回的应答消息<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">textarea</span> <span class="attr">id</span>=<span class="string">"responseText"</span> <span class="attr">style</span>=<span class="string">"width:500px;height:300px;"</span>&gt;</span><span class="tag">&lt;/<span class="name">textarea</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>服务端实现:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebSocketServer</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(<span class="keyword">int</span> port)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	EventLoopGroup bossGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">	EventLoopGroup workerGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">	    ServerBootstrap b = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">	    b.group(bossGroup, workerGroup)</span><br><span class="line">		    .channel(NioServerSocketChannel<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">		    .<span class="title">childHandler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">SocketChannel</span>&gt;() </span>&#123;</span><br><span class="line"></span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel ch)</span></span></span><br><span class="line"><span class="function">				<span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">			    ChannelPipeline pipeline = ch.pipeline();</span><br><span class="line">			    pipeline.addLast(<span class="string">"http-codec"</span>,</span><br><span class="line">				    <span class="keyword">new</span> HttpServerCodec());</span><br><span class="line">			    pipeline.addLast(<span class="string">"aggregator"</span>,</span><br><span class="line">				    <span class="keyword">new</span> HttpObjectAggregator(<span class="number">65536</span>));</span><br><span class="line">			    ch.pipeline().addLast(<span class="string">"http-chunked"</span>,</span><br><span class="line">				    <span class="keyword">new</span> ChunkedWriteHandler());</span><br><span class="line">			    pipeline.addLast(<span class="string">"handler"</span>,</span><br><span class="line">				    <span class="keyword">new</span> WebSocketServerHandler());</span><br><span class="line">			&#125;</span><br><span class="line">		    &#125;);</span><br><span class="line"></span><br><span class="line">	    Channel ch = b.bind(port).sync().channel();</span><br><span class="line">	    System.out.println(<span class="string">"Web socket server started at port "</span> + port + <span class="string">'.'</span>);</span><br><span class="line">	    System.out.println(<span class="string">"Open your browser and navigate to http://localhost:"</span> + port + <span class="string">'/'</span>);</span><br><span class="line"></span><br><span class="line">	    ch.closeFuture().sync();</span><br><span class="line">	&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">	    bossGroup.shutdownGracefully();</span><br><span class="line">	    workerGroup.shutdownGracefully();</span><br><span class="line">	&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">    	<span class="keyword">new</span> WebSocketServer().run(<span class="number">8765</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebSocketServerHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">Object</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger logger = Logger.getLogger(WebSocketServerHandler<span class="class">.<span class="keyword">class</span>.<span class="title">getName</span>())</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> WebSocketServerHandshaker handshaker;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">messageReceived</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span></span></span><br><span class="line"><span class="function">	    <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="comment">// 传统的HTTP接入</span></span><br><span class="line">		<span class="keyword">if</span> (msg <span class="keyword">instanceof</span> FullHttpRequest) &#123;</span><br><span class="line">		    handleHttpRequest(ctx, (FullHttpRequest) msg);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// WebSocket接入</span></span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (msg <span class="keyword">instanceof</span> WebSocketFrame) &#123;</span><br><span class="line">		    handleWebSocketFrame(ctx, (WebSocketFrame) msg);</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    	ctx.flush();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleHttpRequest</span><span class="params">(ChannelHandlerContext ctx, FullHttpRequest req)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="comment">// 如果HTTP解码失败，返回HHTP异常</span></span><br><span class="line">		<span class="keyword">if</span> (!req.decoderResult().isSuccess()</span><br><span class="line">			|| (!<span class="string">"websocket"</span>.equals(req.headers().get(<span class="string">"Upgrade"</span>)))) &#123;</span><br><span class="line">		    sendHttpResponse(ctx, req, <span class="keyword">new</span> DefaultFullHttpResponse(HTTP_1_1, BAD_REQUEST));</span><br><span class="line">		    <span class="keyword">return</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	</span><br><span class="line">		<span class="comment">// 构造握手响应返回，本机测试</span></span><br><span class="line">		WebSocketServerHandshakerFactory wsFactory = <span class="keyword">new</span> WebSocketServerHandshakerFactory(<span class="string">"ws://localhost:8080/websocket"</span>, <span class="keyword">null</span>, <span class="keyword">false</span>);</span><br><span class="line">		handshaker = wsFactory.newHandshaker(req);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span> (handshaker == <span class="keyword">null</span>) &#123;</span><br><span class="line">		    WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		    handshaker.handshake(ctx.channel(), req);</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleWebSocketFrame</span><span class="params">(ChannelHandlerContext ctx, WebSocketFrame frame)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 判断是否是关闭链路的指令</span></span><br><span class="line">		<span class="keyword">if</span> (frame <span class="keyword">instanceof</span> CloseWebSocketFrame) &#123;</span><br><span class="line">		    handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());</span><br><span class="line">		    <span class="keyword">return</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 判断是否是Ping消息</span></span><br><span class="line">		<span class="keyword">if</span> (frame <span class="keyword">instanceof</span> PingWebSocketFrame) &#123;</span><br><span class="line">		    ctx.channel().write(<span class="keyword">new</span> PongWebSocketFrame(frame.content().retain()));</span><br><span class="line">		    <span class="keyword">return</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 本例程仅支持文本消息，不支持二进制消息</span></span><br><span class="line">		<span class="keyword">if</span> (!(frame <span class="keyword">instanceof</span> TextWebSocketFrame)) &#123;</span><br><span class="line">		    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(String.format(<span class="string">"%s frame types not supported"</span>, frame.getClass().getName()));</span><br><span class="line">		&#125;</span><br><span class="line">	</span><br><span class="line">		<span class="comment">// 返回应答消息</span></span><br><span class="line">		String request = ((TextWebSocketFrame) frame).text();</span><br><span class="line">		<span class="keyword">if</span> (logger.isLoggable(Level.FINE)) &#123;</span><br><span class="line">		    logger.fine(String.format(<span class="string">"%s received %s"</span>, ctx.channel(), request));</span><br><span class="line">		&#125;</span><br><span class="line">		ctx.channel().write(</span><br><span class="line">			<span class="keyword">new</span> TextWebSocketFrame(request + <span class="string">" , 欢迎使用Netty WebSocket服务，现在时刻："</span> + <span class="keyword">new</span> java.util.Date().toString()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sendHttpResponse</span><span class="params">(ChannelHandlerContext ctx, FullHttpRequest req, FullHttpResponse res)</span> </span>&#123;</span><br><span class="line">		<span class="comment">// 返回应答给客户端</span></span><br><span class="line">		<span class="keyword">if</span> (res.status().code() != <span class="number">200</span>) &#123;</span><br><span class="line">		    ByteBuf buf = Unpooled.copiedBuffer(res.status().toString(), CharsetUtil.UTF_8);</span><br><span class="line">		    res.content().writeBytes(buf);</span><br><span class="line">		    buf.release();</span><br><span class="line">		    HttpHeaderUtil.setContentLength(res, res.content().readableBytes());</span><br><span class="line">		&#125;</span><br><span class="line">	</span><br><span class="line">		<span class="comment">// 如果是非Keep-Alive，关闭连接</span></span><br><span class="line">		ChannelFuture f = ctx.channel().writeAndFlush(res);</span><br><span class="line">		<span class="keyword">if</span> (!HttpHeaderUtil.isKeepAlive(req) || res.status().code() != <span class="number">200</span>) &#123;</span><br><span class="line">		    f.addListener(ChannelFutureListener.CLOSE);</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span></span></span><br><span class="line"><span class="function">	    <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		cause.printStackTrace();</span><br><span class="line">		ctx.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>效果如图所示：</p>
+<p><img src="http://img.bcoder.top/2017.11.16/9.png" alt="业余学习之网络编程Netty框架入门篇"></p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/11/16/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8BNetty%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8%E7%AF%87/>https://www.bcoder.top/2017/11/16/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8BNetty%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8%E7%AF%87/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Netty/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Netty</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/NIO/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>NIO</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/TCP/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>TCP</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/UDP/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>UDP</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/11/16/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8BNetty%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8%E7%AF%87/&title=业余学习之网络编程Netty框架入门篇 - zln's blog&summary=
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/11/16/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8BNetty%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8%E7%AF%87/&title=业余学习之网络编程Netty框架入门篇 - zln's blog&summary=
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/11/16/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8BNetty%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8%E7%AF%87/&title=业余学习之网络编程Netty框架入门篇 - zln's blog&summary=
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/11/18/Sigar%E5%BC%80%E6%BA%90%E5%B7%A5%E5%85%B7%E7%9A%84%E4%BD%BF%E7%94%A8/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>Sigar开源工具的使用</p>
+                <p class='content'>前言Sigar（System Information Gatherer And Reporter），是一个开源的工具，提供了跨平台的系统信息收集的API，核心由C语言实现的。
+
+
+
+Sigar提...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/11/12/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80%E7%AF%87/'>
+                <p class='title'>业余学习之网络通信编程基础篇<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+
+BIO（同步阻塞式IO）基本概念Socket又称“套接字”，应用程序通常通过“套接字”向网络发...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '业余学习之网络编程Netty框架入门篇',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#初识Netty框架"><span class="toc-text">初识Netty框架</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么选择Netty"><span class="toc-text">为什么选择Netty</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Netty框架组成"><span class="toc-text">Netty框架组成</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Netty之Hello-World"><span class="toc-text">Netty之Hello World</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Netty解决TCP粘包、拆包问题"><span class="toc-text">Netty解决TCP粘包、拆包问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#粘包、拆包介绍"><span class="toc-text">粘包、拆包介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#复现粘包、拆包"><span class="toc-text">复现粘包、拆包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Netty解决TCP粘包、拆包的方案"><span class="toc-text">Netty解决TCP粘包、拆包的方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#分隔符解决TCP粘包、拆包-DelimiterBasedFrameDecoder"><span class="toc-text">分隔符解决TCP粘包、拆包(DelimiterBasedFrameDecoder)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#定长解决TCP粘包、拆包-FixedLengthFrameDecoder"><span class="toc-text">定长解决TCP粘包、拆包(FixedLengthFrameDecoder)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Netty编解码技术"><span class="toc-text">Netty编解码技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UDP在netty中的使用"><span class="toc-text">UDP在netty中的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#websocket在netty中的使用"><span class="toc-text">websocket在netty中的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是WebSocket"><span class="toc-text">什么是WebSocket</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WebSocket应用"><span class="toc-text">WebSocket应用</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

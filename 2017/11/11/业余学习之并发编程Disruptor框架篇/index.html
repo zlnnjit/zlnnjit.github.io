@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>业余学习之并发编程Disruptor框架篇 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="java,多线程,并发,Disruptor">
+  
+  
+    <meta name="description" content="
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/11/11/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8BDisruptor%E6%A1%86%E6%9E%B6%E7%AF%87/">
+        业余学习之并发编程Disruptor框架篇
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/deep/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>deep</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-11-11 14:31:09</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言</p>
+</blockquote>
+<p>本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。</p>
+<a id="more"></a>
+
+<h2 id="Disruptor并发框架简介"><a href="#Disruptor并发框架简介" class="headerlink" title="Disruptor并发框架简介"></a>Disruptor并发框架简介</h2><p>Martin Fowler在自己网站上写了一篇LMAX架构的文章，在文章中他介绍了LMAX是一种新型零售金融交易平台，它能够以很低的延迟产生大量交易。这个系统是建立在JVM平台上，其核心是一个业务逻辑处理器，它能够<strong>在一个线程里每秒处理6百万订单</strong>。业务逻辑处理器完全是运行在内存中，使用事件源驱动方式。业务逻辑处理器的核心是Disruptor。</p>
+<p>Disruptor它是一个开源的并发框架，并获得2011 Duke’s 程序框架创新奖，能够在无锁的情况下实现网络的Queue并发操作。</p>
+<p>Disruptor是一个高性能的<strong>异步处理框架</strong>，或者可以认为是最快的消息框架（<strong>轻量的JMS</strong>），也可以认为是一个观察者模式的实现，或者事件监听模式的实现。</p>
+<p>目前我们使用disruptor已经更新到了3.x版本，比之前的2.x版本性能更加的优秀，提供更多的API使用方式。</p>
+<p>下载disruptor-3.3.2.jar引入我们的项目既可以开始disruptor之旅。</p>
+<p>在使用之前，首先说明disruptor主要功能加以说明，你可以理解为他是一种高效的”生产者-消费者”模型。也就性能远远高于传统的BlockingQueue容器。</p>
+<p>官方学习网站：<a href="http://ifeve.com/disruptor-getting-started/" target="_blank" rel="noopener">http://ifeve.com/disruptor-getting-started/</a></p>
+<h2 id="Disruptor之Hello-World"><a href="#Disruptor之Hello-World" class="headerlink" title="Disruptor之Hello World"></a>Disruptor之Hello World</h2><p>在Disruptor中，我们想实现hello world 需要如下几步骤：</p>
+<p>第一：建立一个Event类</p>
+<p>第二：建立一个工厂Event类，用于创建Event类实例对象</p>
+<p>第三：需要有一个监听事件类，用于处理数据（Event类）</p>
+<p>第四：我们需要进行测试代码编写。实例化Disruptor实例，配置一系列参数。然后我们对Disruptor实例绑定监听事件类，接受并处理数据。</p>
+<p>第五：在Disruptor中，真正存储数据的核心叫做RingBuffer，我们通过Disruptor实例拿到它，然后把数据生产出来，把数据加入到RingBuffer的实例对象中即可。</p>
+<p>下面我们来看一下代码：</p>
+<p>1.建立Event类：LongEvent.java，这个相当于我要生产和消费的实体类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongEvent</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> value;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123; </span><br><span class="line">        <span class="keyword">return</span> value; </span><br><span class="line">    &#125; </span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(<span class="keyword">long</span> value)</span> </span>&#123; </span><br><span class="line">        <span class="keyword">this</span>.value = value; </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2.：建立一个工厂Event类:LongEventFactory.java,这个类仅仅为了创建空的Event类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span>  <span class="title">LongEventFactory</span> <span class="keyword">implements</span> <span class="title">EventFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">newInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> LongEvent();</span><br><span class="line"></span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3.有一个<strong>监听</strong>事件类，用于处理数据（Event类）：LongEventHandler.java,这个类主要是消费者获取到数据后，如何进行处理数据，注意，这个类需要实现<code>EventHandler&lt;T&gt;</code>接口，下面写的主要是为了打印生成数据中的价格：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//我们还需要一个事件消费者，也就是一个事件处理器。这个事件处理器简单地把事件中存储的数据打印到终端：</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongEventHandler</span> <span class="keyword">implements</span> <span class="title">EventHandler</span>&lt;<span class="title">LongEvent</span>&gt;  </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(LongEvent longEvent, <span class="keyword">long</span> l, <span class="keyword">boolean</span> b)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		System.out.println(longEvent.getValue()); 		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4.下面编写生产者类，这个类主要是指导我们如何把数据生产出来并且放入到RingBuffer中（RingBuffer，一个环形的数据结构，用于存放生产好的数据，后面还会详细的涉及到）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 很明显的是：当用一个简单队列来发布事件的时候会牵涉更多的细节，这是因为事件对象还需要预先创建。</span></span><br><span class="line"><span class="comment"> * 发布事件最少需要两步：获取下一个事件槽并发布事件（发布事件的时候要使用try/finnally保证事件一定会被发布）。</span></span><br><span class="line"><span class="comment"> * 如果我们使用RingBuffer.next()获取一个事件槽，那么一定要发布对应的事件。</span></span><br><span class="line"><span class="comment"> * 如果不能发布事件，那么就会引起Disruptor状态的混乱。</span></span><br><span class="line"><span class="comment"> * 尤其是在多个事件生产者的情况下会导致事件消费者失速，从而不得不重启应用才能会恢复。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongEventProducer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> RingBuffer&lt;LongEvent&gt; ringBuffer;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">LongEventProducer</span><span class="params">(RingBuffer&lt;LongEvent&gt; ringBuffer)</span></span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.ringBuffer = ringBuffer;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * onData用来发布事件，每调用一次就发布一次事件</span></span><br><span class="line"><span class="comment">	 * 它的参数会用过事件传递给消费者</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onData</span><span class="params">(<span class="keyword">long</span> a)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//1.可以把ringBuffer看做一个事件队列，那么next就是得到下面一个事件槽</span></span><br><span class="line">		<span class="keyword">long</span> sequence = ringBuffer.next();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">			<span class="comment">//2.用上面的索引取出一个空的事件用于填充（获取该序号对应的事件对象）</span></span><br><span class="line">			LongEvent event = ringBuffer.get(sequence);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">			<span class="comment">//3.获取要通过事件传递的业务数据</span></span><br><span class="line">			event.setValue(a);</span><br><span class="line"></span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line"></span><br><span class="line">			<span class="comment">//4.发布事件</span></span><br><span class="line">			<span class="comment">//注意，最后的 ringBuffer.publish 方法必须包含在 finally 中以确保必须得到调用；</span></span><br><span class="line">            <span class="comment">//如果某个请求的 sequence 未被提交，将会堵塞后续的发布操作或者其它的 producer。</span></span><br><span class="line">			ringBuffer.publish(sequence);</span><br><span class="line"></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>另外，需要特别说明的是，生产者类还可以下面这种方式进行编写，这样的好处是不需要我们去管理sequence：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Disruptor 3.0提供了lambda式的API。这样可以把一些复杂的操作放在Ring Buffer，</span></span><br><span class="line"><span class="comment"> * 所以在Disruptor3.0以后的版本最好使用Event Publisher或者Event Translator来发布事件</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongEventProducerWithTranslator</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//一个translator可以看做一个事件初始化器，publicEvent方法会调用它</span></span><br><span class="line">	<span class="comment">//填充Event</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> EventTranslatorOneArg&lt;LongEvent, Long&gt; TRANSLATOR =</span><br><span class="line">			<span class="keyword">new</span> EventTranslatorOneArg&lt;LongEvent, Long&gt;() &#123;</span><br><span class="line">				<span class="meta">@Override</span></span><br><span class="line">				<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">translateTo</span><span class="params">(LongEvent event, <span class="keyword">long</span> sequeue, Long l)</span> </span>&#123;</span><br><span class="line">					event.setValue(l);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> RingBuffer&lt;LongEvent&gt; ringBuffer;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">LongEventProducerWithTranslator</span><span class="params">(RingBuffer&lt;LongEvent&gt; ringBuffer)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.ringBuffer = ringBuffer;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onData</span><span class="params">(Long l)</span></span>&#123;</span><br><span class="line">		ringBuffer.publishEvent(TRANSLATOR, l);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<ol start="5">
+<li>通过Disruptor实例拿到RingBuffer，然后把数据生产出来，把数据加入到RingBuffer</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongEventMain</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//创建缓冲池</span></span><br><span class="line">		ExecutorService executor = Executors.newCachedThreadPool();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		<span class="comment">//创建工厂</span></span><br><span class="line">		LongEventFactory factory = <span class="keyword">new</span> LongEventFactory();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		<span class="comment">//创建bufferSize ,也就是RingBuffer大小，必须是2的N次方</span></span><br><span class="line">		<span class="keyword">int</span> ringBufferSize = <span class="number">1024</span> * <span class="number">1024</span>; <span class="comment">// </span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		<span class="comment">/**</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">		//BlockingWaitStrategy 是最低效的策略，但其对CPU的消耗最小并且在各种不同部署环境中能提供更加一致的性能表现</span></span><br><span class="line"><span class="comment">		WaitStrategy BLOCKING_WAIT = new BlockingWaitStrategy();</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">		//SleepingWaitStrategy 的性能表现跟BlockingWaitStrategy差不多，对CPU的消耗也类似，但其对生产者线程的影响最小，适合用于异步日志类似的场景</span></span><br><span class="line"><span class="comment">		WaitStrategy SLEEPING_WAIT = new SleepingWaitStrategy();</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">		//YieldingWaitStrategy 的性能是最好的，适合用于低延迟的系统。在要求极高性能且事件处理线数小于CPU逻辑核心数的场景中，推荐使用此策略；例如，CPU开启超线程的特性</span></span><br><span class="line"><span class="comment">		WaitStrategy YIELDING_WAIT = new YieldingWaitStrategy();</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">		*/</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		<span class="comment">//创建disruptor</span></span><br><span class="line">		Disruptor&lt;LongEvent&gt; disruptor = </span><br><span class="line">				<span class="keyword">new</span> Disruptor&lt;&gt;(</span><br><span class="line">				        factory,                       <span class="comment">//工厂类对象，用于创建LongEvent,LongEvent是实际的消费书籍</span></span><br><span class="line">                        ringBufferSize,                <span class="comment">//缓冲区大小</span></span><br><span class="line">                        executor,                      <span class="comment">//线程池,进行Disruptor内部的数据接收处理调度</span></span><br><span class="line">                        ProducerType.SINGLE,           <span class="comment">//SINGLE：一个生产者   MULTI：多个生产者</span></span><br><span class="line">                        <span class="keyword">new</span> YieldingWaitStrategy());   <span class="comment">//是一种策略，生产消费的策略（见上方注释）</span></span><br><span class="line"></span><br><span class="line">		<span class="comment">// 连接消费事件方法   LongEventHandler可以理解为消费者</span></span><br><span class="line">		disruptor.handleEventsWith(<span class="keyword">new</span> LongEventHandler());</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 启动</span></span><br><span class="line">		disruptor.start();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		<span class="comment">//Disruptor 的事件发布过程是一个两阶段提交的过程：</span></span><br><span class="line"></span><br><span class="line">		<span class="comment">//发布事件，ringBuffer为存放数据的容器，这是一种环形的数据结构</span></span><br><span class="line">		RingBuffer&lt;LongEvent&gt; ringBuffer = disruptor.getRingBuffer();</span><br><span class="line">		</span><br><span class="line">		LongEventProducer producer = <span class="keyword">new</span> LongEventProducer(ringBuffer); </span><br><span class="line">		<span class="comment">//LongEventProducerWithTranslator producer = new LongEventProducerWithTranslator(ringBuffer);</span></span><br><span class="line"></span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">long</span> a = <span class="number">0</span>; a&lt;<span class="number">100</span>; a++)&#123;</span><br><span class="line"></span><br><span class="line">			producer.onData(a);</span><br><span class="line">			<span class="comment">//发布一个事件，消费者监听处理一个</span></span><br><span class="line">			Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//关闭 disruptor，方法会堵塞，直至所有的事件都得到处理；</span></span><br><span class="line">        disruptor.shutdown();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//关闭 disruptor 使用的线程池；如果需要的话，必须手动关闭， disruptor 在 shutdown 时不会自动关闭；</span></span><br><span class="line">        executor.shutdown();</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">0</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">.......</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td></tr></table></figure>
+
+<h2 id="Disruptor深入理解"><a href="#Disruptor深入理解" class="headerlink" title="Disruptor深入理解"></a>Disruptor深入理解</h2><h3 id="Disruptor术语说明"><a href="#Disruptor术语说明" class="headerlink" title="Disruptor术语说明"></a>Disruptor术语说明</h3><p><strong>RingBuffer</strong>: 被看作Disruptor最主要的组件，然而从3.0开始RingBuffer仅仅负责存储和更新在Disruptor中流通的数据。对一些特殊的使用场景能够被用户(使用其他数据结构)完全替代。</p>
+<p><strong>Sequence</strong>: Disruptor使用Sequence来表示一个特殊组件处理的<code>序号</code>。和Disruptor一样，每个消费者(EventProcessor)都维持着一个Sequence。大部分的并发代码依赖这些Sequence值的运转，因此Sequence支持多种当前为AtomicLong类的特性。(代码中由ringBuffer.next()获得)</p>
+<p><strong>Sequencer</strong>: 这是Disruptor真正的核心。实现了这个接口的两种生产者（单生产者和多生产者）均实现了所有的并发算法，为了在生产者和消费者之间进行准确快速的数据传递。</p>
+<p><strong>SequenceBarrier</strong>:由Sequencer生成，并且包含了已经发布的Sequence的引用，这些的Sequence源于Sequencer和一些独立的消费者的Sequence。它包含了决定是否有供消费者来消费的Event的逻辑。（这个主要来避免一些极端情况，比如生产者生产数据速度过快，导致RingBuffer空间占满的处理）</p>
+<p><strong>WaitStrategy</strong>：决定一个消费者将如何等待生产者将Event置入Disruptor。主要有下面几种策略：</p>
+<ul>
+<li>BlockingWaitStrategy是最低效的策略，但其对CPU的消耗最小并且在各种不同部署环境中能提供更加一致的性能表现。</li>
+<li>SleepingWaitStrategy的性能表现跟BlockingWaitStrategy差不多，对CPU的消耗也类似，但其对生产者线程的影响最小，适合用于异步日志类似的场景。</li>
+<li>YieldingWaitStrategy的性能是最好的，适合用于低延迟的系统。在要求极高性能且事件处理线数小于CPU逻辑核心数的场景中，推荐使用此策略；例如，CPU开启超线程的特性。</li>
+</ul>
+<p><strong>Event</strong>：从生产者到消费者过程中所处理的数据单元。Disruptor中没有代码表示Event，因为它完全是由用户定义的。</p>
+<p><strong>EventProcessor</strong>：主要事件循环，处理Disruptor中的Event，并且拥有消费者的Sequence。它有一个实现类是BatchEventProcessor，包含了event loop有效的实现，并且将回调到一个EventHandler接口的实现对象。</p>
+<p><strong>EventHandler</strong>：由用户实现并且代表了Disruptor中的一个消费者的接口。</p>
+<p><strong>Producer</strong>：由用户实现，它调用RingBuffer来插入事件(Event)，在Disruptor中没有相应的实现代码，由用户实现。</p>
+<p><strong>WorkProcessor</strong>：确保每个sequence只被一个processor消费，在同一个WorkPool中的处理多个WorkProcessor不会消费同样的sequence。</p>
+<p><strong>WorkerPool</strong>：一个WorkProcessor池，其中WorkProcessor将消费Sequence，所以任务可以在实现WorkHandler接口的worker移交</p>
+<p><strong>LifecycleAware</strong>：当BatchEventProcessor启动和停止时，于实现这个接口用于接收通知。</p>
+<h3 id="RingBuffer理解"><a href="#RingBuffer理解" class="headerlink" title="RingBuffer理解"></a>RingBuffer理解</h3><p>初看Disruptor，给人的印象就是RingBuffer是其核心，生产者向RingBuffer中写入元素，消费者从RingBuffer中消费元素，如下图：</p>
+<p><img src="http://img.bcoder.top/2017.11.11/1.png" alt="业余学习之并发编程Disruptor框架篇"></p>
+<p>那么问题来了，Ringbuffer到底是什么？</p>
+<p>正如名字所说的一样，它是一个环（首尾相接的环），你可以把它用做在不同上下文（线程）间传递数据的buffer。</p>
+<p><img src="http://img.bcoder.top/2017.11.11/2.png" alt="业余学习之并发编程Disruptor框架篇"></p>
+<p>基本来说，ringbuffer拥有一个序号，这个序号指向数组中下一个可用元素。</p>
+<p><img src="http://img.bcoder.top/2017.11.11/3.png" alt="业余学习之并发编程Disruptor框架篇"></p>
+<p>下面通过一个小故事介绍Disruptor的运行机制：</p>
+<p>Disruptor说的是生产者和消费者的故事.有一个数组.生产者往里面扔芝麻.消费者从里面捡芝麻.  但是扔芝麻和捡芝麻也要考虑速度的问题.<br>1 消费者捡的比扔的快 那么消费者要停下来.生产者扔了新的芝麻,然后消费者继续. 2 数组的长度是有限的,生产者到末尾的时候会再从数组的开始位置继续.<br>这个时候可能会追上消费者,消费者还没从那个地方捡走芝麻,这个时候生产者要等待消费者捡走芝麻,然后继续.</p>
+<p>随着你不停地填充这个buffer（可能也会有相应的读取），这个序号会一直增长，直到绕过这个环。</p>
+<p>要找到数组中当前序号指向的元素，可以通过mod操作：sequence mod array length = array index（取模操作）以上面的ringbuffer为例（java的mod语法）：12 % 8 = 4。很简单吧。</p>
+<p>事实上，如果槽的个数是2的N次方更有利于基于二进制的计算机进行计算。</p>
+<h3 id="我们为什么选用RingBuffer这个数据结构："><a href="#我们为什么选用RingBuffer这个数据结构：" class="headerlink" title="我们为什么选用RingBuffer这个数据结构："></a>我们为什么选用RingBuffer这个数据结构：</h3><p>如果你看了维基百科里面的关于环形buffer的词条，你就会发现，我们的实现方式，与其最大的区别在于：<strong>没有尾指针。我们只维护了一个指向下一个可用位置的序号</strong>。这种实现是经过深思熟虑的—我们选择用环形buffer的最初原因就是想要提供可靠的消息传递。</p>
+<p>我们实现的ring buffer和大家常用的队列之间的区别是，我们不删除buffer中的数据，也就是说这些数据一直存放在buffer中，直到新的数据覆盖他们。这就是和维基百科版本相比，我们不需要尾指针的原因。ringbuffer本身并不控制是否需要重叠。</p>
+<p>因为它是<strong>数组</strong>，所以要比链表快，而且有一个容易预测的访问模式。</p>
+<p>这是对CPU缓存友好的，也就是说在硬件级别，数组中的元素是会被预加载的，因此在ringbuffer当中，cpu无需时不时去主存加载数组中的下一个元素。.</p>
+<p>其次，你可以为数组预先分配内存，使得数组对象一直存在（除非程序终止）。这就意味着不需要花大量的时间用于垃圾回收。此外，不像链表那样，需要为每一个添加到其上面的对象创造节点对象—对应的，当删除节点时，需要执行相应的内存清理操作。</p>
+<h2 id="Disruptor使用场景"><a href="#Disruptor使用场景" class="headerlink" title="Disruptor使用场景"></a>Disruptor使用场景</h2><p>在helloWorld的实例中，我们创建Disruptor实例，然后调用getRingBuffer方法去获取RingBuffer，其实在很多时候，我们可以直接使用RingBuffer，以及其他的API操作。我们一起看一下下面的使用场景</p>
+<h3 id="使用EventProcessor消息处理器"><a href="#使用EventProcessor消息处理器" class="headerlink" title="使用EventProcessor消息处理器"></a>使用EventProcessor消息处理器</h3><p>Event类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Trade</span> </span>&#123;  </span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> String id;<span class="comment">//ID  </span></span><br><span class="line">	<span class="keyword">private</span> String name;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">double</span> price;<span class="comment">//金额  </span></span><br><span class="line">	<span class="keyword">private</span> AtomicInteger count = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.id = id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.name = name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">getPrice</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> price;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPrice</span><span class="params">(<span class="keyword">double</span> price)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.price = price;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> AtomicInteger <span class="title">getCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> count;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCount</span><span class="params">(AtomicInteger count)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.count = count;</span><br><span class="line">	&#125; </span><br><span class="line">	  </span><br><span class="line">	  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>监听事件类，用于处理数据：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TradeHandler1</span> <span class="keyword">implements</span> <span class="title">EventHandler</span>&lt;<span class="title">Trade</span>&gt; </span>&#123;</span><br><span class="line">	  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(Trade event, <span class="keyword">long</span> sequence, <span class="keyword">boolean</span> endOfBatch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">//这里做具体的消费逻辑  </span></span><br><span class="line">        event.setId(UUID.randomUUID().toString());<span class="comment">//简单生成下ID  </span></span><br><span class="line">        System.out.println(event.getId());</span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Main</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main1</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> BUFFER_SIZE = <span class="number">1024</span>;</span><br><span class="line">        <span class="keyword">int</span> THREAD_NUMBERS = <span class="number">4</span>;</span><br><span class="line">        <span class="comment">/* </span></span><br><span class="line"><span class="comment">         * createSingleProducer创建一个单生产者的RingBuffer， </span></span><br><span class="line"><span class="comment">         * 第一个参数叫EventFactory，从名字上理解就是"事件工厂"，其实它的职责就是产生数据填充RingBuffer的区块。 </span></span><br><span class="line"><span class="comment">         * 第二个参数是RingBuffer的大小，它必须是2的指数倍 目的是为了将求模运算转为&amp;运算提高效率 </span></span><br><span class="line"><span class="comment">         * 第三个参数是RingBuffer的生产都在没有可用区块的时候(可能是消费者（或者说是事件处理器） 太慢了)的等待策略 </span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">final</span> RingBuffer&lt;Trade&gt; ringBuffer = RingBuffer.createSingleProducer(<span class="keyword">new</span> EventFactory&lt;Trade&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> Trade <span class="title">newInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> Trade();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, BUFFER_SIZE, <span class="keyword">new</span> YieldingWaitStrategy());</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建线程池  </span></span><br><span class="line">        ExecutorService executors = Executors.newFixedThreadPool(THREAD_NUMBERS);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建SequenceBarrier  </span></span><br><span class="line">        SequenceBarrier sequenceBarrier = ringBuffer.newBarrier();</span><br><span class="line">        EventHandler eventHandler = <span class="keyword">new</span> TradeHandler1();</span><br><span class="line">        <span class="comment">//创建消息处理器  </span></span><br><span class="line">        BatchEventProcessor&lt;Trade&gt; transProcessor = <span class="keyword">new</span> BatchEventProcessor&lt;Trade&gt;(</span><br><span class="line">                ringBuffer, sequenceBarrier,eventHandler );</span><br><span class="line"></span><br><span class="line">        <span class="comment">//这一步的目的就是把消费者的位置信息引用注入到生产者    如果只有一个消费者的情况可以省略 </span></span><br><span class="line">        ringBuffer.addGatingSequences(transProcessor.getSequence());</span><br><span class="line"></span><br><span class="line">        <span class="comment">//把消息处理器提交到线程池  </span></span><br><span class="line">        executors.submit(transProcessor);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//如果存在多个消费者 那重复执行上面3行代码 把TradeHandler换成其它消费者类  </span></span><br><span class="line"></span><br><span class="line">        Future&lt;?&gt; future = executors.submit(<span class="keyword">new</span> Callable&lt;Void&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> Void <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                <span class="keyword">long</span> seq;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">                    seq = ringBuffer.next();<span class="comment">//占个坑 --ringBuffer一个可用区块  </span></span><br><span class="line">                    ringBuffer.get(seq).setPrice(Math.random() * <span class="number">9999</span>);<span class="comment">//给这个区块放入 数据</span></span><br><span class="line">                    ringBuffer.publish(seq);<span class="comment">//发布这个区块的数据使handler(consumer)可见  </span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        future.get();<span class="comment">//等待生产者结束  </span></span><br><span class="line">        Thread.sleep(<span class="number">10000</span>);<span class="comment">//等上10秒，等消费都处理完成</span></span><br><span class="line">        transProcessor.halt();<span class="comment">//通知事件(或者说消息)处理器 可以结束了（并不是马上结束!）  </span></span><br><span class="line">        executors.shutdown();<span class="comment">//终止线程  </span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">bf654d6e-aca8-<span class="number">4296</span>-b59b-a803256bf2ea</span><br><span class="line">b659dae1-<span class="number">35</span>c2-<span class="number">41f</span>c-<span class="number">99f</span>2-<span class="number">21f</span>8443f13ef</span><br><span class="line"><span class="number">25f</span>79e8f-<span class="number">7f</span>e5-<span class="number">42e6</span>-b7f3-b25e85049e74</span><br><span class="line"><span class="number">496</span>a00c3-ea22-<span class="number">4</span>dec-<span class="number">9471</span>-fd308224ced9</span><br><span class="line"><span class="number">93</span>b69fb5-<span class="number">9409</span>-<span class="number">4102</span>-bb54-<span class="number">41</span>c6910b0ed8</span><br><span class="line"><span class="number">32f</span>00f65-a883-<span class="number">4</span>c0d-<span class="number">87</span>dd-<span class="number">63</span>d7d4d7779f</span><br><span class="line">d6df8591-<span class="number">9524</span>-<span class="number">4260</span>-aa67-<span class="number">86f</span>8ae7b18fe</span><br><span class="line">a9220353-<span class="number">19</span>ca-<span class="number">4</span>bfd-afb2-<span class="number">1</span>c46b5945152</span><br><span class="line">b22697a7-<span class="number">109</span>c-<span class="number">4382</span>-<span class="number">906f</span>-<span class="number">3</span>c9e32c62b48</span><br><span class="line"><span class="number">02424</span>da8-<span class="number">32</span>a8-<span class="number">44</span>eb-<span class="number">8167</span>-<span class="number">0</span>b84a53a67e0</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="使用WorkerPool消息处理器。"><a href="#使用WorkerPool消息处理器。" class="headerlink" title="使用WorkerPool消息处理器。"></a>使用WorkerPool消息处理器。</h3><p>Event类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Trade</span> </span>&#123;  </span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> String id;<span class="comment">//ID  </span></span><br><span class="line">	<span class="keyword">private</span> String name;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">double</span> price;<span class="comment">//金额  </span></span><br><span class="line">	<span class="keyword">private</span> AtomicInteger count = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.id = id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.name = name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">getPrice</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> price;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPrice</span><span class="params">(<span class="keyword">double</span> price)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.price = price;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> AtomicInteger <span class="title">getCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> count;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCount</span><span class="params">(AtomicInteger count)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.count = count;</span><br><span class="line">	&#125; </span><br><span class="line">	  </span><br><span class="line">	  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>监听事件类，用于处理数据：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TradeHandler2</span> <span class="keyword">implements</span> <span class="title">WorkHandler</span>&lt;<span class="title">Trade</span>&gt; </span>&#123;</span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(Trade event)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">        <span class="comment">//这里做具体的消费逻辑  </span></span><br><span class="line">        event.setId(UUID.randomUUID().toString());<span class="comment">//简单生成下ID  </span></span><br><span class="line">        System.out.println(event.getId());  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Main</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main2</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;  </span><br><span class="line">        <span class="keyword">int</span> BUFFER_SIZE=<span class="number">1024</span>;  </span><br><span class="line">        <span class="keyword">int</span> THREAD_NUMBERS=<span class="number">4</span>;  </span><br><span class="line">        </span><br><span class="line">        EventFactory&lt;Trade&gt; eventFactory = <span class="keyword">new</span> EventFactory&lt;Trade&gt;() &#123;  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> Trade <span class="title">newInstance</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> Trade();  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;;  </span><br><span class="line">        </span><br><span class="line">        RingBuffer&lt;Trade&gt; ringBuffer = RingBuffer.createSingleProducer(eventFactory, BUFFER_SIZE);  </span><br><span class="line">          </span><br><span class="line">        SequenceBarrier sequenceBarrier = ringBuffer.newBarrier();  </span><br><span class="line">          </span><br><span class="line">        ExecutorService executor = Executors.newFixedThreadPool(THREAD_NUMBERS);</span><br><span class="line">          </span><br><span class="line">        WorkHandler&lt;Trade&gt; handler = <span class="keyword">new</span> TradeHandler2();</span><br><span class="line"></span><br><span class="line">        WorkerPool&lt;Trade&gt; workerPool = <span class="keyword">new</span> WorkerPool&lt;Trade&gt;(ringBuffer, sequenceBarrier, <span class="keyword">new</span> IgnoreExceptionHandler(), handler);  </span><br><span class="line">          </span><br><span class="line">        workerPool.start(executor);  </span><br><span class="line">          </span><br><span class="line">        <span class="comment">//下面这个生产8个数据</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">10</span>;i++)&#123;</span><br><span class="line">            <span class="keyword">long</span> seq=ringBuffer.next();  </span><br><span class="line">            ringBuffer.get(seq).setPrice(Math.random()*<span class="number">9999</span>);  </span><br><span class="line">            ringBuffer.publish(seq);  </span><br><span class="line">        &#125;  </span><br><span class="line">          </span><br><span class="line">        Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">        workerPool.halt();  </span><br><span class="line">        executor.shutdown();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">568e5c67-fc62-4f68-823b-0c0865c007ad</span><br><span class="line">2d4ea263-cb60-4cd5-a702-8decc5d3d970</span><br><span class="line">1486ccb2-2558-4636-94eb-d119c95ab18a</span><br><span class="line">c52e5b64-ee69-4eea-80e9-2396edd1054b</span><br><span class="line">20e83380-287d-4895-bffb-1338fe3c9077</span><br><span class="line">3d1c7f2e-8c55-43ad-a531-1e086459b6c6</span><br><span class="line">792dedaa-77d7-4574-b180-51258b56cdd6</span><br><span class="line">3ccb79af-1b94-4a2a-abdd-2b84017b5918</span><br><span class="line">cee4295d-f186-4318-95c3-bb5ee99241ff</span><br><span class="line">8df98d40-1dad-4652-a648-c2a74e1c8d13</span><br></pre></td></tr></table></figure>
+
+<h3 id="复杂场景下使用RingBuffer-多消费者并行和串行"><a href="#复杂场景下使用RingBuffer-多消费者并行和串行" class="headerlink" title="复杂场景下使用RingBuffer(多消费者并行和串行)"></a>复杂场景下使用RingBuffer(多消费者并行和串行)</h3><p>我们先来定义实体类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Trade</span> </span>&#123;  </span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> String id;<span class="comment">//ID  </span></span><br><span class="line">	<span class="keyword">private</span> String name;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">double</span> price;<span class="comment">//金额  </span></span><br><span class="line">	<span class="keyword">private</span> AtomicInteger count = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.id = id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.name = name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">getPrice</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> price;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPrice</span><span class="params">(<span class="keyword">double</span> price)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.price = price;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> AtomicInteger <span class="title">getCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> count;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCount</span><span class="params">(AtomicInteger count)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.count = count;</span><br><span class="line">	&#125; </span><br><span class="line">	  </span><br><span class="line">	  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们接下来定义生产者发布事件的类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TradePublisher</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;  </span><br><span class="line">	</span><br><span class="line">    Disruptor&lt;Trade&gt; disruptor;</span><br><span class="line">    <span class="keyword">private</span> CountDownLatch latch;  </span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> LOOP=<span class="number">3</span>;<span class="comment">//模拟百万次交易的发生</span></span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TradePublisher</span><span class="params">(CountDownLatch latch,Disruptor&lt;Trade&gt; disruptor)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">this</span>.disruptor=disruptor;  </span><br><span class="line">        <span class="keyword">this</span>.latch=latch;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    	TradeEventTranslator tradeTransloator = <span class="keyword">new</span> TradeEventTranslator();  </span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;LOOP;i++)&#123;  </span><br><span class="line">            disruptor.publishEvent(tradeTransloator);  </span><br><span class="line">        &#125;  </span><br><span class="line">        latch.countDown();  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TradeEventTranslator</span> <span class="keyword">implements</span> <span class="title">EventTranslator</span>&lt;<span class="title">Trade</span>&gt;</span>&#123;  </span><br><span class="line">    </span><br><span class="line">	<span class="keyword">private</span> Random random=<span class="keyword">new</span> Random();  </span><br><span class="line">    </span><br><span class="line">	<span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">translateTo</span><span class="params">(Trade event, <span class="keyword">long</span> sequence)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">this</span>.generateTrade(event);  </span><br><span class="line">    &#125;  </span><br><span class="line">    </span><br><span class="line">	<span class="function"><span class="keyword">private</span> Trade <span class="title">generateTrade</span><span class="params">(Trade trade)</span></span>&#123;  </span><br><span class="line">        trade.setPrice(random.nextDouble()*<span class="number">9999</span>);  </span><br><span class="line">        <span class="keyword">return</span> trade;  </span><br><span class="line">    &#125;  </span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>我们最后来定义下文需要使用的5个handler(也就是Customer)</p>
+<p>Handler1:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Handler1</span> <span class="keyword">implements</span> <span class="title">EventHandler</span>&lt;<span class="title">Trade</span>&gt;,<span class="title">WorkHandler</span>&lt;<span class="title">Trade</span>&gt; </span>&#123;</span><br><span class="line">	  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(Trade event, <span class="keyword">long</span> sequence, <span class="keyword">boolean</span> endOfBatch)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">        <span class="keyword">this</span>.onEvent(event);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(Trade event)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">    	System.out.println(<span class="string">"handler1: set name"</span>);</span><br><span class="line">    	event.setName(<span class="string">"h1"</span>);</span><br><span class="line">    	Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Handler2:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Handler2</span> <span class="keyword">implements</span> <span class="title">EventHandler</span>&lt;<span class="title">Trade</span>&gt; </span>&#123;</span><br><span class="line">	  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(Trade event, <span class="keyword">long</span> sequence,  <span class="keyword">boolean</span> endOfBatch)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">    	System.out.println(<span class="string">"handler2: set price"</span>);</span><br><span class="line">    	event.setPrice(<span class="number">17.0</span>);</span><br><span class="line">    	Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Handler3:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Handler3</span> <span class="keyword">implements</span> <span class="title">EventHandler</span>&lt;<span class="title">Trade</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(Trade event, <span class="keyword">long</span> sequence,  <span class="keyword">boolean</span> endOfBatch)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">    	System.out.println(<span class="string">"handler3: name: "</span> + event.getName() + <span class="string">" , price: "</span> + event.getPrice() + <span class="string">";  instance: "</span> + event.toString());</span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Handler4:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Handler4</span> <span class="keyword">implements</span> <span class="title">EventHandler</span>&lt;<span class="title">Trade</span>&gt;,<span class="title">WorkHandler</span>&lt;<span class="title">Trade</span>&gt; </span>&#123;</span><br><span class="line">	  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(Trade event, <span class="keyword">long</span> sequence, <span class="keyword">boolean</span> endOfBatch)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">        <span class="keyword">this</span>.onEvent(event);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(Trade event)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">    	System.out.println(<span class="string">"handler4: get name : "</span> + event.getName());</span><br><span class="line">    	event.setName(event.getName() + <span class="string">"h4"</span>);</span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Handler5:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Handler5</span> <span class="keyword">implements</span> <span class="title">EventHandler</span>&lt;<span class="title">Trade</span>&gt;,<span class="title">WorkHandler</span>&lt;<span class="title">Trade</span>&gt; </span>&#123;  </span><br><span class="line">	  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(Trade event, <span class="keyword">long</span> sequence, <span class="keyword">boolean</span> endOfBatch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.onEvent(event);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(Trade event)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">    	System.out.println(<span class="string">"handler5: get price : "</span> + event.getPrice());</span><br><span class="line">    	event.setPrice(event.getPrice() + <span class="number">3.0</span>);</span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面，我们来规定如何处理数据：</p>
+<p>1.顺序操作</p>
+<p><img src="http://img.bcoder.top/2017.11.11/4.png" alt="业余学习之并发编程Disruptor框架篇"></p>
+<p>实现代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;  </span><br><span class="line">       </span><br><span class="line">    	<span class="keyword">long</span> beginTime=System.currentTimeMillis();  </span><br><span class="line">        <span class="keyword">int</span> bufferSize=<span class="number">1024</span>;  </span><br><span class="line">        ExecutorService executor=Executors.newFixedThreadPool(<span class="number">8</span>);  </span><br><span class="line"></span><br><span class="line">        Disruptor&lt;Trade&gt; disruptor = <span class="keyword">new</span> Disruptor&lt;Trade&gt;(<span class="keyword">new</span> EventFactory&lt;Trade&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> Trade <span class="title">newInstance</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> Trade();  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;, bufferSize, executor, ProducerType.SINGLE, <span class="keyword">new</span> BusySpinWaitStrategy());  </span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        <span class="comment">//顺序操作</span></span><br><span class="line">        disruptor.handleEventsWith(<span class="keyword">new</span> Handler1()).</span><br><span class="line">        	handleEventsWith(<span class="keyword">new</span> Handler2()).</span><br><span class="line">        	handleEventsWith(<span class="keyword">new</span> Handler3());</span><br><span class="line">    </span><br><span class="line">        disruptor.start();<span class="comment">//启动  </span></span><br><span class="line">        CountDownLatch latch=<span class="keyword">new</span> CountDownLatch(<span class="number">1</span>);  </span><br><span class="line">        <span class="comment">//生产者准备  </span></span><br><span class="line">        executor.submit(<span class="keyword">new</span> TradePublisher(latch, disruptor));</span><br><span class="line">        </span><br><span class="line">        latch.await();<span class="comment">//等待生产者完事. </span></span><br><span class="line">       </span><br><span class="line">        disruptor.shutdown();  </span><br><span class="line">        executor.shutdown();  </span><br><span class="line">        System.out.println(<span class="string">"总耗时:"</span>+(System.currentTimeMillis()-beginTime));  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">handler1: set name</span><br><span class="line">handler1: set name</span><br><span class="line">handler2: set price</span><br><span class="line">handler3: name: h1 , price: 17.0;  instance: generate1.Trade@2e5eed78</span><br><span class="line">handler1: set name</span><br><span class="line">handler2: set price</span><br><span class="line">handler2: set price</span><br><span class="line">handler3: name: h1 , price: 17.0;  instance: generate1.Trade@209916c3</span><br><span class="line">handler3: name: h1 , price: 17.0;  instance: generate1.Trade@24a68608</span><br><span class="line">总耗时:5122</span><br></pre></td></tr></table></figure>
+
+<p>2.菱形操作</p>
+<p><img src="http://img.bcoder.top/2017.11.11/5.png" alt="业余学习之并发编程Disruptor框架篇"></p>
+<p>实现代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line"></span><br><span class="line">    	<span class="keyword">long</span> beginTime=System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">int</span> bufferSize=<span class="number">1024</span>;</span><br><span class="line">        ExecutorService executor=Executors.newFixedThreadPool(<span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">        Disruptor&lt;Trade&gt; disruptor = <span class="keyword">new</span> Disruptor&lt;Trade&gt;(<span class="keyword">new</span> EventFactory&lt;Trade&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> Trade <span class="title">newInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> Trade();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, bufferSize, executor, ProducerType.SINGLE, <span class="keyword">new</span> BusySpinWaitStrategy());</span><br><span class="line"></span><br><span class="line">        disruptor.start();<span class="comment">//启动</span></span><br><span class="line">        CountDownLatch latch=<span class="keyword">new</span> CountDownLatch(<span class="number">1</span>);</span><br><span class="line">        <span class="comment">//生产者准备</span></span><br><span class="line">        executor.submit(<span class="keyword">new</span> TradePublisher(latch, disruptor));</span><br><span class="line"></span><br><span class="line">        latch.await();<span class="comment">//等待生产者完事.</span></span><br><span class="line"></span><br><span class="line">        disruptor.shutdown();</span><br><span class="line">        executor.shutdown();</span><br><span class="line">        System.out.println(<span class="string">"总耗时:"</span>+(System.currentTimeMillis()-beginTime));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3.六边形操作</p>
+<p><img src="http://img.bcoder.top/2017.11.11/6.png" alt="业余学习之并发编程Disruptor框架篇"></p>
+<p>实现代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line"></span><br><span class="line">    	<span class="keyword">long</span> beginTime=System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">int</span> bufferSize=<span class="number">1024</span>;</span><br><span class="line">        ExecutorService executor=Executors.newFixedThreadPool(<span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">        Disruptor&lt;Trade&gt; disruptor = <span class="keyword">new</span> Disruptor&lt;Trade&gt;(<span class="keyword">new</span> EventFactory&lt;Trade&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> Trade <span class="title">newInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> Trade();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, bufferSize, executor, ProducerType.SINGLE, <span class="keyword">new</span> BusySpinWaitStrategy());</span><br><span class="line"></span><br><span class="line">        <span class="comment">//六边形操作.</span></span><br><span class="line">        Handler1 h1 = <span class="keyword">new</span> Handler1();</span><br><span class="line">        Handler2 h2 = <span class="keyword">new</span> Handler2();</span><br><span class="line">        Handler3 h3 = <span class="keyword">new</span> Handler3();</span><br><span class="line">        Handler4 h4 = <span class="keyword">new</span> Handler4();</span><br><span class="line">        Handler5 h5 = <span class="keyword">new</span> Handler5();</span><br><span class="line">        disruptor.handleEventsWith(h1, h2);</span><br><span class="line">        disruptor.after(h1).handleEventsWith(h4);</span><br><span class="line">        disruptor.after(h2).handleEventsWith(h5);</span><br><span class="line">        disruptor.after(h4, h5).handleEventsWith(h3);</span><br><span class="line"></span><br><span class="line">        disruptor.start();<span class="comment">//启动</span></span><br><span class="line">        CountDownLatch latch=<span class="keyword">new</span> CountDownLatch(<span class="number">1</span>);</span><br><span class="line">        <span class="comment">//生产者准备</span></span><br><span class="line">        executor.submit(<span class="keyword">new</span> TradePublisher(latch, disruptor));</span><br><span class="line"></span><br><span class="line">        latch.await();<span class="comment">//等待生产者完事.</span></span><br><span class="line"></span><br><span class="line">        disruptor.shutdown();</span><br><span class="line">        executor.shutdown();</span><br><span class="line">        System.out.println(<span class="string">"总耗时:"</span>+(System.currentTimeMillis()-beginTime));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">handler2: set price</span><br><span class="line">handler1: set name</span><br><span class="line">handler2: set price</span><br><span class="line">handler5: get price : 17.0</span><br><span class="line">handler1: set name</span><br><span class="line">handler2: set price</span><br><span class="line">handler1: set name</span><br><span class="line">handler5: get price : 17.0</span><br><span class="line">handler5: get price : 17.0</span><br><span class="line">handler4: get name : h1</span><br><span class="line">handler4: get name : h1</span><br><span class="line">handler4: get name : h1</span><br><span class="line">handler3: name: h1h4 , price: 20.0;  instance: generate1.Trade@206cd157</span><br><span class="line">handler3: name: h1h4 , price: 20.0;  instance: generate1.Trade@2eab3b2a</span><br><span class="line">handler3: name: h1h4 , price: 20.0;  instance: generate1.Trade@2a94ba27</span><br><span class="line">总耗时:3365</span><br></pre></td></tr></table></figure>
+
+<h3 id="多生产者、消费者使用"><a href="#多生产者、消费者使用" class="headerlink" title="多生产者、消费者使用"></a>多生产者、消费者使用</h3><p>实体类Order.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Order</span> </span>&#123;  </span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> String id;<span class="comment">//ID  </span></span><br><span class="line">	<span class="keyword">private</span> String name;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">double</span> price;<span class="comment">//金额  </span></span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.id = id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.name = name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">getPrice</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> price;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPrice</span><span class="params">(<span class="keyword">double</span> price)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.price = price;</span><br><span class="line">	&#125;</span><br><span class="line">	  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>生产者Productor.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> RingBuffer&lt;Order&gt; ringBuffer;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Producer</span><span class="params">(RingBuffer&lt;Order&gt; ringBuffer)</span></span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.ringBuffer = ringBuffer;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * onData用来发布事件，每调用一次就发布一次事件</span></span><br><span class="line"><span class="comment">	 * 它的参数会用过事件传递给消费者</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onData</span><span class="params">(String data)</span></span>&#123;</span><br><span class="line">		<span class="comment">//可以把ringBuffer看做一个事件队列，那么next就是得到下面一个事件槽</span></span><br><span class="line">		<span class="keyword">long</span> sequence = ringBuffer.next();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="comment">//用上面的索引取出一个空的事件用于填充（获取该序号对应的事件对象）</span></span><br><span class="line">			Order order = ringBuffer.get(sequence);</span><br><span class="line">			<span class="comment">//获取要通过事件传递的业务数据</span></span><br><span class="line">			order.setId(data);</span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">			<span class="comment">//发布事件</span></span><br><span class="line">			<span class="comment">//注意，最后的 ringBuffer.publish 方法必须包含在 finally 中以确保必须得到调用；如果某个请求的 sequence 未被提交，将会堵塞后续的发布操作或者其它的 producer。</span></span><br><span class="line">			ringBuffer.publish(sequence);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>消费者Customer.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> <span class="keyword">implements</span> <span class="title">WorkHandler</span>&lt;<span class="title">Order</span>&gt;</span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> String consumerId;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> AtomicInteger count = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Consumer</span><span class="params">(String consumerId)</span></span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.consumerId = consumerId;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(Order order)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"当前消费者: "</span> + <span class="keyword">this</span>.consumerId + <span class="string">"，消费信息："</span> + order.getId());</span><br><span class="line">		count.incrementAndGet();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCount</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">return</span> count.get();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//创建ringBuffer</span></span><br><span class="line">		RingBuffer&lt;Order&gt; ringBuffer = </span><br><span class="line">				RingBuffer.create(ProducerType.MULTI, </span><br><span class="line">						<span class="keyword">new</span> EventFactory&lt;Order&gt;() &#123;  </span><br><span class="line">				            <span class="meta">@Override</span>  </span><br><span class="line">				            <span class="function"><span class="keyword">public</span> Order <span class="title">newInstance</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">				                <span class="keyword">return</span> <span class="keyword">new</span> Order();  </span><br><span class="line">				            &#125;  </span><br><span class="line">				        &#125;, </span><br><span class="line">				        <span class="number">1024</span> * <span class="number">1024</span>, </span><br><span class="line">						<span class="keyword">new</span> YieldingWaitStrategy());</span><br><span class="line">		</span><br><span class="line">		SequenceBarrier barriers = ringBuffer.newBarrier();</span><br><span class="line">		</span><br><span class="line">		Consumer[] consumers = <span class="keyword">new</span> Consumer[<span class="number">3</span>];</span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; consumers.length; i++)&#123;</span><br><span class="line">			consumers[i] = <span class="keyword">new</span> Consumer(<span class="string">"c"</span> + i);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		WorkerPool&lt;Order&gt; workerPool = </span><br><span class="line">				<span class="keyword">new</span> WorkerPool&lt;Order&gt;(ringBuffer, </span><br><span class="line">						barriers, </span><br><span class="line">						<span class="keyword">new</span> IntEventExceptionHandler(),</span><br><span class="line">						consumers);</span><br><span class="line">		</span><br><span class="line">        ringBuffer.addGatingSequences(workerPool.getWorkerSequences());  </span><br><span class="line">        workerPool.start(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));  </span><br><span class="line">        </span><br><span class="line">        <span class="keyword">final</span> CountDownLatch latch = <span class="keyword">new</span> CountDownLatch(<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;  </span><br><span class="line">        	<span class="keyword">final</span> Producer p = <span class="keyword">new</span> Producer(ringBuffer);</span><br><span class="line">        	<span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">				<span class="meta">@Override</span></span><br><span class="line">				<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">					<span class="keyword">try</span> &#123;</span><br><span class="line">						latch.await();</span><br><span class="line">					&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">						e.printStackTrace();</span><br><span class="line">					&#125;</span><br><span class="line">					<span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">100</span>; j ++)&#123;</span><br><span class="line">						p.onData(UUID.randomUUID().toString());</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;).start();</span><br><span class="line">        &#125; </span><br><span class="line">        Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">        System.out.println(<span class="string">"---------------开始生产-----------------"</span>);</span><br><span class="line">        latch.countDown();</span><br><span class="line">        Thread.sleep(<span class="number">5000</span>);</span><br><span class="line">        System.out.println(<span class="string">"总数:"</span> + consumers[<span class="number">0</span>].getCount() );</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">IntEventExceptionHandler</span> <span class="keyword">implements</span> <span class="title">ExceptionHandler</span> </span>&#123;  </span><br><span class="line">	    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleEventException</span><span class="params">(Throwable ex, <span class="keyword">long</span> sequence, Object event)</span> </span>&#123;&#125;  </span><br><span class="line">	    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleOnStartException</span><span class="params">(Throwable ex)</span> </span>&#123;&#125;  </span><br><span class="line">	    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleOnShutdownException</span><span class="params">(Throwable ex)</span> </span>&#123;&#125;  </span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">当前消费者: c1，消费信息：f7be6ee9-d0f4-4343-a96c-68cdf6475bbf</span><br><span class="line">当前消费者: c1，消费信息：195c2bea-df15-4340-bf6e-acb420a0db8b</span><br><span class="line">当前消费者: c1，消费信息：2e1bd6ca-ae51-463f-acf0-9e77086e8b82</span><br><span class="line">当前消费者: c1，消费信息：8bd69886-a926-4cb4-a76f-9b2af199921b</span><br><span class="line">当前消费者: c1，消费信息：6d29df5b-defd-4dfa-92fe-1fbf536412ac</span><br><span class="line">当前消费者: c1，消费信息：d73dff20-7099-4678-85dd-a8c5e8edd4c0</span><br><span class="line">当前消费者: c1，消费信息：e0a37186-4b4f-48f5-be93-9d5f72c0c424</span><br><span class="line">当前消费者: c1，消费信息：e693ea9d-5de6-403c-a12e-81c7f97cc325</span><br><span class="line">当前消费者: c0，消费信息：bbdd495e-80bf-4a18-90e8-7f2f5f8369ee</span><br><span class="line">当前消费者: c1，消费信息：71751380-5b4d-4437-9102-69f105085183</span><br><span class="line">当前消费者: c2，消费信息：7187974c-fdd1-4a45-96f9-3d5221ede000</span><br><span class="line">当前消费者: c1，消费信息：ca90f329-af50-4107-a734-32fe9db13c39</span><br><span class="line">当前消费者: c0，消费信息：79d8d8c2-517c-4ad5-ba09-accce4873e12</span><br><span class="line">当前消费者: c1，消费信息：d5d791d9-50de-4487-88fc-bf2ac2450609</span><br><span class="line">当前消费者: c2，消费信息：0418f1a4-0b7d-4a9c-8a08-2eb2e70d6d13</span><br><span class="line">当前消费者: c1，消费信息：9791e832-aea6-46ab-b2aa-0f117ef40f7c</span><br><span class="line">.....</span><br><span class="line">当前消费者: c2，消费信息：52c59e63-1f90-4bfb-8378-7865b69211d4</span><br><span class="line">当前消费者: c2，消费信息：824deb14-0990-442f-9827-323ab42af135</span><br><span class="line">当前消费者: c2，消费信息：b4138a8e-cf71-45ba-a7a2-b25ea5683e60</span><br><span class="line">当前消费者: c0，消费信息：6deb6619-2433-4990-bf1d-a55da3b595c6</span><br><span class="line">当前消费者: c1，消费信息：533f45fd-c23d-45dd-a591-aaee8e03986c</span><br><span class="line">总数:10000</span><br></pre></td></tr></table></figure>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/11/11/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8BDisruptor%E6%A1%86%E6%9E%B6%E7%AF%87/>https://www.bcoder.top/2017/11/11/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8BDisruptor%E6%A1%86%E6%9E%B6%E7%AF%87/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/java/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>java</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>多线程</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E5%B9%B6%E5%8F%91/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>并发</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Disruptor/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Disruptor</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/11/11/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8BDisruptor%E6%A1%86%E6%9E%B6%E7%AF%87/&title=业余学习之并发编程Disruptor框架篇 - zln's blog&summary=
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/11/11/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8BDisruptor%E6%A1%86%E6%9E%B6%E7%AF%87/&title=业余学习之并发编程Disruptor框架篇 - zln's blog&summary=
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/11/11/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8BDisruptor%E6%A1%86%E6%9E%B6%E7%AF%87/&title=业余学习之并发编程Disruptor框架篇 - zln's blog&summary=
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/11/12/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80%E7%AF%87/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>业余学习之网络通信编程基础篇</p>
+                <p class='content'>
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+
+BIO（同步阻塞式IO）基本概念Socket又称“套接字”，应用程序通常通过“套接字”向网络发...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/11/10/%E5%AD%A6%E4%B9%A0%E4%B8%8E%E4%BD%BF%E7%94%A8Java8%E4%B8%AD%E7%9A%84Optional/'>
+                <p class='title'>学习与使用Java8中的Optional<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>前言从Java 8引入的一个很有趣的特性是Optional类。Optional类主要解决的问题是臭名昭著的空指针异常（NullPointerException）——每个Java程序员都非常了解的...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '业余学习之并发编程Disruptor框架篇',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Disruptor并发框架简介"><span class="toc-text">Disruptor并发框架简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Disruptor之Hello-World"><span class="toc-text">Disruptor之Hello World</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Disruptor深入理解"><span class="toc-text">Disruptor深入理解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Disruptor术语说明"><span class="toc-text">Disruptor术语说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RingBuffer理解"><span class="toc-text">RingBuffer理解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#我们为什么选用RingBuffer这个数据结构："><span class="toc-text">我们为什么选用RingBuffer这个数据结构：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Disruptor使用场景"><span class="toc-text">Disruptor使用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用EventProcessor消息处理器"><span class="toc-text">使用EventProcessor消息处理器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用WorkerPool消息处理器。"><span class="toc-text">使用WorkerPool消息处理器。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#复杂场景下使用RingBuffer-多消费者并行和串行"><span class="toc-text">复杂场景下使用RingBuffer(多消费者并行和串行)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多生产者、消费者使用"><span class="toc-text">多生产者、消费者使用</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>Java并发之两阶段生产者-消费者模式 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="java,juc">
+  
+  
+    <meta name="description" content="Worker Thread 模式类比的是工厂里车间工人的工作模式。但其实在现实世界，工厂里还有一种流水线的工作模式，类比到编程领域，就是生产者 - 消费者模式。
+生产者 - 消费者模式在编程领域的应用也非常广泛，前面我们曾经提到，Java 线程池本质上就是用生产者 - 消费者模式实现的，所以每当使用线程池的时候，...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2020/01/28/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E4%B8%A4%E9%98%B6%E6%AE%B5%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F/">
+        Java并发之两阶段生产者-消费者模式
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/cs-inter/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>cs-inter</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2020-01-28 19:12:03</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <p>Worker Thread 模式类比的是工厂里车间工人的工作模式。但其实在现实世界，工厂里还有一种流水线的工作模式，类比到编程领域，就是<strong>生产者 - 消费者模式</strong>。</p>
+<p>生产者 - 消费者模式在编程领域的应用也非常广泛，前面我们曾经提到，Java 线程池本质上就是用生产者 - 消费者模式实现的，所以每当使用线程池的时候，其实就是在应用生产者 - 消费者模式。</p>
+<p>当然，除了在线程池中的应用，为了提升性能，并发编程领域很多地方也都用到了生产者 - 消费者模式，例如 Log4j2 中异步 Appender 内部也用到了生产者 - 消费者模式。所以今天我们就来深入地聊聊生产者 - 消费者模式，看看它具体有哪些优点，以及如何提升系统的性能。</p>
+<a id="more"></a>
+
+<h2 id="生产者-消费者模式的优点"><a href="#生产者-消费者模式的优点" class="headerlink" title="生产者 - 消费者模式的优点"></a>生产者 - 消费者模式的优点</h2><p>生产者 - 消费者模式的核心是一个<strong>任务队列</strong>，生产者线程生产任务，并将任务添加到任务队列中，而消费者线程从任务队列中获取任务并执行。下面是生产者 - 消费者模式的一个示意图，你可以结合它来理解。</p>
+<p><img src="http://img.bcoder.top/2020.01.28.10/1.png" alt=""></p>
+<p>从架构设计的角度来看，生产者 - 消费者模式有一个很重要的优点，就是<strong>解耦</strong>。解耦对于大型系统的设计非常重要，而解耦的一个关键就是组件之间的依赖关系和通信方式必须受限。在生产者 - 消费者模式中，生产者和消费者没有任何依赖关系，它们彼此之间的通信只能通过任务队列，所以<strong>生产者 - 消费者模式是一个不错的解耦方案</strong>。</p>
+<p>你或许会有这样的疑问，异步化处理最简单的方式就是创建一个新的线程去处理，那中间增加一个“<strong>任务队列</strong>”究竟有什么用呢？我觉得主要还是用于<strong>平衡生产者和消费者的速度差异</strong>。我们假设生产者的速率很慢，而消费者的速率很高，比如是 1:3，如果生产者有 3 个线程，采用创建新的线程的方式，那么会创建 3 个子线程，而采用生产者 - 消费者模式，消费线程只需要 1 个就可以了。Java 语言里，Java 线程和操作系统线程是一一对应的，线程创建得太多，会增加上下文切换的成本，所以 Java 线程不是越多越好，适量即可。而<strong>生产者 - 消费者模式恰好能支持你用适量的线程</strong>。</p>
+<h2 id="支持批量执行以提升性能"><a href="#支持批量执行以提升性能" class="headerlink" title="支持批量执行以提升性能"></a>支持批量执行以提升性能</h2><p>如果使用轻量级线程，就没有必要平衡生产者和消费者的速度差异了，因为轻量级线程本身就是廉价的，那是否意味着生产者 - 消费者模式在性能优化方面就无用武之地了呢？当然不是，有一类并发场景应用生产者 - 消费者模式就有奇效，那就是<strong>批量执行</strong>任务。</p>
+<p>例如，我们要在数据库里 INSERT 1000 条数据，有两种方案：第一种方案是用 1000 个线程并发执行，每个线程 INSERT 一条数据；第二种方案是用 1 个线程，执行一个批量的 SQL，一次性把 1000 条数据 INSERT 进去。这两种方案，显然是第二种方案效率更高，其实这样的应用场景就是我们上面提到的批量执行场景。</p>
+<p>之前我们提到一个监控系统动态采集的案例，其实最终回传的监控数据还是要存入数据库的（如下图）。但被监控系统往往有很多，如果每一条回传数据都直接 INSERT 到数据库，那么这个方案就是上面提到的第一种方案：每个线程 INSERT 一条数据。很显然，更好的方案是批量执行 SQL，那如何实现呢？这就要用到生产者 - 消费者模式了。</p>
+<p><img src="http://img.bcoder.top/2020.01.28.10/2.png" alt=""></p>
+<p>利用生产者 - 消费者模式实现批量执行 SQL 非常简单：将原来直接 INSERT 数据到数据库的线程作为生产者线程，生产者线程只需将数据添加到任务队列，然后消费者线程负责将任务从任务队列中批量取出并批量执行。</p>
+<p>在下面的示例代码中，我们创建了 5 个消费者线程负责批量执行 SQL，这 5 个消费者线程以 <code>while(true){}</code> 循环方式批量地获取任务并批量地执行。需要注意的是，从任务队列中获取批量任务的方法 pollTasks() 中，首先是以阻塞方式获取任务队列中的一条任务，而后则是以非阻塞的方式获取任务；之所以首先采用阻塞方式，是因为如果任务队列中没有任务，这样的方式能够避免无谓的循环。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 任务队列</span></span><br><span class="line">BlockingQueue&lt;Task&gt; bq=<span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;(<span class="number">2000</span>);</span><br><span class="line"><span class="comment">// 启动 5 个消费者线程</span></span><br><span class="line"><span class="comment">// 执行批量任务  </span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  ExecutorService es=xecutors.newFixedThreadPool(<span class="number">5</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">5</span>; i++) &#123;</span><br><span class="line">    es.execute(()-&gt;&#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">          <span class="comment">// 获取批量任务</span></span><br><span class="line">          List&lt;Task&gt; ts=pollTasks();</span><br><span class="line">          <span class="comment">// 执行批量任务</span></span><br><span class="line">          execTasks(ts);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 从任务队列中获取批量任务</span></span><br><span class="line"><span class="function">List&lt;Task&gt; <span class="title">pollTasks</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException</span>&#123;</span><br><span class="line">  List&lt;Task&gt; ts=<span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">  <span class="comment">// 阻塞式获取一条任务</span></span><br><span class="line">  Task t = bq.take();</span><br><span class="line">  <span class="keyword">while</span> (t != <span class="keyword">null</span>) &#123;</span><br><span class="line">    ts.add(t);</span><br><span class="line">    <span class="comment">// 非阻塞式获取一条任务</span></span><br><span class="line">    t = bq.poll();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> ts;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 批量执行任务</span></span><br><span class="line">execTasks(List&lt;Task&gt; ts) &#123;</span><br><span class="line">  <span class="comment">// 省略具体代码无数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="支持分阶段提交以提升性能"><a href="#支持分阶段提交以提升性能" class="headerlink" title="支持分阶段提交以提升性能"></a>支持分阶段提交以提升性能</h2><p>利用生产者 - 消费者模式还可以轻松地支持一种分阶段提交的应用场景。我们知道写文件如果同步刷盘性能会很慢，所以对于不是很重要的数据，我们往往采用异步刷盘的方式。我曾经参与过一个项目，其中的日志组件是自己实现的，采用的就是异步刷盘方式，刷盘的时机是：</p>
+<ol>
+<li>ERROR 级别的日志需要立即刷盘；</li>
+<li>数据积累到 500 条需要立即刷盘；</li>
+<li>存在未刷盘数据，且 5 秒钟内未曾刷盘，需要立即刷盘。</li>
+</ol>
+<p>这个日志组件的异步刷盘操作本质上其实就是一种<strong>分阶段提交</strong>。下面我们具体看看用生产者 - 消费者模式如何实现。在下面的示例代码中，可以通过调用 <code>info()</code>和<code>error()</code> 方法写入日志，这两个方法都是创建了一个日志任务 LogMsg，并添加到阻塞队列中，调用 <code>info()</code>和<code>error()</code> 方法的线程是生产者；而真正将日志写入文件的是消费者线程，在 Logger 这个类中，我们只创建了 1 个消费者线程，在这个消费者线程中，会根据刷盘规则执行刷盘操作，逻辑很简单，这里就不赘述了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Logger</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 任务队列  </span></span><br><span class="line">  <span class="keyword">final</span> BlockingQueue&lt;LogMsg&gt; bq = <span class="keyword">new</span> BlockingQueue&lt;&gt;();</span><br><span class="line">  <span class="comment">//flush 批量  </span></span><br><span class="line">  <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> batchSize=<span class="number">500</span>;</span><br><span class="line">  <span class="comment">// 只需要一个线程写日志</span></span><br><span class="line">  ExecutorService es = Executors.newFixedThreadPool(<span class="number">1</span>);</span><br><span class="line">  <span class="comment">// 启动写日志线程</span></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">    File file=File.createTempFile(<span class="string">"foo"</span>, <span class="string">".log"</span>);</span><br><span class="line">    <span class="keyword">final</span> FileWriter writer=<span class="keyword">new</span> FileWriter(file);</span><br><span class="line">    <span class="keyword">this</span>.es.execute(()-&gt;&#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 未刷盘日志数量</span></span><br><span class="line">        <span class="keyword">int</span> curIdx = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">long</span> preFT=System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">          LogMsg log = bq.poll(<span class="number">5</span>, TimeUnit.SECONDS);</span><br><span class="line">          <span class="comment">// 写日志</span></span><br><span class="line">          <span class="keyword">if</span> (log != <span class="keyword">null</span>) &#123;</span><br><span class="line">            writer.write(log.toString());</span><br><span class="line">            ++curIdx;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="comment">// 如果不存在未刷盘数据，则无需刷盘</span></span><br><span class="line">          <span class="keyword">if</span> (curIdx &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="comment">// 根据规则刷盘</span></span><br><span class="line">          <span class="keyword">if</span> (log!=<span class="keyword">null</span> &amp;&amp; log.level==LEVEL.ERROR ||</span><br><span class="line">              curIdx == batchSize ||</span><br><span class="line">              System.currentTimeMillis()-preFT&gt;<span class="number">5000</span>)&#123;</span><br><span class="line">            writer.flush();</span><br><span class="line">            curIdx = <span class="number">0</span>;</span><br><span class="line">            preFT=System.currentTimeMillis();</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">      &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          writer.flush();</span><br><span class="line">          writer.close();</span><br><span class="line">        &#125;<span class="keyword">catch</span>(IOException e)&#123;</span><br><span class="line">          e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);  </span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 写 INFO 级别日志</span></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">info</span><span class="params">(String msg)</span> </span>&#123;</span><br><span class="line">    bq.put(<span class="keyword">new</span> LogMsg(</span><br><span class="line">      LEVEL.INFO, msg));</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 写 ERROR 级别日志</span></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">error</span><span class="params">(String msg)</span> </span>&#123;</span><br><span class="line">    bq.put(<span class="keyword">new</span> LogMsg(</span><br><span class="line">      LEVEL.ERROR, msg));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 日志级别</span></span><br><span class="line"><span class="keyword">enum</span> LEVEL &#123;</span><br><span class="line">  INFO, ERROR</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LogMsg</span> </span>&#123;</span><br><span class="line">  LEVEL level;</span><br><span class="line">  String msg;</span><br><span class="line">  <span class="comment">// 省略构造函数实现</span></span><br><span class="line">  LogMsg(LEVEL lvl, String msg)&#123;&#125;</span><br><span class="line">  <span class="comment">// 省略 toString() 实现</span></span><br><span class="line">  <span class="function">String <span class="title">toString</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Java 语言提供的线程池本身就是一种生产者 - 消费者模式的实现，但是线程池中的线程每次只能从任务队列中消费一个任务来执行，对于大部分并发场景这种策略都没有问题。但是有些场景还是需要自己来实现，例如需要批量执行以及分阶段提交的场景。</p>
+<p>生产者 - 消费者模式在分布式计算中的应用也非常广泛。在分布式场景下，你可以借助分布式消息队列（MQ）来实现生产者 - 消费者模式。MQ 一般都会支持两种消息模型，一种是点对点模型，一种是发布订阅模型。这两种模型的区别在于，点对点模型里一个消息只会被一个消费者消费，和 Java 的线程池非常类似（Java 线程池的任务也只会被一个线程执行）；而发布订阅模型里一个消息会被多个消费者消费，本质上是一种消息的广播，在多线程编程领域，你可以结合观察者模式实现广播功能。</p>
+<h2 id="课后思考"><a href="#课后思考" class="headerlink" title="课后思考"></a>课后思考</h2><p>在日志组件异步刷盘的示例代码中，写日志的线程以 <code>while(true){}</code> 的方式执行，你有哪些办法可以优雅地终止这个线程呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.writer.execute(()-&gt;&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 未刷盘日志数量</span></span><br><span class="line">    <span class="keyword">int</span> curIdx = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">long</span> preFT=System.currentTimeMillis();</span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">    ......</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">catch</span>(Exception e) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>答：在应用系统中，日志系统一般都是最后关闭，因为它要为其他系统关闭提供写日志服务。所以日志系统关闭时需要把队列中所有日志都消费掉才能关闭。<br>可能需要在关闭日志系统时投入一个毒丸，表示没有新的日志写入。线程池在消费到毒丸时知道没有日志写入，将所有的日志刷盘，break循环体。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2020/01/28/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E4%B8%A4%E9%98%B6%E6%AE%B5%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F/>https://www.bcoder.top/2020/01/28/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E4%B8%A4%E9%98%B6%E6%AE%B5%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-28T19:34:35+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-28 19:34:35</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/java/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>java</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/juc/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>juc</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2020/01/28/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E4%B8%A4%E9%98%B6%E6%AE%B5%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F/&title=Java并发之两阶段生产者-消费者模式 - zln's blog&summary=Worker Thread 模式类比的是工厂里车间工人的工作模式。但其实在现实世界，工厂里还有一种流水线的工作模式，类比到编程领域，就是生产者 - 消费者模式。
+生产者 - 消费者模式在编程领域的应用也非常广泛，前面我们曾经提到，Java 线程池本质上就是用生产者 - 消费者模式实现的，所以每当使用线程池的时候，其实就是在应用生产者 - 消费者模式。
+当然，除了在线程池中的应用，为了提升性能，并发编程领域很多地方也都用到了生产者 - 消费者模式，例如 Log4j2 中异步 Appender 内部也用到了生产者 - 消费者模式。所以今天我们就来深入地聊聊生产者 - 消费者模式，看看它具体有哪些优点，以及如何提升系统的性能。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2020/01/28/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E4%B8%A4%E9%98%B6%E6%AE%B5%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F/&title=Java并发之两阶段生产者-消费者模式 - zln's blog&summary=Worker Thread 模式类比的是工厂里车间工人的工作模式。但其实在现实世界，工厂里还有一种流水线的工作模式，类比到编程领域，就是生产者 - 消费者模式。
+生产者 - 消费者模式在编程领域的应用也非常广泛，前面我们曾经提到，Java 线程池本质上就是用生产者 - 消费者模式实现的，所以每当使用线程池的时候，其实就是在应用生产者 - 消费者模式。
+当然，除了在线程池中的应用，为了提升性能，并发编程领域很多地方也都用到了生产者 - 消费者模式，例如 Log4j2 中异步 Appender 内部也用到了生产者 - 消费者模式。所以今天我们就来深入地聊聊生产者 - 消费者模式，看看它具体有哪些优点，以及如何提升系统的性能。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2020/01/28/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E4%B8%A4%E9%98%B6%E6%AE%B5%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F/&title=Java并发之两阶段生产者-消费者模式 - zln's blog&summary=Worker Thread 模式类比的是工厂里车间工人的工作模式。但其实在现实世界，工厂里还有一种流水线的工作模式，类比到编程领域，就是生产者 - 消费者模式。
+生产者 - 消费者模式在编程领域的应用也非常广泛，前面我们曾经提到，Java 线程池本质上就是用生产者 - 消费者模式实现的，所以每当使用线程池的时候，其实就是在应用生产者 - 消费者模式。
+当然，除了在线程池中的应用，为了提升性能，并发编程领域很多地方也都用到了生产者 - 消费者模式，例如 Log4j2 中异步 Appender 内部也用到了生产者 - 消费者模式。所以今天我们就来深入地聊聊生产者 - 消费者模式，看看它具体有哪些优点，以及如何提升系统的性能。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8BGuava-RateLimiter/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>Java并发之Guava RateLimiter</p>
+                <p class='content'>Guava 是 Google 开源的 Java 类库，提供了一个工具类 RateLimiter。我们先来看看 RateLimiter 的使用，让你对限流有个感官的印象。假设我们有一个线程池，它每...</p>
+              </a>
+            
+            
+              <a class='next' href='/2020/01/28/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E4%B8%A4%E9%98%B6%E6%AE%B5%E7%BB%88%E6%AD%A2%E6%A8%A1%E5%BC%8F/'>
+                <p class='title'>Java并发之两阶段终止模式<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>前面文章我们讲述的内容，从纯技术的角度看，都是启动多线程去执行一个异步任务。既启动，那又该如何终止呢？今天咱们就从技术的角度聊聊如何优雅地终止线程，正所谓有始有终。
+线程执行完或者出现异常就会进...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'Java并发之两阶段生产者-消费者模式',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#生产者-消费者模式的优点"><span class="toc-text">生产者 - 消费者模式的优点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支持批量执行以提升性能"><span class="toc-text">支持批量执行以提升性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支持分阶段提交以提升性能"><span class="toc-text">支持分阶段提交以提升性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#课后思考"><span class="toc-text">课后思考</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

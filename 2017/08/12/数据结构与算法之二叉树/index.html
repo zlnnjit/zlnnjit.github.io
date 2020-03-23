@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>数据结构与算法之二叉树 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="java,算法,二叉树">
+  
+  
+    <meta name="description" content="数据结构可分为线性结构和非线性结构两大类。。一般的，线性结构只能用来描述数据元素之间的线性顺序关系，而很难反映元素之间的层次(分支)关系。本文将要讨论一种非线性数据结构，所谓非线性结构是指在结构中至少存在一个数据元素，它具有两个或两个以上的直接后继或直接前驱。
+树形结构，是一类非常重要的非线性数据结构，它用于描述...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/08/12/%C2%96%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%8F%89%E6%A0%91/">
+        数据结构与算法之二叉树
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>数据结构与算法</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-08-12 21:02:10</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <p>数据结构可分为线性结构和非线性结构两大类。。一般的，线性结构只能用来描述数据元素之间的线性顺序关系，而很难反映元素之间的层次(分支)关系。本文将要讨论一种非线性数据结构，所谓非线性结构是指在结构中至少存在一个数据元素，它具有两个或两个以上的直接后继或直接前驱。</p>
+<p>树形结构，是一类非常重要的非线性数据结构，它用于描述数据元素之间的层次关系。树形结构在客观世界中广泛存在，如人类社会的族谱和各种社会组织机构都可用树来形象表示。经常用到的两种结构是树和二叉树。</p>
+<p>二叉树是一种非常重要的数据结构，它同时具有数组和链表各自的特点：它可以像数组一样快速查找，也可以像链表一样快速添加。但是它也有自己的缺点：删除操作复杂。</p>
+<a id="more"></a>
+
+<h2 id="二叉树基本概念"><a href="#二叉树基本概念" class="headerlink" title="二叉树基本概念"></a>二叉树基本概念</h2><p><code>树</code>：是包含n(n≧0)个结点的有限集。在任意一棵非空树中：<br>(1)  有且仅有一个特定的称为根(Root)的结点；<br>(2)  当n&gt;1时，其余的结点可分为m(m&gt;0)个互不相交的子集T1,T2,T3…Tm，其中每个子集又是一棵树，并称其为子树(Subtree)。</p>
+<p>树也可以这样定义： 树是由根结点和若干棵子树构成的。可以看出，在树的定义中用了递归的概念，即在树的定义中又用到树的定义，它道出了树的固有特性，因此递归算法是树结构算法的显著特点。</p>
+<p>比如下面两个都是树</p>
+<p><img src="http://img.bcoder.top/2017.08.12/1.png" alt="数据结构与算法之二叉树"></p>
+<p><code>二叉树</code><br>由结点的有限集合构成:或者为空集<br>或者由一个根结点及两棵不相交的分别称作这个根的左子树和右子树的二叉树(它们也是结点的集合)组成<br>这是个递归的定义。<br>二叉树可以是空集合，因此根可以有空的左子树或右子树，或者左右子树皆为空</p>
+<p>二叉树的五种基本形态如下图所示：</p>
+<p><img src="http://img.bcoder.top/2017.08.12/2.png" alt="数据结构与算法之二叉树"></p>
+<p><code>满二叉树</code>:<br>如果一棵二叉树的任何结点，或者是树叶，或者恰有两棵非空子树，则此二叉树称作满二叉树 </p>
+<p><img src="http://img.bcoder.top/2017.08.12/4.png" alt="数据结构与算法之二叉树"></p>
+<p><code>完全二叉樹</code>:<br>如果一棵二叉树除最后一层外，其余所有的节点都是满的，并且最后一层或者是满的，或者仅在右边缺少若干连续的节点，则此二叉树就是完全二叉树<br>在许多算法和算法分析中都明显地或隐含地用到完全二叉树的概念</p>
+<p><img src="http://img.bcoder.top/2017.08.12/3.png" alt="数据结构与算法之二叉树"></p>
+<p>注意：满二叉树是一种特殊的完全二叉树。当完全二叉树最后一层的所有节点都是满的情况下，这棵完全二叉树就变成了满二叉树。</p>
+<p><code>结点(node)</code>：表示树中的元素，包括数据项及若干指向其子树的分支</p>
+<p><code>结点的度(degree)</code>：结点拥有的子树数</p>
+<p><code>叶子(leaf)</code>：度为0的结点</p>
+<p><code>孩子(child)</code>：结点子树的根称为该结点的孩子</p>
+<p><code>双亲(parents)</code>：孩子结点的上层结点叫该结点的双亲</p>
+<p><code>兄弟(sibling)</code>：同一双亲的孩子</p>
+<p><code>树的度</code>：一棵树中最大的结点度数</p>
+<p><code>树的深度</code>：树中叶子结点所在的最大层次</p>
+<p><code>结点的层次(level)</code>：从根结点算起，根为第一层，它的孩子为第二层</p>
+<p><code>深度(depth)</code>：树中结点的最大层次数</p>
+<p><code>森林(forest)</code>：m(m&gt;0)棵互不相交的树的集合</p>
+<p><strong>二叉树的特点</strong><br>（1）树执行查找、删除、插入的时间复杂度都是<code>O(lgN)</code></p>
+<p>（2）遍历二叉树的方法包括<code>前序</code>、<code>中序</code>、<code>后序</code></p>
+<p>（3）非平衡树指的是根的左右两边的子节点的数量不一致</p>
+<p>（4） 在非空二叉树中，第i层的结点总数不超过 , i&gt;=1；</p>
+<p>（5）深度为h的二叉树最多有个结点(h&gt;=1)，最少有h个结点；</p>
+<p><strong>树和二叉树的两个重要区别如下：</strong><br>1.树中节点的最大度数没有限制，而二叉树节点的最大度数为2，也就是说，二叉树的节点最大度数为2。<br>2.无序树的节点无左右之分，而二叉树的节点有左右之分，也就是说二叉树是有序树。</p>
+<p><strong>二叉树有如下几个性质：</strong></p>
+<p>（1）二叉树的第 i 层上的节点至多有<code>2^(i-1)</code>。 （i &gt; 0）</p>
+<p>（2）深度为 k 的二叉树至多有<code>2^K   -   1</code>个节点。<code>满二叉树</code>的每层节点的数量依次为1,2,4,8，……，因此深度为 k 的满二叉树包含的节点数为公比为2的等比数列的前k项总合，即<code>2^K  - 1</code>。</p>
+<p>（3）在任何一棵二叉树中，如果其叶子节点的数量为a，度为2的字节点数量为b，则<code>a = b + 1</code>。<br>假设度为1的节点数量为c,由此可知，二叉树的节点数为a+b+c,二叉树的边数为2a+b<br>因为边数=节点数-1，代入可得：a+b+c=2a+b-1，因此a=b+1.</p>
+<p>（4）具有n个节点的完全二叉树的深度为<code>lg（n+1）</code>。</p>
+<p><strong>对于一棵具有 n 个节点的完全二叉树的节点按层自左向右编号，则对任意编号为 i （n &gt;= i &gt;= 1）的节点具有如下性质：</strong></p>
+<p>（1）当 i =1时，节点 i 是二叉树的根；若 i &gt; 1，则节点的父节点是 i/2。</p>
+<p>（2）若 2i &lt;= n，则节点 i 有左孩子，左孩子的编号为 2i，否则，节点无左孩子，并且是叶子节点。</p>
+<p>（3）若 2i + 1 &lt;= n，则节点 i 有右孩子，右孩子的编号是 2i+ 1；否则节点无右孩子。</p>
+<p>（4）1 ~ n/2 范围的节点都是有孩子的非叶子节点，其余的节点全部都是叶子节点，编号为 n/2 的节点可能只有左子节点，也极有可能有左子节点，也有右子节点。</p>
+<p><strong>二叉树的存储：</strong><br>（1）顺序存储：采用数组来记录二叉树的所有节点。<br>（2）二叉链表存储：每个节点保留一个left、right域，分别指向其左、右子节点。<br>（3）三叉链表存储：每个节点保留一个left、right、parent域，分别指向其左、右子节点和父节点。</p>
+<h2 id="二叉树的遍历"><a href="#二叉树的遍历" class="headerlink" title="二叉树的遍历"></a>二叉树的遍历</h2><p>我们规定有三种遍历二叉树的方式，分别是前序、中序，后序。</p>
+<p>前序遍历：根节点-&gt;左子树-&gt;右子树<br>中序遍历：左子树-&gt;根节点-&gt;右子树<br>后序遍历：左子树-&gt;右子树-&gt;根节点</p>
+<p>还有一种叫层次遍历的二叉树的遍历方式，见名知意，就是按照层级，从左到右进行遍历。</p>
+<p>首先，我们先先来规定一个二叉树：</p>
+<p><img src="http://img.bcoder.top/2017.08.12/5.png" alt="数据结构与算法之二叉树"></p>
+<p>则这个二叉树的遍历是：</p>
+<p>前序遍历：ABDHECFGI<br>中序遍历：HDBEAFCIG<br>后序遍历：HDEBFIGCA<br>层次遍历：ABCDEFGHI</p>
+<p>下面来用java实现二叉树的遍历：</p>
+<p>首先，构造二叉树节点，这里我们构造带有泛型的Node节点</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">T</span>&gt;</span>&#123;</span><br><span class="line">	<span class="keyword">private</span> Node&lt;T&gt; left;</span><br><span class="line">	<span class="keyword">private</span> Node&lt;T&gt; right;</span><br><span class="line">	<span class="keyword">private</span> T value;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> Node&lt;T&gt; <span class="title">getLeft</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> left;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setLeft</span><span class="params">(Node&lt;T&gt; left)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.left = left;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> Node&lt;T&gt; <span class="title">getRight</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> right;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setRight</span><span class="params">(Node&lt;T&gt; right)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.right = right;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> T <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> value;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.value = value;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(Node&lt;T&gt; left, Node&lt;T&gt; right, T value)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>();</span><br><span class="line">		<span class="keyword">this</span>.left = left;</span><br><span class="line">		<span class="keyword">this</span>.right = right;</span><br><span class="line">		<span class="keyword">this</span>.value = value;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面使用静态方法来构造图中的二叉树：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> Node&lt;String&gt; nodeA=<span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">static</span> Node&lt;String&gt; nodeB=<span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">static</span> Node&lt;String&gt; nodeC=<span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">static</span> Node&lt;String&gt; nodeD=<span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">static</span> Node&lt;String&gt; nodeE=<span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">static</span> Node&lt;String&gt; nodeF=<span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">static</span> Node&lt;String&gt; nodeG=<span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">static</span> Node&lt;String&gt; nodeH=<span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">static</span> Node&lt;String&gt; nodeI=<span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span>&#123;</span><br><span class="line">	nodeI=<span class="keyword">new</span> Node(<span class="keyword">null</span>, <span class="keyword">null</span>, <span class="string">"I"</span>);</span><br><span class="line">	nodeH=<span class="keyword">new</span> Node(<span class="keyword">null</span>, <span class="keyword">null</span>, <span class="string">"H"</span>);</span><br><span class="line">	nodeG=<span class="keyword">new</span> Node(nodeI, <span class="keyword">null</span>, <span class="string">"G"</span>);</span><br><span class="line">	nodeF=<span class="keyword">new</span> Node(<span class="keyword">null</span>, <span class="keyword">null</span>, <span class="string">"F"</span>);</span><br><span class="line">	 nodeE=<span class="keyword">new</span> Node(<span class="keyword">null</span>, <span class="keyword">null</span>, <span class="string">"E"</span>);</span><br><span class="line">	nodeD=<span class="keyword">new</span> Node(nodeH, <span class="keyword">null</span>, <span class="string">"D"</span>);</span><br><span class="line">	nodeC=<span class="keyword">new</span> Node(nodeF, nodeG, <span class="string">"C"</span>);</span><br><span class="line">	nodeB=<span class="keyword">new</span> Node(nodeD, nodeE, <span class="string">"B"</span>);</span><br><span class="line">	 nodeA=<span class="keyword">new</span> Node(nodeB, nodeC, <span class="string">"A"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="前序遍历"><a href="#前序遍历" class="headerlink" title="前序遍历"></a>前序遍历</h3><p>下面先来写采用递归的方式写前序遍历：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> &lt;T&gt;  <span class="function"><span class="keyword">void</span> <span class="title">preOrderTraverse</span><span class="params">(Node&lt;T&gt; root)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(root!=<span class="keyword">null</span>)&#123;</span><br><span class="line">		System.out.print(root.getValue());</span><br><span class="line">		preOrderTraverse(root.getLeft());</span><br><span class="line">		preOrderTraverse(root.getRight());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">Test</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testPreOrderTraverse</span><span class="params">()</span></span>&#123;</span><br><span class="line">	System.out.print(<span class="string">"前序遍历为："</span>);</span><br><span class="line">	preOrderTraverse(nodeA);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">前序遍历为：ABDHECFGI</span><br></pre></td></tr></table></figure>
+
+<p>下面采用非递归的方式写前序遍历：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Test</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">preOrderTraverse2</span><span class="params">()</span></span>&#123;</span><br><span class="line">	System.out.print(<span class="string">"前序遍历为："</span>);</span><br><span class="line">	Stack&lt;Node&lt;String&gt;&gt; stack = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line">	Node node= nodeA;</span><br><span class="line">	<span class="keyword">while</span>(node!=<span class="keyword">null</span>||!stack.isEmpty())&#123;</span><br><span class="line">		<span class="keyword">while</span>(node!=<span class="keyword">null</span>)&#123;</span><br><span class="line">			System.out.print(node.getValue());</span><br><span class="line">			stack.push(node);</span><br><span class="line">			node=node.getLeft();</span><br><span class="line">		&#125;</span><br><span class="line">		node = stack.pop();</span><br><span class="line">		node = node.getRight();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">前序遍历为：ABDHECFGI</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="中序遍历"><a href="#中序遍历" class="headerlink" title="中序遍历"></a>中序遍历</h3><p>下面先来写采用递归的方式写中序遍历：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> &lt;T&gt;<span class="function"><span class="keyword">void</span> <span class="title">inOrderTraverse</span><span class="params">(Node&lt;T&gt; node)</span> </span>&#123;  </span><br><span class="line">       <span class="keyword">if</span> (node != <span class="keyword">null</span>) &#123;  </span><br><span class="line">           inOrderTraverse(node.getLeft());  </span><br><span class="line">           System.out.print(node.getValue());  </span><br><span class="line">           inOrderTraverse(node.getRight());  </span><br><span class="line">       &#125;  </span><br><span class="line">   &#125; </span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testInOrderTraverse</span><span class="params">()</span></span>&#123;</span><br><span class="line">	System.out.print(<span class="string">"中序遍历为："</span>);</span><br><span class="line">	inOrderTraverse(nodeA);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">中序遍历为：HDBEAFCIG</span><br></pre></td></tr></table></figure>
+
+<p>下面采用非递归的方式写中序遍历：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">inOrderTraverse2</span><span class="params">()</span></span>&#123;</span><br><span class="line">	System.out.print(<span class="string">"中序遍历为："</span>);</span><br><span class="line">	Stack&lt;Node&lt;String&gt;&gt; stack = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line">	Node node= nodeA;</span><br><span class="line">	<span class="keyword">while</span>(node!=<span class="keyword">null</span>||!stack.isEmpty())&#123;</span><br><span class="line">		<span class="keyword">while</span>(node!=<span class="keyword">null</span>)&#123;</span><br><span class="line">			stack.push(node);</span><br><span class="line">			node=node.getLeft();</span><br><span class="line">		&#125;</span><br><span class="line">		node = stack.pop();</span><br><span class="line">		System.out.print(node.getValue());</span><br><span class="line">		node = node.getRight();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">中遍历为：HDBEAFCIG</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="后序遍历"><a href="#后序遍历" class="headerlink" title="后序遍历"></a>后序遍历</h3><p>下面先来写采用递归的方式写后序遍历：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> &lt;T&gt;  <span class="function"><span class="keyword">void</span> <span class="title">postOrderTraverse</span><span class="params">(Node&lt;T&gt; root)</span></span>&#123;</span><br><span class="line"><span class="keyword">if</span>(root!=<span class="keyword">null</span>)&#123;</span><br><span class="line">		postOrderTraverse(root.getLeft());</span><br><span class="line">		postOrderTraverse(root.getRight());</span><br><span class="line">		System.out.print(root.getValue());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testpostOrderTraverse</span><span class="params">()</span></span>&#123;</span><br><span class="line">	System.out.print(<span class="string">"后序遍历为："</span>);</span><br><span class="line">	postOrderTraverse(nodeA);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">后序遍历为：HDEBFIGCA</span><br></pre></td></tr></table></figure>
+
+
+
+<p>下面采用非递归的方式写后序遍历：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postOrderTraverse2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	System.out.print(<span class="string">"后序遍历为："</span>);</span><br><span class="line">	Stack&lt;Node&lt;String&gt;&gt; stack = <span class="keyword">new</span> Stack&lt;Node&lt;String&gt;&gt;();</span><br><span class="line">	Node&lt;String&gt; node = nodeA;</span><br><span class="line">	Node&lt;String&gt; preNode = <span class="keyword">null</span>;<span class="comment">// 表示最近一次访问的节点</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> (node != <span class="keyword">null</span> || !stack.isEmpty()) &#123;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">while</span> (node != <span class="keyword">null</span>) &#123;</span><br><span class="line">			stack.push(node);</span><br><span class="line">			node = node.getLeft();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		node = stack.peek();</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (node.getRight() == <span class="keyword">null</span> || node.getRight() == preNode) &#123;</span><br><span class="line">			System.out.print(node.getValue());</span><br><span class="line">			node = stack.pop();</span><br><span class="line">			preNode = node;</span><br><span class="line">			node = <span class="keyword">null</span>;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			node = node.getRight();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">后序遍历为：HDEBFIGCA</span><br></pre></td></tr></table></figure>
+
+<p>我们知道三种遍历方式后，我们可以得到如下重要的结论，这些结论在笔试中可能会经常出现：</p>
+<p>已知先序和后序，不能唯一确定二叉树<br>已知先序或后序，而又知中序，则能唯一确定二叉树<br>先序、中序相同时，二叉树没有左子树<br>后序、中序相同时，二叉树没有右子树<br>后序、先序相同时，只有一个根节点</p>
+<h3 id="层级遍历"><a href="#层级遍历" class="headerlink" title="层级遍历"></a>层级遍历</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">levelIterator</span><span class="params">()</span></span>&#123;</span><br><span class="line">   	System.out.print(<span class="string">"层次遍历为："</span>);</span><br><span class="line">   	Queue&lt;Node&lt;String&gt;&gt; queue = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">   	Node node = nodeA;</span><br><span class="line">   	queue.offer(node);</span><br><span class="line">   	<span class="keyword">while</span>(!queue.isEmpty()) &#123;</span><br><span class="line">   		node = queue.poll();</span><br><span class="line">   		System.out.print(node.getValue());</span><br><span class="line">   		<span class="keyword">if</span>(node.getLeft()!=<span class="keyword">null</span>) &#123;</span><br><span class="line">   			queue.offer(node.getLeft());</span><br><span class="line">   		&#125;</span><br><span class="line">   		<span class="keyword">if</span>(node.getRight()!=<span class="keyword">null</span>) &#123;</span><br><span class="line">   			queue.offer(node.getRight());</span><br><span class="line">   		&#125;</span><br><span class="line">   	&#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">层次遍历为：ABCDEFGHI</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="二叉树其它信息获取"><a href="#二叉树其它信息获取" class="headerlink" title="二叉树其它信息获取"></a>二叉树其它信息获取</h2><p>还是以之前的二叉树为例子，来获取二叉树的其他信息：</p>
+<p><img src="http://img.bcoder.top/2017.08.12/5.png" alt="数据结构与算法之二叉树"></p>
+<p><strong>求树的最大深度</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">maxDepth</span><span class="params">(Node root)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (root == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">int</span> left = maxDepth(root.getLeft());</span><br><span class="line">		<span class="keyword">int</span> right = maxDepth(root.getRight());</span><br><span class="line">		<span class="keyword">return</span> Math.max(left, right) + <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testMaxDepth</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	System.out.println(<span class="string">"树的最大深度为："</span> + maxDepth(nodeA));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">树的最大深度为：4</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>求树的最小深度</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> flag = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">minDepth</span><span class="params">(Node root)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (flag &amp;&amp; root == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (!flag &amp;&amp; root == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> Integer.MAX_VALUE;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (root.getLeft() == <span class="keyword">null</span> &amp;&amp; root.getRight() == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> Math.min(minDepth(root.getLeft()), minDepth(root.getRight())) + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testMinDepth</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	System.out.println(<span class="string">"树的最小深度为："</span> + minDepth(nodeA));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">树的最小深度为：3</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>求二叉树的总节点数</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">totalNodeNumber</span><span class="params">(Node root)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (root == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">int</span> left = totalNodeNumber(root.getLeft());</span><br><span class="line">		<span class="keyword">int</span> right = totalNodeNumber(root.getRight());</span><br><span class="line">		<span class="keyword">return</span> left + right + <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testTotalNodeNumber</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	System.out.println(<span class="string">"树的总节点数为："</span> + totalNodeNumber(nodeA));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">树的总节点数为：9</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>求叶子节点数</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">numsOfNoChildNode</span><span class="params">(Node root)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (root == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (root.getLeft() == <span class="keyword">null</span> &amp;&amp; root.getRight() == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> numsOfNoChildNode(root.getLeft()) + numsOfNoChildNode(root.getRight());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testNumsOfNoChildNode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	System.out.println(<span class="string">"二叉树的叶子节点数为:"</span> + numsOfNoChildNode(nodeA));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">二叉树的叶子节点数为:4</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>打印所有的叶子节点</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">printNoChildNode</span><span class="params">(Node root)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (root == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (root.getLeft() == <span class="keyword">null</span> &amp;&amp; root.getRight() == <span class="keyword">null</span>) &#123;</span><br><span class="line">		System.out.print(root.getValue());</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	printNoChildNode(root.getLeft());</span><br><span class="line">	printNoChildNode(root.getRight());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testPrintNoChildNode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	System.out.print(<span class="string">"二叉树的叶子节点为:"</span>);</span><br><span class="line">	printNoChildNode(nodeA);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">二叉树的叶子节点为:HEFI</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>求第k层的节点数</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">numsLevelTreeNodeOfk</span><span class="params">(Node root, <span class="keyword">int</span> k)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (root == <span class="keyword">null</span> || k &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (k == <span class="number">1</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> numsLevelTreeNodeOfk(root.getLeft(), k - <span class="number">1</span>) + numsLevelTreeNodeOfk(root.getRight(), k - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testNumsLevelTreeNodeOfk</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	System.out.println(<span class="string">"二叉树的第三层节点数为:"</span> + numsOfNoChildNode(nodeA));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">二叉树的第三层节点数为:4</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>判断二叉树是不是完全二叉树</strong></p>
+<p>采用广度优先遍历，从根节点开始，入队列，如果队列不为空，循环。遇到第一个没有左儿子或者右儿子的节点，设置标志位，如果之后再遇到有左/右儿子的节点，那么这不是一颗完全二叉树。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isCompleteTreeNode</span><span class="params">(Node&lt;String&gt; root)</span></span>&#123;</span><br><span class="line"> <span class="keyword">boolean</span> result = <span class="keyword">true</span>;</span><br><span class="line">	 <span class="keyword">if</span>(root==<span class="keyword">null</span>)&#123;</span><br><span class="line">		 result =  <span class="keyword">false</span>;</span><br><span class="line">	 &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		 <span class="keyword">boolean</span> flag = <span class="keyword">false</span>;</span><br><span class="line">		 <span class="keyword">boolean</span> child = <span class="keyword">true</span>;</span><br><span class="line">	</span><br><span class="line">		Queue&lt;Node&gt; queue = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">		</span><br><span class="line">		 queue.offer(root);</span><br><span class="line">		 <span class="keyword">while</span>(!queue.isEmpty())&#123;</span><br><span class="line">			 Node&lt;String&gt; concurrent = queue.remove();</span><br><span class="line">			 </span><br><span class="line">			 <span class="keyword">if</span>(!child&amp;&amp;(concurrent.getLeft()!=<span class="keyword">null</span>||concurrent.getRight()!=<span class="keyword">null</span>))&#123;</span><br><span class="line">				 result = <span class="keyword">false</span>;</span><br><span class="line">				 <span class="keyword">break</span>;</span><br><span class="line">			 &#125;</span><br><span class="line">			 </span><br><span class="line">			 <span class="keyword">if</span>(concurrent.getLeft()!=<span class="keyword">null</span>&amp;&amp;concurrent.getRight()!=<span class="keyword">null</span>)&#123;</span><br><span class="line">				 <span class="keyword">if</span>(!flag)&#123;</span><br><span class="line">					 queue.add(concurrent.getLeft());</span><br><span class="line">					 queue.add(concurrent.getRight());</span><br><span class="line">				 &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">					 result = <span class="keyword">false</span>;</span><br><span class="line">					 <span class="keyword">break</span>;</span><br><span class="line">				 &#125;</span><br><span class="line">			 &#125;</span><br><span class="line">			 <span class="keyword">if</span>(concurrent.getLeft()==<span class="keyword">null</span>&amp;&amp;concurrent.getRight()!=<span class="keyword">null</span>)&#123;</span><br><span class="line">				 result = <span class="keyword">false</span>;</span><br><span class="line">				 <span class="keyword">break</span>;</span><br><span class="line">			 &#125;</span><br><span class="line">			 </span><br><span class="line">			 <span class="keyword">if</span>(concurrent.getLeft()!=<span class="keyword">null</span>&amp;&amp;concurrent.getRight()==<span class="keyword">null</span>)&#123;</span><br><span class="line">				 <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">					 result = <span class="keyword">false</span>;</span><br><span class="line">					 <span class="keyword">break</span>;</span><br><span class="line">				 &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">					 flag=<span class="keyword">true</span>;</span><br><span class="line">					 queue.add(concurrent.getLeft());</span><br><span class="line">				 &#125;</span><br><span class="line">			 &#125;</span><br><span class="line"></span><br><span class="line">			 <span class="keyword">if</span>(concurrent.getLeft()==<span class="keyword">null</span>&amp;&amp;concurrent.getRight()==<span class="keyword">null</span>)&#123;</span><br><span class="line">					 </span><br><span class="line">				child = <span class="keyword">false</span>;</span><br><span class="line">			 &#125;</span><br><span class="line"></span><br><span class="line">			 </span><br><span class="line">		 &#125;</span><br><span class="line"></span><br><span class="line">	 &#125;</span><br><span class="line"></span><br><span class="line">	 <span class="keyword">return</span> result;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"> <span class="meta">@Test</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testIsCompleteTreeNode</span><span class="params">()</span></span>&#123;</span><br><span class="line">	 System.out.println(<span class="string">"该二叉树是否是完全二叉树:"</span>+isCompleteTreeNode(nodeA));</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">该二叉树是否是完全二叉树:false</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>判断两个二叉树是否相同</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isSameTreeNode</span><span class="params">(Node root1, Node root2)</span> </span>&#123;</span><br><span class="line"><span class="keyword">if</span> (root1 == <span class="keyword">null</span> &amp;&amp; root2 == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (root1 == <span class="keyword">null</span> || root2 == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span>(root1.getValue()!=root2.getValue())&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">boolean</span> left = isSameTreeNode(root1.getLeft(), root2.getLeft());</span><br><span class="line">	<span class="keyword">boolean</span> right = isSameTreeNode(root1.getRight(), root2.getRight());</span><br><span class="line">	<span class="keyword">return</span> left &amp;&amp; right;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testIsSameTreeNode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	System.out.println(<span class="string">"两颗二叉树是否是完全相同:"</span> + isSameTreeNode(nodeA, nodeA));</span><br><span class="line">	System.out.println(<span class="string">"两颗二叉树是否是完全相同:"</span> + isSameTreeNode(nodeA, nodeB));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">两颗二叉树是否是完全相同:true</span><br><span class="line">两颗二叉树是否是完全相同:false</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>判断两个二叉树是否互为镜像</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isMrror</span><span class="params">(Node root1, Node root2)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (root1 == <span class="keyword">null</span> &amp;&amp; root2 == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (root1 == <span class="keyword">null</span> || root2 == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span>(root1.getValue()!=root2.getValue())&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">boolean</span> left = isSameTreeNode(root1.getLeft(), root2.getRight());</span><br><span class="line">	<span class="keyword">boolean</span> right = isSameTreeNode(root1.getRight(), root2.getLeft());</span><br><span class="line">	<span class="keyword">return</span> left &amp;&amp; right;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testIsMrror</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	System.out.println(<span class="string">"两颗二叉树是否是互为镜像:"</span> + isMrror(nodeA, nodeA));</span><br><span class="line">	System.out.println(<span class="string">"两颗二叉树是否是互为镜像:"</span> + isMrror(nodeA, nodeB));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">两颗二叉树是否是互为镜像:false</span><br><span class="line">两颗二叉树是否是互为镜像:false</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>将二叉树变成翻转二叉树或者镜像二叉树</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Node <span class="title">ToMirrorTree</span><span class="params">(Node root)</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span>(root == <span class="keyword">null</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       Node left = ToMirrorTree(root.getLeft());</span><br><span class="line">       Node right = ToMirrorTree(root.getRight());</span><br><span class="line">       root.setLeft(right);</span><br><span class="line">       root.setRight(left);</span><br><span class="line">       <span class="keyword">return</span> root;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testToMirrorTree</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	Node newNode = ToMirrorTree(nodeA);</span><br><span class="line">	System.out.print(<span class="string">"前序遍历为："</span>);</span><br><span class="line">	preOrderTraverse(newNode);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">前序遍历为：ACGIFBEDH</span><br></pre></td></tr></table></figure>
+
+<p>本篇文章的整个代码已经放在了github上，有兴趣的可以看看，链接为：<a href="https://github.com/zlnnjit/Algorithms-for-Java/blob/master/src/top/bcoder/Tree.java" target="_blank" rel="noopener">https://github.com/zlnnjit/Algorithms-for-Java/blob/master/src/top/bcoder/Tree.java</a></p>
+<p>树的部分讲解先到这里，这里的比较基础，后面遇到新的东西会继续补充。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/08/12/%C2%96%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%8F%89%E6%A0%91/>https://www.bcoder.top/2017/08/12/%C2%96%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%8F%89%E6%A0%91/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/java/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>java</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E7%AE%97%E6%B3%95/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>算法</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>二叉树</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/08/12/%C2%96%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%8F%89%E6%A0%91/&title=数据结构与算法之二叉树 - zln's blog&summary=数据结构可分为线性结构和非线性结构两大类。。一般的，线性结构只能用来描述数据元素之间的线性顺序关系，而很难反映元素之间的层次(分支)关系。本文将要讨论一种非线性数据结构，所谓非线性结构是指在结构中至少存在一个数据元素，它具有两个或两个以上的直接后继或直接前驱。
+树形结构，是一类非常重要的非线性数据结构，它用于描述数据元素之间的层次关系。树形结构在客观世界中广泛存在，如人类社会的族谱和各种社会组织机构都可用树来形象表示。经常用到的两种结构是树和二叉树。
+二叉树是一种非常重要的数据结构，它同时具有数组和链表各自的特点：它可以像数组一样快速查找，也可以像链表一样快速添加。但是它也有自己的缺点：删除操作复杂。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/08/12/%C2%96%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%8F%89%E6%A0%91/&title=数据结构与算法之二叉树 - zln's blog&summary=数据结构可分为线性结构和非线性结构两大类。。一般的，线性结构只能用来描述数据元素之间的线性顺序关系，而很难反映元素之间的层次(分支)关系。本文将要讨论一种非线性数据结构，所谓非线性结构是指在结构中至少存在一个数据元素，它具有两个或两个以上的直接后继或直接前驱。
+树形结构，是一类非常重要的非线性数据结构，它用于描述数据元素之间的层次关系。树形结构在客观世界中广泛存在，如人类社会的族谱和各种社会组织机构都可用树来形象表示。经常用到的两种结构是树和二叉树。
+二叉树是一种非常重要的数据结构，它同时具有数组和链表各自的特点：它可以像数组一样快速查找，也可以像链表一样快速添加。但是它也有自己的缺点：删除操作复杂。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/08/12/%C2%96%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%8F%89%E6%A0%91/&title=数据结构与算法之二叉树 - zln's blog&summary=数据结构可分为线性结构和非线性结构两大类。。一般的，线性结构只能用来描述数据元素之间的线性顺序关系，而很难反映元素之间的层次(分支)关系。本文将要讨论一种非线性数据结构，所谓非线性结构是指在结构中至少存在一个数据元素，它具有两个或两个以上的直接后继或直接前驱。
+树形结构，是一类非常重要的非线性数据结构，它用于描述数据元素之间的层次关系。树形结构在客观世界中广泛存在，如人类社会的族谱和各种社会组织机构都可用树来形象表示。经常用到的两种结构是树和二叉树。
+二叉树是一种非常重要的数据结构，它同时具有数组和链表各自的特点：它可以像数组一样快速查找，也可以像链表一样快速添加。但是它也有自己的缺点：删除操作复杂。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/09/01/OpenFlow1-3%E6%80%BB%E7%BB%93/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>OpenFlow1.3总结</p>
+                <p class='content'>SDN交换机组成OpenFlow交换机包括一个或多个流表、一个组表和一个连接外部控制器的OpenFlow信道，其中流表和组表负责分组查找和转发。控制器与交换机进行通信，并通过OpenFlow协议...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/08/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F/'>
+                <p class='title'>数据结构与算法之排序<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>概述排序算法无论是在日常的编码中亦或者是面试中都经常出现，比较常见的像冒泡排序法，这应该是大家入门是必须要会的排序算法，下面使用java语言实现几种常用的排序。
+这里先贴出两张思维导图：
+第一张...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '数据结构与算法之二叉树',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#二叉树基本概念"><span class="toc-text">二叉树基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二叉树的遍历"><span class="toc-text">二叉树的遍历</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#前序遍历"><span class="toc-text">前序遍历</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#中序遍历"><span class="toc-text">中序遍历</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#后序遍历"><span class="toc-text">后序遍历</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#层级遍历"><span class="toc-text">层级遍历</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二叉树其它信息获取"><span class="toc-text">二叉树其它信息获取</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

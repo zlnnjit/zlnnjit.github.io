@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>消息队列之高并发下的垃圾回收 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="中间件,消息队列">
+  
+  
+    <meta name="description" content="不知道你有没有发现，在高并发、高吞吐量的极限情况下，简单的事情就会变得没有那么简单了。一个业务逻辑非常简单的微服务，日常情况下都能稳定运行，为什么一到大促就卡死甚至进程挂掉？再比如，一个做数据汇总的应用，按照小时、天这样的粒度进行数据汇总都没问题，到年底需要汇总全年数据的时候，没等数据汇总出来，程序就死掉了。">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2019/11/30/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8B%E9%AB%98%E5%B9%B6%E5%8F%91%E4%B8%8B%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/">
+        消息队列之高并发下的垃圾回收
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/cs-inter/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>cs-inter</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2019-11-30 19:53:22</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <p>不知道你有没有发现，在高并发、高吞吐量的极限情况下，简单的事情就会变得没有那么简单了。一个业务逻辑非常简单的微服务，日常情况下都能稳定运行，为什么一到大促就卡死甚至进程挂掉？再比如，一个做数据汇总的应用，按照小时、天这样的粒度进行数据汇总都没问题，到年底需要汇总全年数据的时候，没等数据汇总出来，程序就死掉了。</p>
+<a id="more"></a>
+
+<p>之所以出现这些情况，大部分的原因是，程序在设计的时候，没有针对高并发高吞吐量的情况做好内存管理。要想解决这类问题，首先你要了解内存管理机制。</p>
+<p>现代的编程语言，像 Java、Go 语言等，采用的都是自动内存管理机制。我们在编写代码的时候，不需要显式去申请和释放内存。当我们创建一个新对象的时候，系统会自动分配一块内存用于存放新创建的对象，对象使用完毕后，系统会自动择机收回这块内存，完全不需要开发者干预。</p>
+<p>对于开发者来说，这种自动内存管理的机制，显然是非常方便的，不仅极大降低了开发难度，提升了开发效率，更重要的是，它完美地解决了内存泄漏的问题。是不是很厉害？当年，Java 语言能够迅速普及和流行，超越 C 和 C++，自动内存管理机制是非常重要的一个因素。但是它也会带来一些问题，什么问题呢？这就要从它的实现原理中来分析。</p>
+<h2 id="自动内存管理机制的实现原理"><a href="#自动内存管理机制的实现原理" class="headerlink" title="自动内存管理机制的实现原理"></a>自动内存管理机制的实现原理</h2><p>做内存管理，主要需要考虑申请内存和内存回收这两个部分。</p>
+<p>申请内存的逻辑非常简单：</p>
+<ol>
+<li>计算要创建对象所需要占用的内存大小；</li>
+<li>在内存中找一块儿连续并且是空闲的内存空间，标记为已占用；</li>
+<li>把申请的内存地址绑定到对象的引用上，这时候对象就可以使用了。</li>
+</ol>
+<p>内存回收的过程就非常复杂了，总体上，内存回收需要做这样两件事儿：先是要找出所有可以回收的对象，将对应的内存标记为空闲，然后，还需要整理内存碎片。</p>
+<p>如何找出可以回收的对象呢？现代的 GC 算法大多采用的是“标记 - 清除”算法或是它的变种算法，这种算法分为标记和清除两个阶段：</p>
+<ul>
+<li>标记阶段：从 GC Root 开始，你可以简单地把 GC Root 理解为程序入口的那个对象，标记所有可达的对象，因为程序中所有在用的对象一定都会被这个 GC Root 对象直接或者间接引用。</li>
+<li>清除阶段：遍历所有对象，找出所有没有标记的对象。这些没有标记的对象都是可以被回收的，清除这些对象，释放对应的内存即可。</li>
+</ul>
+<p>这个算法有一个最大问题就是，在执行标记和清除过程中，必须把进程暂停，否则计算的结果就是不准确的。这也就是为什么发生垃圾回收的时候，我们的程序会卡死的原因。后续产生了许多变种的算法，这些算法更加复杂，可以减少一些进程暂停的时间，但都不能完全避免暂停进程。</p>
+<p>完成对象回收后，还需要整理内存碎片。什么是内存碎片呢？我举个例子你就明白了。</p>
+<p>假设，我们的内存只有 10 个字节，一开始这 10 个字节都是空闲的。我们初始化了 5 个 Short 类型的对象，每个 Short 占 2 个字节，正好占满 10 个字节的内存空间。程序运行一段时间后，其中的 2 个 Short 对象用完并被回收了。这时候，如果我需要创建一个占 4 个字节的 Int 对象，是否可以创建成功呢？</p>
+<p>答案是，不一定。我们刚刚回收了 2 个 Short，正好是 4 个字节，但是，创建一个 Int 对象需要连续 4 个字节的内存空间，2 段 2 个字节的内存，并不一定就等于一段连续的 4 字节内存。如果这两段 2 字节的空闲内存不连续，我们就无法创建 Int 对象，这就是内存碎片问题。</p>
+<p>所以，<strong>垃圾回收完成后，还需要进行内存碎片整理，将不连续的空闲内存移动到一起，以便空出足够的连续内存空间供后续使用。</strong>和垃圾回收算法一样，内存碎片整理也有很多非常复杂的实现方法，但由于整理过程中需要移动内存中的数据，也都不可避免地需要暂停进程。</p>
+<p>虽然自动内存管理机制有效地解决了内存泄漏问题，带来的代价是执行垃圾回收时会暂停进程，如果暂停的时间过长，程序看起来就像“卡死了”一样。</p>
+<h2 id="为什么在高并发下程序会卡死？"><a href="#为什么在高并发下程序会卡死？" class="headerlink" title="为什么在高并发下程序会卡死？"></a>为什么在高并发下程序会卡死？</h2><p>在理解了自动内存管理的基本原理后，我再带你分析一下，为什么在高并发场景下，这种自动内存管理的机制会更容易触发进程暂停。</p>
+<p>一般来说，我们的微服务在收到一个请求后，执行一段业务逻辑，然后返回响应。这个过程中，会创建一些对象，比如说请求对象、响应对象和处理中间业务逻辑中需要使用的一些对象等等。随着这个请求响应的处理流程结束，我们创建的这些对象也就都没有用了，它们将会在下一次垃圾回收过程中被释放。</p>
+<p>你需要注意的是，直到下一次垃圾回收之前，这些已经没有用的对象会一直占用内存。</p>
+<p>那么，虚拟机是如何决定什么时候来执行垃圾回收呢？这里面的策略非常复杂，也有很多不同的实现，我们不展开来讲，但是无论是什么策略，如果内存不够用了，那肯定要执行一次垃圾回收的，否则程序就没法继续运行了。</p>
+<p>在低并发情况下，单位时间内需要处理的请求不多，创建的对象数量不会很多，自动垃圾回收机制可以很好地发挥作用，它可以选择在系统不太忙的时候来执行垃圾回收，每次垃圾回收的对象数量也不多，相应的，程序暂停的时间非常短，短到我们都无法感知到这个暂停。这是一个良性的循环。</p>
+<p>在高并发的情况下，一切都变得不一样了。</p>
+<p>我们的程序会非常繁忙，短时间内就会创建大量的对象，这些对象将会迅速占满内存，这时候，由于没有内存可以使用了，垃圾回收被迫开始启动，并且，这次被迫执行的垃圾回收面临的是占满整个内存的海量对象，它执行的时间也会比较长，相应的，这个回收过程会导致进程长时间暂停。</p>
+<p>进程长时间暂停，又会导致大量的请求积压等待处理，垃圾回收刚刚结束，更多的请求立刻涌进来，迅速占满内存，再次被迫执行垃圾回收，进入了一个恶性循环。如果垃圾回收的速度跟不上创建对象的速度，还可能会产生内存溢出的现象。</p>
+<p>于是，就出现了开始提到的那个情况：一到大促，大量请求过来，我们的服务就卡死了。</p>
+<h2 id="高并发下的内存管理技巧"><a href="#高并发下的内存管理技巧" class="headerlink" title="高并发下的内存管理技巧"></a>高并发下的内存管理技巧</h2><p>对于开发者来说，垃圾回收是不可控的，而且是无法避免的。但是，我们还是可以通过一些方法来降低垃圾回收的频率，减少进程暂停的时长。</p>
+<p>我们知道，只有使用过被丢弃的对象才是垃圾回收的目标，所以，我们需要想办法在处理大量请求的同时，尽量少的产生这种一次性对象。</p>
+<p>最有效的方法就是，优化你的代码中处理请求的业务逻辑，尽量少的创建一次性对象，特别是占用内存较大的对象。比如说，我们可以把收到请求的 Request 对象在业务流程中一直传递下去，而不是每执行一个步骤，就创建一个内容和 Request 对象差不多的新对象。这里面没有多少通用的优化方法，你需要根据我告诉你的这个原则，针对你的业务逻辑来想办法进行优化。</p>
+<p>对于需要频繁使用，占用内存较大的一次性对象，我们可以考虑自行回收并重用这些对象。实现的方法是这样的：我们可以为这些对象建立一个对象池。收到请求后，在对象池内申请一个对象，使用完后再放回到对象池中，这样就可以反复地重用这些对象，非常有效地避免频繁触发垃圾回收。</p>
+<p>如果可能的话，使用更大内存的服务器，也可以非常有效地缓解这个问题。</p>
+<p>以上这些方法，都可以在一定程度上缓解由于垃圾回收导致的进程暂停，如果你优化的好，是可以达到一个还不错的效果的。</p>
+<p>当然，要从根本上来解决这个问题，办法只有一个，那就是绕开自动垃圾回收机制，自己来实现内存管理。但是，自行管理内存将会带来非常多的问题，比如说极大增加了程序的复杂度，可能会引起内存泄漏等等。</p>
+<p>流计算平台 Flink，就是自行实现了一套内存管理机制，一定程度上缓解了处理大量数据时垃圾回收的问题，但是也带来了一些问题和 Bug，总体看来，效果并不是特别好。因此，一般情况下我并不推荐你这样做，具体还是要根据你的应用情况，综合权衡做出一个相对最优的选择。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>现代的编程语言，大多采用自动内存管理机制，虚拟机会不定期执行垃圾回收，自动释放我们不再使用的内存，但是执行垃圾回收的过程会导致进程暂停。</p>
+<p>在高并发的场景下，会产生大量的待回收的对象，需要频繁地执行垃圾回收，导致程序长时间暂停，我们的程序看起来就像卡死了一样。为了缓解这个问题，我们需要尽量少地使用一次性对象，对于需要频繁使用，占用内存较大的一次性对象，我们可以考虑自行回收并重用这些对象，来减轻垃圾回收的压力。</p>
+<h2 id="思考题"><a href="#思考题" class="headerlink" title="思考题"></a>思考题</h2><p>如果我们的微服务的需求是处理大量的文本，比如说，每次请求会传入一个 10KB 左右的文本，在高并发的情况下，你会如何来优化这个程序，来尽量避免由于垃圾回收导致的进程卡死问题？</p>
+<p>如果有一个微服务是处理大量的文本，感觉这种一般不会要求时延，大部分都会进行异步处理，更加注重服务的吞吐率，服务可以在更大的内存服务器进行部署，然后把新生代的eden设置的更大些，因为这些文本处理完不会再拿来复用，朝生夕灭，可以在新生代Minor GC，防止对象晋升到老年代，防止频繁的Major GC，如果晋升的对象过多大于老年代的连续内存空间也会有触发Full Gc，然后在这些处理文本的业务流程中，防止频繁的创建一次性的大对象，把文本对象做为业务流程直接传递下去，如果这些文本需要复用可以将他保存起来，防止频繁的创建。也为了保证服务的高可用，也需对服务做限流、负载、兜底的一些策略。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2019/11/30/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8B%E9%AB%98%E5%B9%B6%E5%8F%91%E4%B8%8B%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/>https://www.bcoder.top/2019/11/30/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8B%E9%AB%98%E5%B9%B6%E5%8F%91%E4%B8%8B%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>中间件</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>消息队列</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2019/11/30/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8B%E9%AB%98%E5%B9%B6%E5%8F%91%E4%B8%8B%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/&title=消息队列之高并发下的垃圾回收 - zln's blog&summary=不知道你有没有发现，在高并发、高吞吐量的极限情况下，简单的事情就会变得没有那么简单了。一个业务逻辑非常简单的微服务，日常情况下都能稳定运行，为什么一到大促就卡死甚至进程挂掉？再比如，一个做数据汇总的应用，按照小时、天这样的粒度进行数据汇总都没问题，到年底需要汇总全年数据的时候，没等数据汇总出来，程序就死掉了。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2019/11/30/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8B%E9%AB%98%E5%B9%B6%E5%8F%91%E4%B8%8B%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/&title=消息队列之高并发下的垃圾回收 - zln's blog&summary=不知道你有没有发现，在高并发、高吞吐量的极限情况下，简单的事情就会变得没有那么简单了。一个业务逻辑非常简单的微服务，日常情况下都能稳定运行，为什么一到大促就卡死甚至进程挂掉？再比如，一个做数据汇总的应用，按照小时、天这样的粒度进行数据汇总都没问题，到年底需要汇总全年数据的时候，没等数据汇总出来，程序就死掉了。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2019/11/30/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8B%E9%AB%98%E5%B9%B6%E5%8F%91%E4%B8%8B%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/&title=消息队列之高并发下的垃圾回收 - zln's blog&summary=不知道你有没有发现，在高并发、高吞吐量的极限情况下，简单的事情就会变得没有那么简单了。一个业务逻辑非常简单的微服务，日常情况下都能稳定运行，为什么一到大促就卡死甚至进程挂掉？再比如，一个做数据汇总的应用，按照小时、天这样的粒度进行数据汇总都没问题，到年底需要汇总全年数据的时候，没等数据汇总出来，程序就死掉了。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2019/11/30/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8BKafka%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%AB%98%E6%80%A7%E8%83%BDIO/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>消息队列之Kafka如何实现高性能IO</p>
+                <p class='content'>Apache Kafka 是一个高性能的消息队列，在众多消息队列产品中，Kafka 的性能绝对是处于第一梯队的。在一台配置比较好的服务器上，对 Kafka 做过极限的性能压测，Kafka 单个节...</p>
+              </a>
+            
+            
+              <a class='next' href='/2019/11/30/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8B%E9%AB%98%E6%80%A7%E8%83%BD%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE/'>
+                <p class='title'>消息队列之消息模型<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>传输协议就是应用程序之间对话的语言。设计传输协议，并没有太多规范和要求，只要是通信双方的应用程序都能正确处理这个协议，并且没有歧义就好了。
+
+
+如何“断句”？既然传输协议也是一种语言，那么在应用...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '消息队列之高并发下的垃圾回收',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#自动内存管理机制的实现原理"><span class="toc-text">自动内存管理机制的实现原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么在高并发下程序会卡死？"><span class="toc-text">为什么在高并发下程序会卡死？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#高并发下的内存管理技巧"><span class="toc-text">高并发下的内存管理技巧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#小结"><span class="toc-text">小结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#思考题"><span class="toc-text">思考题</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

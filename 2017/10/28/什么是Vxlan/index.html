@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>什么是Vxlan - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="openflow">
+  
+  
+    <meta name="description" content="为什么需要Vxlan?1、服务器虚拟化技术，允许在物理机上运行多个MAC地址各不相同的虚拟机，随着数量的增加，交换机上的MAC地址表将剧烈膨胀，甚至需要MAC覆盖。
+2、数据中心多以VLAN为虚拟机划分网络，但是VLAN数量受制于VLAN(802.1Q)协议4096，这远远满足不了现实的需求。
+3、多租户环境的要...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/10/28/%C2%96%E4%BB%80%E4%B9%88%E6%98%AFVxlan/">
+        什么是Vxlan
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/SDN/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>SDN</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-10-28 20:58:04</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <h2 id="为什么需要Vxlan"><a href="#为什么需要Vxlan" class="headerlink" title="为什么需要Vxlan?"></a>为什么需要Vxlan?</h2><p>1、服务器虚拟化技术，允许在物理机上运行多个MAC地址各不相同的虚拟机，随着数量的增加，交换机上的MAC地址表将剧烈膨胀，甚至需要MAC覆盖。</p>
+<p>2、数据中心多以VLAN为虚拟机划分网络，但是VLAN数量受制于VLAN(802.1Q)协议4096，这远远满足不了现实的需求。</p>
+<p>3、多租户环境的要求，其每个租户都有自己隔离的网络环境，导致物理网络中每个租户所分配的MAC地址和VLAN ID会存在重叠的可能。</p>
+<a id="more"></a>
+
+<p>4、Spanning Tree Protocol (STP)算法会产生大量多路路径冗余。</p>
+<p>5、支持远距离虚拟机迁移，避免处理复杂的L2 (VLAN)网络环境。</p>
+<p>6、ToR(Top of Rack) Switch链接着物理server，它记录着各个server/VM相连的MAC地址映射表。当地址映射表满时，ToR就会停止学习新的地址，这样就会导致网络泛洪，直到有记录过期被换出，腾出空闲表项。</p>
+<p><br><br></p>
+<h2 id="Vxlan介绍"><a href="#Vxlan介绍" class="headerlink" title="Vxlan介绍"></a>Vxlan介绍</h2><p>VXLAN(Virtual eXtensible Local Area Network)是一种将二层报文用三层协议进行封装的技术，可以对二层网络在三层范围进行扩展。<br>每个覆盖域被称为VXLAN segment，它的ID是由位于VXLAN数据包头中的VXLAN Network Identifier(VNI)标识的。VNI字段包含24bits，故segments最大数量为2的24次方，约合<strong>16M个</strong>。并且只有在相同VXLAN segment内的虚拟机之间才可以相互通信。</p>
+<p>根据VXLAN的封包方式，也可以将它看做一种隧道模式的网络覆盖技术，这种隧道是无状态的。隧道端点VTEP (VXLAN Tunnel End Point - an entity which originates and/or terminates VXLAN tunnels)，它一般位于拥有虚拟机的hypervisor宿主机中，因此VNI(VXLAN Network Identifier or VXLAN Segment ID)和VXLAN隧道只有VTEP可见，对于虚拟机是透明的，那么不同的VXLAN segment中就允许具有相同MAC地址的虚拟机。并且VTEP也可以位于物理交换机或物理主机中，甚至可以使用软件来定义。VTEP (单播时是两个VTEP或多播时是多个VTEP)之间完全是通过L3协议交互的，这也就意味着VTEP间可以由Router相连，而非类似于GRE模式的固定端到端隧道连接。</p>
+<br>
+
+<p><strong>Vxlan报文格式:</strong></p>
+<p><img src="http://img.bcoder.top/2017.11.04/13.png" alt="什么是Vxlan"></p>
+<p>Outer UDP端口使用4798，但可以修改</p>
+<p>Outer IP头封装：源IP为发送报文的虚拟机所属的VTEP的IP地址，目的IP为目的虚拟机所属的VTEP IP地址。</p>
+<p>Outer的目的IP地址可以是单播和组播地址，单播的情况下，目的IP为VTEP(Vxlan Tunnel End Point）的IP地址，在多播的情况下引入VXLAN的管理层，利用VNI和IP多播组的映射来确定VTEP。</p>
+<p>当目的IP为接收端的VTEP的IP时，假如不知道这个IP地址，则需要执行ARP请求来获取，步骤如下：</p>
+<p>1.　　目标IP被替换成与源虚拟机具有相同VNI的多播组IP地址；</p>
+<ol start="2">
+<li><p>所有VTEP端都接收该多播报文，VTEP查找所在主机上的全部虚拟机来匹配源虚拟机的Inner 目的MAC。</p>
+</li>
+<li><p>目标VTEP的虚拟机会回应该多播包，从而获得目标VTEP的IP地址。</p>
+</li>
+<li><p>发送端VTEP添加VNI-VTEP-虚拟机MAC的映射关系到自己的VXLAN表中，以避免再次组播学习。</p>
+</li>
+</ol>
+<p>Outer 以太封装：SA为发送报文的虚拟机所属的VTEP MAC地址，DA为目的虚拟机所属的VTEP上路由表中下一跳MAC地址。</p>
+<br>
+
+<p><strong>什么是vtep?</strong><br>vtep,VTEP-VXLAN Tunnel Endpoints.VTEP是VXLAN隧道端点，用于对VXLAN报文进行封装/解封装，包括ARP请求报文和正常的VXLAN数据报文，在一段封装报文后通过隧道向另一端VTEP发送封装报文，另一端VTEP接收到封装的报文解封装后根据封装的MAC地址进行装法。VTEP可由支持VXLAN的硬件设备或软件来实现。</p>
+<p><img src="http://img.bcoder.top/2017.11.04/14.png" alt="什么是Vxlan"></p>
+<p><br><br></p>
+<h2 id="vxlan通信流程-以ARP为例"><a href="#vxlan通信流程-以ARP为例" class="headerlink" title="vxlan通信流程(以ARP为例)"></a>vxlan通信流程(以ARP为例)</h2><p><strong>(1) vxlan初始化</strong></p>
+<p><img src="http://img.bcoder.top/2017.11.04/15.png" alt="什么是Vxlan"></p>
+<p> VM1和VM2连接到VXLAN网络(VNI)100，两个VXLAN主机加入IP多播组239.119.1.1</p>
+<br>
+
+<p><strong>2 ARP请求</strong></p>
+<p><img src="http://img.bcoder.top/2017.11.04/16.png" alt="什么是Vxlan"></p>
+<p>1) VM1以广播的形式发送ARP请求；</p>
+<p>2) VTEP1封装报文。打上VXLAN标识为100，外层IP头DA为IP多播组(239.119.1.1)，SA为IP_VTEP1.</p>
+<p>3) VTEP1在多播组内进行多播；</p>
+<p>4) VTEP2解析接收到多播报文。填写流表(VNI, 内层mac地址，外层Ip地址)，并在本地VXLAN标识为100的范围内<br>   广播(是VXLAN的用武之地)。</p>
+<p>5) VM2对接收到的ARP请求进行响应；</p>
+<br>
+
+<p><strong>3 ARP应答</strong></p>
+<p><img src="http://img.bcoder.top/2017.11.04/86.png" alt="什么是Vxlan"></p>
+<p>1) VM2准备ARP响应报文后向VM1发送响应报文<br>2)VTEP2接收到VM2的响应报文后把它封装在ip单播报文中（VXLAN标识依然为100），然后向VM1发送单播<br>3)VTEP1接收到单播报文后，学习内层MAC到外层ip地址的映射，解封装并根据被封装内容的目的MAC地址转发给VM1<br>4)VM1接收到ARP应答报文，ARP交互结束</p>
+<br>
+
+<p><strong>4  数据传输</strong></p>
+<p>(1)  ARP请求应答之后，VM1知道了VM2的Mac地址，并且要向VM2通信(注意，VM1是以TCP的方法向VM2发送数据的)。VTEP1 收到VM1发送数据包，用MAC地址从流表中检查VM1与VM2是否属于用一个VNI。两个VM不但位于同一个VNI中(不在同一个VNI中出网关)，并且VTEP1已经知道了VM2的所有地址信息(MAC和VTEP2_IP)。VTEP1封装新的数据包。然后交给上联交换机。</p>
+<p>(2) 上联交换机收到服务器发来的UDP包，对比目的IP地址和自己的路由表，然后将数据报转发给相应的端口。</p>
+<p>(3) 目的VTEP收到数据包后检查器VNI，如果UDP报中VNI与VM2的VNI一致，则将数据包解封装后交给VM2进一步处理。至此一个数据包传输完成。整个Vxlan相关的行为(可能穿越多个网关)对虚拟机来说是透明的，虚拟机不会感受传输的过程。</p>
+<p>虽然VM1与VM2之间启动了TCP来传输数据，但数据包一路上实际是以UDP的形式被转发，两端的VTEP并不会检查数据是否正确或者顺序是否完整，所有的这些工作都是在VM1和VM2在接收到解封装的TCP包后完成的。也就是说如果说如果被UDP封装的是TCP连接，那么UDP和TCP将做为两个独立的协议栈各自工作，相互之间没有交互。</p>
+<p><strong>5 Vxlan网关</strong></p>
+<p><img src="http://img.bcoder.top/2017.11.04/87.png" alt="什么是Vxlan"></p>
+<p>如果需要VXLAN网络和非VXLAN网络连接，必须使用VXLAN网关才能把VXLAN网络和外部网络进行桥接和<br>完成VXLAN ID和VLAN ID之间的映射和路由，和VLAN一样，VXLAN网络之间的通信也需要三层设备的支持，<br>即VXLAN路由的支持。同样VXLAN网关可由硬件和软件来实现。</p>
+<p>从封装的结构上来看，VXLAN提供了将二层网络overlay在三层网络上的能力，VXLAN Header中的VNI有<br>24个bit，数量远远大于4096，并且UDP的封装可以穿越三层网络，比VLAN有更好的扩展性。</p>
+<p><strong>6 部署</strong><br>(1) 纯VXLAN部署场景</p>
+<p>对于连接到VXLAN内的虚拟机，由于虚拟机的VLAN信息不再作为转发的依据，虚拟机的迁移也就<br>不再受三层网关的限制，可以实现跨越三层网关的迁移。</p>
+<p>(2) VXLAN与VLAN混合部署</p>
+<p>为了实现VLAN和VXLAN之间互通，VXLAN定义了VXLAN网关。VXLAN网关上同时存在两种类型的端口：VXLAN端口<br>和普通端口。</p>
+<p>当收到从VXLAN网络到普通网络的数据时，VXLAN网关去掉外层包头，根据内层的原始帧头转发到普通端口上；当有数据从普通网络进入到VXLAN网络时，VXLAN网关负责打上外层包头，并根据原始VLAN ID对应到一个VNI，同时去掉内层包头的VLANID信息。相应的如果VXLAN网关发现一个VXLAN包的内层帧头上还带有原始的二层VLAN ID，会直接将这个包丢弃。</p>
+<p>之所以这样，是VLAN ID是一个本地信息，仅仅在一个地方的二层网络上其作用，VXLAN是隧道机制，并不依赖VLAN ID进行转发，也无法检查VLAN ID正确与否。因此，VXLAN网关连接传统网络的端口必须配置ACCESS口，不能启用TRUNK口。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/10/28/%C2%96%E4%BB%80%E4%B9%88%E6%98%AFVxlan/>https://www.bcoder.top/2017/10/28/%C2%96%E4%BB%80%E4%B9%88%E6%98%AFVxlan/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/openflow/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>openflow</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/10/28/%C2%96%E4%BB%80%E4%B9%88%E6%98%AFVxlan/&title=什么是Vxlan - zln's blog&summary=为什么需要Vxlan?1、服务器虚拟化技术，允许在物理机上运行多个MAC地址各不相同的虚拟机，随着数量的增加，交换机上的MAC地址表将剧烈膨胀，甚至需要MAC覆盖。
+2、数据中心多以VLAN为虚拟机划分网络，但是VLAN数量受制于VLAN(802.1Q)协议4096，这远远满足不了现实的需求。
+3、多租户环境的要求，其每个租户都有自己隔离的网络环境，导致物理网络中每个租户所分配的MAC地址和VLAN ID会存在重叠的可能。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/10/28/%C2%96%E4%BB%80%E4%B9%88%E6%98%AFVxlan/&title=什么是Vxlan - zln's blog&summary=为什么需要Vxlan?1、服务器虚拟化技术，允许在物理机上运行多个MAC地址各不相同的虚拟机，随着数量的增加，交换机上的MAC地址表将剧烈膨胀，甚至需要MAC覆盖。
+2、数据中心多以VLAN为虚拟机划分网络，但是VLAN数量受制于VLAN(802.1Q)协议4096，这远远满足不了现实的需求。
+3、多租户环境的要求，其每个租户都有自己隔离的网络环境，导致物理网络中每个租户所分配的MAC地址和VLAN ID会存在重叠的可能。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/10/28/%C2%96%E4%BB%80%E4%B9%88%E6%98%AFVxlan/&title=什么是Vxlan - zln's blog&summary=为什么需要Vxlan?1、服务器虚拟化技术，允许在物理机上运行多个MAC地址各不相同的虚拟机，随着数量的增加，交换机上的MAC地址表将剧烈膨胀，甚至需要MAC覆盖。
+2、数据中心多以VLAN为虚拟机划分网络，但是VLAN数量受制于VLAN(802.1Q)协议4096，这远远满足不了现实的需求。
+3、多租户环境的要求，其每个租户都有自己隔离的网络环境，导致物理网络中每个租户所分配的MAC地址和VLAN ID会存在重叠的可能。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/10/29/%E7%AE%97%E6%B3%95%E6%B7%B1%E5%85%A5%E4%B9%8B%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>算法深入之栈和队列</p>
+                <p class='content'>0.前言本系列题目以及部分截图均来自左程云大大的算法书《程序员代码面试指南—-IT名企算法与数据结构最优解》，有兴趣的小伙伴可以去网上购买正版书籍阅读。
+
+
+1.设计一个带有getMin功能栈【...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/10/16/NIO%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/'>
+                <p class='title'>NIO学习总结<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>前言最近一段时间忙着准备面试，终于有一点闲暇的时间学点新东西了，话不多少，正式进入正题。
+Java NIO 简介Java NIO（New IO）是从Java 1.4版本开始引入的一个新的IO A...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '什么是Vxlan',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么需要Vxlan"><span class="toc-text">为什么需要Vxlan?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vxlan介绍"><span class="toc-text">Vxlan介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#vxlan通信流程-以ARP为例"><span class="toc-text">vxlan通信流程(以ARP为例)</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

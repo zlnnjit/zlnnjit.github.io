@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>OpenFlow1.3总结 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="openflow">
+  
+  
+    <meta name="description" content="SDN交换机组成OpenFlow交换机包括一个或多个流表、一个组表和一个连接外部控制器的OpenFlow信道，其中流表和组表负责分组查找和转发。控制器与交换机进行通信，并通过OpenFlow协议管理交换机。 ">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/09/01/OpenFlow1-3%E6%80%BB%E7%BB%93/">
+        OpenFlow1.3总结
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/SDN/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>SDN</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-09-01 11:05:59</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <h2 id="SDN交换机组成"><a href="#SDN交换机组成" class="headerlink" title="SDN交换机组成"></a>SDN交换机组成</h2><p>OpenFlow交换机包括一个或多个流表、一个组表和一个连接外部控制器的OpenFlow信道，其中流表和组表负责分组查找和转发。控制器与交换机进行通信，并通过OpenFlow协议管理交换机。 </p>
+<a id="more"></a>
+
+<h2 id="Openflow协议总览"><a href="#Openflow协议总览" class="headerlink" title="Openflow协议总览"></a>Openflow协议总览</h2><p><img src="http://img.bcoder.top/2017.09.01/2.png" alt="OpenFlow 1.3"></p>
+<h2 id="Openflow-端口分类"><a href="#Openflow-端口分类" class="headerlink" title="Openflow 端口分类"></a>Openflow 端口分类</h2><p>OpenFlow交换机必须支持三种类型的OpenFlow的端口：物理端口，逻辑端口和保留端口。</p>
+<ul>
+<li><strong>物理端口</strong></li>
+</ul>
+<p>OpenFlow的物理端口是交换机定义的端口，对应于交换机的一个硬件接口。例如，以太网交换机上的物理端口与以太网接口一一对应。</p>
+<ul>
+<li><strong>逻辑端口</strong></li>
+</ul>
+<p>OpenFlow逻辑端口是交换机定义的端口，并不直接对应交换机的硬件接口。逻辑端口是更高层次的抽象概念，可能是交换机中使用非OpenFlow方式定义的端口<strong>（如链路汇聚组，隧道，环回接口</strong>）。</p>
+<p>物理端口和逻辑端口之间的唯一<strong>区别</strong>是：一个与逻辑端口相关的数据包可能有一个额外的元数据字段，叫做隧道ID，而当一个逻辑端口上接收到的分组被发送到控制器时，其逻辑端口和底层的物理端口都要报告给控制器。</p>
+<ul>
+<li><strong>保留端口</strong></li>
+</ul>
+<p>它们指定通用的转发动作，如发送到控制器，泛洪，或使用非OpenFlow的方法转发，如“正常”交换机处理。</p>
+<p><strong>保留端口分为Required和Optional端口.</strong></p>
+<p>Required:<br><strong>ALL</strong>: 表示交换机可以转发特定数据包到所有端口，它仅可用于为<code>输出端口</code>。</p>
+<p><strong>CONTROLLER</strong>: 表示与OpenFlow控制器之间的控制通道，它既可用作一个<code>入端口</code>又可作为一个<code>出端口</code>。当用作一个出端口，将数据包封装到packet-in消息中，并使用的OpenFlow协议发送。当用作一个入端口，则表明该数据包来自控制器。</p>
+<p><strong>TABLE</strong>: 表示openflow<code>流水线的开始</code>。这个端口仅在packet-out消息动作列表中的输出行为时有效，提交数据包给第一流表，这样数据包可以通过OpenFlow流水线处理。</p>
+<p><strong>IN PORT</strong>:代表数据包进入的端口。只能用做<code>输出端口</code>，通过入端口将数据包发出。</p>
+<p><strong>ANY</strong>: 当未指定端口时（端口通配），OpenFlow指令中使用的特殊值。既不能用作入端口，也不能用作输出端口。</p>
+<br>
+Optional:
+**LOCAL**: 表示交换机的本地网络堆栈和管理堆栈。可以用作一个入端口或用作一个输出端口。本地端口使远程实体通过OpenFlow网络与交换机以及其网络服务互通，而不是通过一个单独的控制网络进行互通。使用一组合适的默认流表项，`本地端口可以用来实现一个带内控制器的连接`。
+
+<p><strong>ORMAL</strong>: 代表传统的非OpenFlow流水线。仅可用作一个输出端口，使用普通的流水线处理数据包。如果交换机不能从OpenFlow流水线转发数据包到普通流水线，那么它必须表明它不支持这一动作。</p>
+<p><strong>FLOOD</strong>: 表示使用普通流水线进行泛洪。可用于作为一个输出端口，一般可以将数据包发往所有标准端口，但不能发往入端口和OFPPS_BLOCKED状态的端口。交换机也可以通过数据包的VLAN ID选择哪些端口泛洪。</p>
+<h2 id="Openflow交换机分类"><a href="#Openflow交换机分类" class="headerlink" title="Openflow交换机分类"></a>Openflow交换机分类</h2><p>支持OpenFlow的交换机有两种类型：<strong>OpenFlow-only和OpenFlow-hybrid</strong>。 </p>
+<ul>
+<li><p><strong>OpenFlow-only</strong><br>OpenFlow-only交换机只支持OpenFlow操作，在这些交换机中的所有数据包只能由OpenFlow流水线处理，否则不能被处理。</p>
+</li>
+<li><p><strong>OpenFlow-hybrid</strong><br>OpenFlow-hybrid交换机支持OpenFlow的操作和普通的以太网交换操作.例如传统的L2以太网交换，VLAN隔离，L3路由（IPv4的路由，IPv6路由），ACL和QoS处理。这些交换机提供一个openflow外的分类机制，指示流量到OpenFlow流水线或普通流水线。</p>
+</li>
+</ul>
+<h2 id="Openflow流表"><a href="#Openflow流表" class="headerlink" title="Openflow流表"></a>Openflow流表</h2><h3 id="流表组成"><a href="#流表组成" class="headerlink" title="流表组成"></a>流表组成</h3><ul>
+<li>匹配字段(<strong>match</strong>)：匹配数据包。包括入端口和数据包报头，以及由前一个表指定的可选的元数据。</li>
+<li>优先级(<strong>priority</strong>)：流表项的匹配次序。</li>
+<li>计数器(<strong>counters</strong>)：数据包匹配时更新。</li>
+<li>指令(<strong>instructions</strong>)：修改动作集或流水线处理。</li>
+<li>超时(<strong>timeouts</strong>)：最大时间计数值或流有效时间。</li>
+<li><strong>cookie</strong>：由控制器选择的不透明数据值。控制器用来过滤流统计数据、流修改和流删除。但处理数据包时不能使用。</li>
+</ul>
+<h3 id="流表匹配"><a href="#流表匹配" class="headerlink" title="流表匹配"></a>流表匹配</h3><p><img src="http://img.bcoder.top/2017.09.01/1.png" alt="OpenFlow 1.3"></p>
+<h3 id="Table-miss"><a href="#Table-miss" class="headerlink" title="Table-miss"></a>Table-miss</h3><p>每一个流表必须支持一个table-miss流表项去处理漏表行为。table-miss表项指定在流表中如何处理与其他流表项未匹配的数据包。比如将数据包发送到控制器，丢弃数据包或直接将包转发给后续的表。</p>
+<h3 id="流表项删除"><a href="#流表项删除" class="headerlink" title="流表项删除"></a>流表项删除</h3><p>流表项可以通过两种方式在流表中删除，控制器的请求或交换机流超时机制。交换流超时机制运行基于相关的控制器和流表项的状态和配置，与控制器无关。</p>
+<p>每个流的表项具有一个和它相关的<code>idle_timeout</code>和<code>hard_timeout</code>值。</p>
+<p><strong>idle_timeout</strong><br>一个非零idle_timeout 字段将引起流表项被删除。当其中一个超时发生时，交换机必须实现流表项超时并且从流表中删除流表项。</p>
+<p><strong>hard_timeout</strong><br>一个非零hard_timeout字段可能在规定数秒后引起流表项被删除，无论有多少数据包与之匹配。</p>
+<p>除了<code>idle_timeout</code>和<code>hard_timeout</code>控制器可以通过主动发送<code>DELETE</code>流表修改消息（OFPFC_DELETE，或OFPFC_DELETE_STRICT）将流表项删除。</p>
+<p>流表项被删除时，无论是<strong>控制器控制或流表项超时</strong>机制，交换机必须检查流表项的<code>OFPFF_SEND_FLOW_REM</code>标志。如果该标志被设置，该交换机必须将流删除消息发送到控制器。每个流删除消息中包含的流表项的完整的描述、清除的原因（超时或删除），在删除时的流表项的持续时间，在删除时的流统计数据。</p>
+<h2 id="openflow组表"><a href="#openflow组表" class="headerlink" title="openflow组表"></a>openflow组表</h2><h3 id="组表组成"><a href="#组表组成" class="headerlink" title="组表组成"></a>组表组成</h3><p>组编号（<strong>group identifier</strong>）：一个32位的无符号整数，该组的唯一标识。<br>组类型（<strong>group type</strong>）：确定组语义。<br>计数器（<strong>counters</strong>）：当数据包被组表项处理时更新。<br>动作桶（<strong>action buckets</strong>）：一系列有序的动作桶，其中的每个动作桶包含了一组要执行的动作和相关参数。</p>
+<h3 id="组表类型"><a href="#组表类型" class="headerlink" title="组表类型"></a>组表类型</h3><p>Required: <code>all</code>: 执行组中的所有存储段(bucket)。<br>这个组用于<strong>多播或广播的转发</strong>。数据包为每个存储段都有效地复制一份，然后被每个存储段处理。如果某个存储段中明确地指导数据包发往入端口，那么这个复制的包被丢弃。如果控制器希望数据包转发到入端口，那么这个组需要包含一个额外的存储段，这个存储段含有到OFPP_IN_PORT保留端口的输出动作。</p>
+<p>Optional: <code>select</code>:执行组中的一个存储段。<br>用组中的一个存储段处理数据包，并且根据一个交换计算选择算法（如一些用户配置数组的哈希算法或简单的循环算法）处理数据包。所有的配置和选择算法的状态都在OpenFlow外部运行。<br>选择算法实现可以使用等负荷分配，也可以有选择地根据存储段的权重进行。<br><code>当存储段中指定的端口出现故障时，交换机可以选择剩余的存储段（具有转发行为的有效端口）</code>，而不是丢弃发往该端口的数据包。此行为可能会<code>减少报文在链路或交换机的中断</code>。</p>
+<p>Required: <code>indirect</code>:执行此组中定义的一个存储段。<br>这个组<strong>只支持单一的存储段</strong>。允许多个流表项或者组指向一个共同的组编号，这样可以使<code>转发更快，更高效的聚集</code>（例如：下一跳IP转发）。对于所有组的这个存储段，组类型应该是相同的。</p>
+<p>Optional: <code>fast failover</code>:执行第一个有效的存储段。<br>每一个动作桶与一个特定的端口和/或组相关，这些端口或者组控制其活跃性。存储段的顺序由组定义，并且第一个有效的存储段对应的端口或者组也是有效的。这个组类型可以直接使交换机改变转发，而无需和控制器联系。如果没有存储段是有效的，数据包将被丢弃。这组的类型必须实行liveness mechainsm</p>
+<h2 id="meter表"><a href="#meter表" class="headerlink" title="meter表"></a>meter表</h2><p>一个meter表包含若干meter表项，确定每个流量的计数。单位流量的计量可以使OpenFlow实现各种简单的QoS业务，如限速，并且可以结合每个端口队列来实现复杂的QoS框架，如DiffServ。</p>
+<p>meter表可以测试数据包的速率，使这些数据包可以实现速率控制。</p>
+<h3 id="meter表组成"><a href="#meter表组成" class="headerlink" title="meter表组成"></a>meter表组成</h3><p>带类型（<strong>meter identifier</strong>）：定义了数据包怎样被处理。<br>速率（<strong>meter bands</strong>）：用于选择计量带，定义了带可以运行的最低速率。<br>计数器（<strong>counters</strong>）：当数据报文被计量带处理时，更新计数器。</p>
+<h3 id="Meter-Bands"><a href="#Meter-Bands" class="headerlink" title="Meter Bands"></a>Meter Bands</h3><p>每个meter表可能有一个或多个meter band。每个带指定带适用的速率和数据包被处理的方式。单个的band基于当前的计量速率处理数据包，band带适用于当前速率超过配置的速率的情况，如果目前的速度比任何指定的计量带速率低，那么meter band就不工作。</p>
+<p>带类型(<strong>band type</strong>)：定义了数据包怎样被处理。<br>速率(<strong>rate</strong>)：用于选择计量带，定义了带可以运行的最低速率。<br>计数器(<strong>type specific arguments</strong>)：当数据报文被计量带处理时，更新计数器。<br>类型的具体参数：带类型的可选参数。</p>
+<p>Optional: drop:丢弃数据包。可以用来定义的速率限制带。<br>Optional: dscp remark:增加数据包的IP头中的<strong>DSCP字段</strong>丢弃的优先级。可用于定义一个简单的DiffServ策略。</p>
+<h2 id="计数器"><a href="#计数器" class="headerlink" title="计数器"></a>计数器</h2><p>每一个流表，流表项，端口，队列，组，组存储段，计量器和计量带都会含有计数器。OpenFlow-compliant 计数器可以在软件中实现，也可以通过查询硬件在有限范围内实现。交换机不要求支持所有的计数器，只有那些标记为“Required”是必须支持的。</p>
+<p>持续时间（<strong>Duration</strong>）指的是流表项、端口、组、队列或计量器在交换机中已安装的时间数值，而且必须精确到秒。</p>
+<h2 id="Instructions"><a href="#Instructions" class="headerlink" title="Instructions"></a>Instructions</h2><p>每个流表项中包含一组指令，当一个数据包匹配表项时指令会被执行。这些指令可以更改数据包，动作组和/或流水线处理。<br>交换机并不需要支持所有类型的指令，只有那些标记为“<code>Required Instruction</code>”的必须支持，控制器可以查询交换机获取其所支持的“<code>Optional Instruction</code>”类型。</p>
+<p><strong>Optional Instruction:</strong><br>Optional Instruction: <code>Meter meter_id</code> :将包导向指定的计量，计量后根据计量的配置和状态决定是否丢弃该包。</p>
+<p>Optional Instruction: <code>Apply-Actions action(s)</code>: 立即执行指定的动作，而不改变动作集。这个指令经常用来修改两个表之间的数据包，或者执行同类型的多个动作。这些动作被指定为动作列表。</p>
+<p>Optional Instruction: <code>Clear-Actions</code>: 立即清除动作集中所有的动作。</p>
+<p>Optional Instruction: <code>Write-Metadata metadata / mask</code> : 在元数据字段写入元数据值，该掩码值指定了元数据寄存器中哪一位需要修改。（new_metadata=old_metadata&amp;~mask|value&amp;mask）</p>
+<p><strong>Required Instruction:</strong><br>Required Instruction: <code>Write-Actions action(s)</code>: 将指定的动作添加到当前动作集中，如果已经存在该类型动作，则覆盖原来的。</p>
+<p>Required Instruction: <code>Goto-Table next-table-id</code>: 指定流水线处理进程中的下一张表的ID。下一张表的ID必须比当前表的ID大，而流水线的最后一张表的流表项不能含有该命令，同理，只有单一流表的交换机无需执行此命令。</p>
+<h2 id="Action-Set"><a href="#Action-Set" class="headerlink" title="Action Set"></a>Action Set</h2><p>动作集与每个报文相关，默认情况下是空的。一个流表项可以使用Write-Action指令或者Clear-Action指令修改动作集。动作集在表间传递。当一个流表项的指令集没有包含Goto-Table指令时，流水线处理停止，然后报文的动作集就被执行。(也就是说,动作集在goto-tabel的时候并不会执行,只是会被累加,到最后一个流表动作集才会被执行)</p>
+<p>无论动作以什么顺序加入到动作集中，动作均按照下列顺序执行。如果动作集包含组动作，那么组动作桶中的动作也按照下列顺序执行。当然，交换机也可以通过Apply-Actions指令修改动作执行顺序。</p>
+<ol>
+<li>copy TTL inwards: apply copy TTL inward actions to the packet</li>
+<li>pop: apply all tag pop actions to the packet</li>
+<li>push-MPLS: apply MPLS tag push action to the packet</li>
+<li>push-PBB: apply PBB tag push action to the packet</li>
+<li>push-VLAN: apply VLAN tag push action to the packet</li>
+<li>copy TTL outwards: apply copy TTL outwards action to the packet</li>
+<li>decrement TTL: apply decrement TTL action to the packet</li>
+<li>set: apply all set-field actions to the packet</li>
+<li>qos: apply all QoS actions, such as set queue to the packet</li>
+<li>group: if a group action is specified, apply the actions of the relevant group bucket(s) in the<br>order specified by this list</li>
+<li>output: if no group action is specified, forward the packet on the port specified by the output<br>action</li>
+</ol>
+<p>output动作最后执行。如果group动作和output动作均存在，那么group动作优先级高。<strong>如果两者均不存在，那么报文被丢弃</strong>。如果没有指定group动作并且<strong>output动作指向一个不存在的端口，那么报文也被丢弃</strong>。倘若交换机支持，group动作可以递归执行。一个组存储段可能会指定另一个组，这种情况下动作的执行涉及了组配置指定的所有组。</p>
+<h2 id="Action-List"><a href="#Action-List" class="headerlink" title="Action List"></a>Action List</h2><p>Apply-Actions指令和Packet-out消息中存在动作列表。动作列表中的动作按列表指定的顺序执行，并且立刻作用到数据包上。<br>从动作列表中的第一个动作开始执行，然后依次执行。动作的效果累积而来的，比如动作列表中有两个动作都是push VLAN，那么动作后，报文会被加上两个VLAN tag。如果动作列表包含两个output动作，则将当前数据包的复制转发到请求端口，如果output动作指向一个不存在的端口，那么丢弃数据包的复制。如果列表中包含组动作，那么相关组存储器就会处理当前数据包的复制。</p>
+<h2 id="Actions"><a href="#Actions" class="headerlink" title="Actions"></a>Actions</h2><p>交换机并不需要支持所有类型的动作，只有那些标记为“<code>Required Action</code>”的必须支持，控制器可以查询交换机获取其所支持的“<code>Optional  Action</code>”类型。</p>
+<p>Required Action: <code>Output</code>.  <strong>报文输出到指定端口。</strong>交换机必须支持物理端口，交换机定义的逻辑端口，以及请求的保留端口。</p>
+<p>Optional Action: <code>Set-Queue</code>. <strong>设置报文的队列ID</strong>，当使用output动作转发数据包到某个端口时，队列ID决定哪个队列连接到此端口，用于调度和转发数据包。转发行为由队列配置支配，并且用来提供基本的Qos支持。</p>
+<p>Required Action: <code>Drop</code>. 没有明确的动作则代表<strong>丢弃</strong>。没有输出动作的数据包也应该被丢弃。这种情况可能是因为流水线处理中的空指令集或空动作桶，也可能是刚执行了clear-action指令。</p>
+<p>Required Action: <code>Group</code>. <strong>用来指定的组表处理报文</strong>。具体取决于组类型。</p>
+<p>Optional Action: <code>Push-Tag/Pop-Tag</code>. 交换机可能支持压入/弹出标签，为了整合已有网络，建议支持压入/弹出VLAN标签。<br>最新压入的标签总是作为最外层标签压入到有效位置，在以太网包头之后，其他标签之前。当一个新的MPLS标签压入，作为最外层标签，应该在以太网包头之后，其他标签之前。<br>当多个压入动作添加到数据包的动作列表中时，按动作集规则指定的顺序添加，<strong>先是MPLS，然后是PBB，接着是VLAN</strong>。当动作列表中包含多个压入动作时，按列表顺序作用到数据包。</p>
+<p>Optional Action: <code>Set-Field</code>. Set-Field由字段类型确定，<strong>用来修改包中各自头字段的值</strong>。当请求不精确时，用set-field重写头字段提高了openflow操作的有效性。为了促进已有网络整合，建议支持VLAN修改动作，set-field动作应该总是被用到包头最外层（例如，“set VLAN ID”动作总是作用于最外层标签的ID），除非字段类型指定了其他的。</p>
+<p>Optional Action: <code>Change-TTL</code>. <strong>修改IPV4的TTL值，IPV6的跳数限制以及数据包中的MPLS TTL</strong>。当请求不精确时，所示的动作可以提高openflow操作的有效性，提高路由功能。Change-TTL总是作用于包头最外层。</p>
+<h2 id="Openflow-流水线"><a href="#Openflow-流水线" class="headerlink" title="Openflow 流水线"></a>Openflow 流水线</h2><p><img src="http://img.bcoder.top/2017.09.01/3.png" alt="OpenFlow 1.3"></p>
+<h2 id="openflow消息"><a href="#openflow消息" class="headerlink" title="openflow消息"></a>openflow消息</h2><h3 id="Controller-to-Switch"><a href="#Controller-to-Switch" class="headerlink" title="Controller-to-Switch"></a>Controller-to-Switch</h3><p><strong>Features:</strong>控制器通过发送feature请求查询交换机的身份以及基本功能，交换机·<code>必须响应</code>，回答其身份和基本能力。通常在openflow通道建立后运行。</p>
+<p><strong>Configuration：</strong>控制器用来<code>设置、查询交换机的配置参数</code>。交换机<code>仅需要回应来自控制器的查询消息</code>。</p>
+<p><strong>Modify-State：</strong>modify-sate消息由控制器发出，用来<code>管理交换机的状态</code>。它们的首要目标是增加、删除、修改openflow表中的流表项/组表项，并且设置交换机的端口属性。</p>
+<p><strong>Read-state：</strong>控制器用Read-state消息<code>收集交换机的各种消息</code>，例如当前配置、统计数据和性能等。</p>
+<p><strong>Packet-out：</strong>控制器用这个Packet-out发送数据包到交换机特定的端口。并且转发通过Packet-in消息收到的数据包。Packet-out消息必须包括一个完整的数据包或者一个指明交换机中存储数据包缓冲区的ID。这个消息必须包含一个动作列表，并按指定顺序应用这些动作。若动作列表为空则丢弃该包。</p>
+<p><strong>Barrier:</strong> 控制器使用Barrier请求/回复消息<code>确保已经达到消息依赖或者收到操作完成的通知</code>。</p>
+<p><strong>Role-Request:</strong>控制器使用Role-Request消息，<code>用来设置openflow通道角色，或者查询这个角色</code>。当交换机连接多个控制器时这个消息则非常有用。</p>
+<p><strong>Asynchronous-Configuration：</strong>控制器使用Asynchronous-Configuration消息来``设置一个附加过滤器`，滤出想在openflow通道中接收的异步消息，或者用来查询这些过滤器。这个消息在交换机连接多个控制器时非常有用，通常在openflow通道建立后运行。</p>
+<h3 id="异步（Asynchronous）"><a href="#异步（Asynchronous）" class="headerlink" title="异步（Asynchronous）"></a>异步（Asynchronous）</h3><p>交换机发送Asynchronous消息时无需控制器的请求，通知控制器数据包到达、交换机状态改变或是发生错误。四个主要的异步消息描述如下。</p>
+<p><strong>Packet-in:</strong><code>将对包的控制转移给控制器</code>。由于全部数据包使用流表项或者漏表项转发到“CONTROLLER”保留端口，一个packet-in事件就会发给控制器。其他处理，例如TTL检查,也可能产生packet-in事件，将数据包发给控制器。packet-in事件可以缓存数据包。由流表项或者组存储段中的输出行动产生的packet-in，可以在输出行动中分别指定，其他的packet-in可在交换机中配置。如果这个packet-in事件具有缓冲数据包能力，并且交换机中有足够的缓存，在交换机准备转发这个数据包时，这个packet-in事件仅仅包含数据包头部的一部分和供控制器使用的缓冲ID。不支持内部缓存的交换机，packet-in事件配置为不缓存数据包，或内部缓存区耗尽时，将整个包作为消息的一部分发送给控制器。缓存的数据包通常是利用控制器发来的packet-out消息进行处理，或者一段时间后自动过期。如果数据包已缓存，包含在packet-in中的原始包字节数就可以配置，默认的是128字节。由流表项或者组存储段中的输出行动产生的packet-in，可以在输出行动中分别指定，其他的可在交换机中配置。</p>
+<p><strong>Flow-Removed：</strong>通知控制器一个流表项从流表中删除。流表项只有设置了OFPFF_SEND_FLOW_REM标志，才会发送Flow-Removed消息。此消息是由于控制器的流删除请求而产生的，或者因为交换机流处理超时产生，即超出某个流有效时间范围了。</p>
+<p><strong>Port-status：</strong>通知控制器某个端口发生变化。交换机需要在端口配置或状态改变时发送port-status消息给控制器。包括端口配置改变等事件，例如，端口被用户关闭，端口状态被用户改变，连接断开等。</p>
+<p><strong>Error:</strong>交换机用Error消息<code>通知控制器出现问题</code>。</p>
+<h3 id="对称（Symmetric）"><a href="#对称（Symmetric）" class="headerlink" title="对称（Symmetric）"></a>对称（Symmetric）</h3><p>Symmetric消息向任何方向发送都无需询问。包括Hello，Echo，Experimenter三种消息。</p>
+<p><strong>Hello:</strong> 连接一旦建立，Hello消息就在交换机和控制器之间传递。</p>
+<p><strong>Echo:</strong>从交换机或者控制器发出的Echo应答/请求消息，必须得到一个Echo响应消息。他们主要用来验证controller-switch连接是否有效，也可能来测量延迟率和带宽。</p>
+<p><strong>Experimenter:</strong>Experimenter消息为交换机在其消息类型中提供的附加功能，提供了一个标准的方法。这是将来openflow修订时的一个功能中转区。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/09/01/OpenFlow1-3%E6%80%BB%E7%BB%93/>https://www.bcoder.top/2017/09/01/OpenFlow1-3%E6%80%BB%E7%BB%93/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/openflow/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>openflow</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/09/01/OpenFlow1-3%E6%80%BB%E7%BB%93/&title=OpenFlow1.3总结 - zln's blog&summary=SDN交换机组成OpenFlow交换机包括一个或多个流表、一个组表和一个连接外部控制器的OpenFlow信道，其中流表和组表负责分组查找和转发。控制器与交换机进行通信，并通过OpenFlow协议管理交换机。 "
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/09/01/OpenFlow1-3%E6%80%BB%E7%BB%93/&title=OpenFlow1.3总结 - zln's blog&summary=SDN交换机组成OpenFlow交换机包括一个或多个流表、一个组表和一个连接外部控制器的OpenFlow信道，其中流表和组表负责分组查找和转发。控制器与交换机进行通信，并通过OpenFlow协议管理交换机。 "
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/09/01/OpenFlow1-3%E6%80%BB%E7%BB%93/&title=OpenFlow1.3总结 - zln's blog&summary=SDN交换机组成OpenFlow交换机包括一个或多个流表、一个组表和一个连接外部控制器的OpenFlow信道，其中流表和组表负责分组查找和转发。控制器与交换机进行通信，并通过OpenFlow协议管理交换机。 "
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/09/02/%C2%96ArrayList%E3%80%81LinkedList%E3%80%81Vector%E7%9A%84%E5%8C%BA%E5%88%AB/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>ArrayList、LinkedList、Vector的区别</p>
+                <p class='content'>首先我们来看一下继承关系：
+
+从上图我们可以看出，ArrayList、LinkedList、Vector都实现了List的接口。
+
+ArrayList①.类的定义：
+12public class...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/08/12/%C2%96%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E4%B9%8B%E4%BA%8C%E5%8F%89%E6%A0%91/'>
+                <p class='title'>数据结构与算法之二叉树<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>数据结构可分为线性结构和非线性结构两大类。。一般的，线性结构只能用来描述数据元素之间的线性顺序关系，而很难反映元素之间的层次(分支)关系。本文将要讨论一种非线性数据结构，所谓非线性结构是指在结构...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'OpenFlow1.3总结',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SDN交换机组成"><span class="toc-text">SDN交换机组成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Openflow协议总览"><span class="toc-text">Openflow协议总览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Openflow-端口分类"><span class="toc-text">Openflow 端口分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Openflow交换机分类"><span class="toc-text">Openflow交换机分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Openflow流表"><span class="toc-text">Openflow流表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#流表组成"><span class="toc-text">流表组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#流表匹配"><span class="toc-text">流表匹配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Table-miss"><span class="toc-text">Table-miss</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#流表项删除"><span class="toc-text">流表项删除</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#openflow组表"><span class="toc-text">openflow组表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#组表组成"><span class="toc-text">组表组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#组表类型"><span class="toc-text">组表类型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#meter表"><span class="toc-text">meter表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#meter表组成"><span class="toc-text">meter表组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Meter-Bands"><span class="toc-text">Meter Bands</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#计数器"><span class="toc-text">计数器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Instructions"><span class="toc-text">Instructions</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Action-Set"><span class="toc-text">Action Set</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Action-List"><span class="toc-text">Action List</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Actions"><span class="toc-text">Actions</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Openflow-流水线"><span class="toc-text">Openflow 流水线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#openflow消息"><span class="toc-text">openflow消息</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Controller-to-Switch"><span class="toc-text">Controller-to-Switch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#异步（Asynchronous）"><span class="toc-text">异步（Asynchronous）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对称（Symmetric）"><span class="toc-text">对称（Symmetric）</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

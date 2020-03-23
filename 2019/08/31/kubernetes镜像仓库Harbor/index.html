@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>kubernetes镜像仓库Harbor - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="docker,Harbor,k8s,Kubernetes,持续集成">
+  
+  
+    <meta name="description" content="1 Harbor入门1.1 Harbor简介Harbor是一个开源的可信云本机注册表项目，用于存储，签名和扫描内容。Harbor通过添加用户通常需要的功能（如安全性，身份和管理）来扩展开源Docker Distribution。使注册表更接近构建和运行环境可以提高图像传输效率。Harbor支持在注册表之间复制映像...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2019/08/31/kubernetes%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93Harbor/">
+        kubernetes镜像仓库Harbor
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/Kubernetes/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>Kubernetes</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2019-08-31 11:32:18</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <h2 id="1-Harbor入门"><a href="#1-Harbor入门" class="headerlink" title="1 Harbor入门"></a>1 Harbor入门</h2><h3 id="1-1-Harbor简介"><a href="#1-1-Harbor简介" class="headerlink" title="1.1 Harbor简介"></a>1.1 Harbor简介</h3><p>Harbor是一个开源的可信云本机注册表项目，用于存储，签名和扫描内容。Harbor通过添加用户通常需要的功能（如安全性，身份和管理）来扩展开源Docker Distribution。使注册表更接近构建和运行环境可以提高图像传输效率。Harbor支持在注册表之间复制映像，还提供高级安全功能，如用户管理，访问控制和活动审计。</p>
+<p>镜像的存储harbor使用的是官方的docker registry(v2命名是distribution)服务去完成。harbor在docker distribution的基础上增加了一些安全、访问控制、管理的功能以满足企业对于镜像仓库的需求。harbor以docker-compose的规范形式组织各个组件，并通过docker-compose工具进行启停。</p>
+<p>docker的registry是用本地存储或者s3都是可以的，harbor的功能是在此之上提供用户权限管理、镜像复制等功能，提高使用的registry的效率。Harbor的镜像拷贝功能是通过docker registry的API去拷贝，这种做法屏蔽了繁琐的底层文件操作、不仅可以利用现有docker registry功能不必重复造轮子，而且可以解决冲突和一致性的问题。</p>
+<a id="more"></a>
+
+<h3 id="1-2-Harbor尝鲜"><a href="#1-2-Harbor尝鲜" class="headerlink" title="1.2 Harbor尝鲜"></a>1.2 Harbor尝鲜</h3><p>Harbor github地址：<a href="https://github.com/goharbor/harbor" target="_blank" rel="noopener">https://github.com/goharbor/harbor</a></p>
+<p>Harbor  在线体验地址：<a href="https://demo.goharbor.io/harbor/sign-in?redirect_url=%2Fharbor%2Fprojects" target="_blank" rel="noopener">https://demo.goharbor.io/harbor/sign-in?redirect_url=%2Fharbor%2Fprojects</a> 注册登录即可</p>
+<p>页面如下：<img src="http://img.bcoder.top/2019.08.30/1.png" alt=""></p>
+<h3 id="1-3-架构与设计"><a href="#1-3-架构与设计" class="headerlink" title="1.3 架构与设计"></a>1.3 架构与设计</h3><p><img src="http://img.bcoder.top/2019.08.30/2.png" alt=""></p>
+<p>如上图所示，Harbor包含6个组件：</p>
+<p><strong>Proxy：</strong> Harbor的组件，例如注册表，UI和令牌服务，都在反向代理之后。代理将来自浏览器和Docker客户端的请求转发给各种后端服务。</p>
+<p><strong>Registry：</strong>负责存储Docker镜像和处理Docker pull/pash 命令。由于Harbor需要对图像实施访问控制，因此Registry会将客户端定向到令牌服务，以获取每个提取或推送请求的有效令牌。</p>
+<p><strong>Core services：</strong>港湾的核心功能，主要提供以下服务：</p>
+<p><strong>UI：</strong>一个图形用户界面，用于帮助用户管理Registry Webhook上的图像：Webhook是一种在Registry中配置的机制，因此可以将Registry中的图像状态更改填充到Harbor的Webhook端点。Harbor使用webhook更新日志，启动复制和其他一些功能。令牌服务：负责根据用户的项目角色为每个docker push / pull命令发出令牌。如果从Docker客户端发送的请求中没有令牌，则注册表会将请求重定向到令牌服务。数据库：数据库存储项目，用户，角色，复制策略和图像的元数据。</p>
+<p><strong>Job services：</strong>用于图像复制，本地图像可以复制（同步）到其他Harbor实例。</p>
+<p><strong>log collector：</strong>负责在一个地方收集其他模块的日志。</p>
+<h2 id="2-Harbor安装准备"><a href="#2-Harbor安装准备" class="headerlink" title="2 Harbor安装准备"></a>2 Harbor安装准备</h2><h3 id="2-1-版本说明"><a href="#2-1-版本说明" class="headerlink" title="2.1 版本说明"></a>2.1 版本说明</h3><p>本次采用的Harbor版本为1.8.1，采用离线安装的方式进行安装，安装地址为：<a href="https://storage.googleapis.com/harbor-releases/release-1.8.0/harbor-offline-installer-v1.8.1.tgz" target="_blank" rel="noopener">https://storage.googleapis.com/harbor-releases/release-1.8.0/harbor-offline-installer-v1.8.1.tgz</a></p>
+<h3 id="2-2-环境说明"><a href="#2-2-环境说明" class="headerlink" title="2.2 环境说明"></a>2.2 环境说明</h3><p>Harbor被部署为多个Docker容器，因此可以部署在任何支持Docker的Linux发行版上。目标主机需要Docker，并且要安装Docker Compose。</p>
+<p><strong>①硬件环境</strong></p>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Capacity</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CPU</td>
+<td>minimal 2 CPU</td>
+<td>4 CPU is preferred</td>
+</tr>
+<tr>
+<td>Mem</td>
+<td>minimal 4GB</td>
+<td>8GB is preferred</td>
+</tr>
+<tr>
+<td>Disk</td>
+<td>minimal 40GB</td>
+<td>160GB is preferred</td>
+</tr>
+</tbody></table>
+<p><strong>②软件环境</strong></p>
+<table>
+<thead>
+<tr>
+<th>软件</th>
+<th>版本</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Docker engine</td>
+<td>version 17.06.0-ce+ or higher</td>
+<td>安装文档: <a href="https://docs.docker.com/engine/installation/" target="_blank" rel="noopener">docker engine doc</a></td>
+</tr>
+<tr>
+<td>Docker Compose</td>
+<td>version 1.23.0 or higher安装文档</td>
+<td>安装文档: <a href="https://docs.docker.com/compose/install/" target="_blank" rel="noopener">docker compose doc</a></td>
+</tr>
+<tr>
+<td>Openssl</td>
+<td>latest is preferred</td>
+<td>Generate certificate and keys for Harbor</td>
+</tr>
+</tbody></table>
+<p><strong>③网络环境</strong></p>
+<table>
+<thead>
+<tr>
+<th>港口</th>
+<th>协议</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>443</td>
+<td>HTTPS</td>
+<td>Harbor端口和核心API将接受此端口上的https协议请求，此端口可以在配置文件中更改</td>
+</tr>
+<tr>
+<td>4443</td>
+<td>HTTPS</td>
+<td>只有在启用“公证”时才需要连接到Dock的Docker Content Trust服务，此端口可以在配置文件中更改</td>
+</tr>
+<tr>
+<td>80</td>
+<td>HTTP</td>
+<td>Harbor端口和核心API将接受此端口上的http协议请求</td>
+</tr>
+</tbody></table>
+<p><strong>④部署说明</strong></p>
+<p>目前kubernetes环境如下：</p>
+<ul>
+<li><p>k8s-master:172.171.15.90</p>
+</li>
+<li><p>k8s-worker1:172.171.15.91</p>
+</li>
+<li><p>k8s-worker1:172.171.15.92</p>
+</li>
+</ul>
+<p>部署方案：在两个worker节点部署karbor，作为双主结构，在master部署nginx进行负载分担(<strong>暂时未实现</strong>)：</p>
+<p><img src="http://img.bcoder.top/2019.08.30/3.png" alt=""></p>
+<h2 id="3-Harbor安装与配置"><a href="#3-Harbor安装与配置" class="headerlink" title="3 Harbor安装与配置"></a>3 Harbor安装与配置</h2><h3 id="3-1-Worker节点安装Harbor"><a href="#3-1-Worker节点安装Harbor" class="headerlink" title="3.1 Worker节点安装Harbor"></a>3.1 Worker节点安装Harbor</h3><p>1).将下载的离线安装包拷贝到worker节点，并进行解压并进入<strong>[各worker节点]</strong>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar zxvf harbor-offline-installer-v1.8.1.tgz</span><br><span class="line">cd harbor</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2).修改harbor.yml</p>
+<p>k8s-worker1:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim harbor.yml</span><br></pre></td></tr></table></figure>
+
+<p>修改内容</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">hostname:</span> <span class="number">172.171</span><span class="number">.15</span><span class="number">.91</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>k8s-worker2:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim harbor.yml</span><br></pre></td></tr></table></figure>
+
+<p>修改内容</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">hostname:</span> <span class="number">172.171</span><span class="number">.15</span><span class="number">.92</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>3)安装 docker-compose ，版本需要1.18.0+，<strong>[各worker节点]：</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -L https://github.com/docker/compose/releases/download/1.24.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose</span><br><span class="line"></span><br><span class="line">chmod +x /usr/local/bin/docker-compose</span><br></pre></td></tr></table></figure>
+
+
+
+<p>4）执行install.sh<strong>[各worker节点]:</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh install.sh</span><br></pre></td></tr></table></figure>
+
+<p>最终结果：</p>
+<p><img src="http://img.bcoder.top/2019.08.30/4.png" alt=""></p>
+<p>表示成功</p>
+<p>5）验证：</p>
+<p>任意访问一台：<a href="http://172.171.15.92/" target="_blank" rel="noopener">http://172.171.15.92/</a> </p>
+<p>用户名：admin    </p>
+<p>密码：Harbor12345</p>
+<p><img src="http://img.bcoder.top/2019.08.30/5.png" alt=""></p>
+<h3 id="3-2-Master节点安装Nginx"><a href="#3-2-Master节点安装Nginx" class="headerlink" title="3.2 Master节点安装Nginx"></a>3.2 Master节点安装Nginx</h3><p>1）创建目录并拉取nginx镜像<strong>[Master节点]</strong>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir nginx</span><br><span class="line">docker pull nginx:1.13.12</span><br></pre></td></tr></table></figure>
+
+<p>如果拉取缓慢的话请配置国内镜像源。</p>
+<p>2）编辑nginx.conf<strong>[Master节点]</strong>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim nginx.conf</span><br></pre></td></tr></table></figure>
+
+<p>内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">user nginx;</span><br><span class="line">worker_processes 1;</span><br><span class="line"></span><br><span class="line">error_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;error.log warn;</span><br><span class="line"></span><br><span class="line">pid &#x2F;var&#x2F;run&#x2F;nginx.pid;</span><br><span class="line"></span><br><span class="line">events &#123;</span><br><span class="line">	worker_connections 1024;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stream &#123;</span><br><span class="line">	upstream hub &#123;</span><br><span class="line">		server 172.171.15.91:80;</span><br><span class="line">	&#125;</span><br><span class="line">	server &#123;</span><br><span class="line">		listen 80;</span><br><span class="line">		proxy_pass hub;</span><br><span class="line">		proxy_timeout 300s;</span><br><span class="line">		proxy_connect_timeout 5s;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2）编辑restart.sh<strong>[Master节点]</strong>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim restart.sh</span><br></pre></td></tr></table></figure>
+
+<p>内容如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">docker stop harbornginx</span><br><span class="line"></span><br><span class="line">docker rm harbornginx</span><br><span class="line"></span><br><span class="line">docker run -idt --net=host --name harbornginx -v /root/nginx/nginx.conf:/etc/nginx/nginx.conf nginx:1.13.12</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-3-配置Hashboard用户"><a href="#3-3-配置Hashboard用户" class="headerlink" title="3.3 配置Hashboard用户"></a>3.3 配置Hashboard用户</h3><p><img src="http://img.bcoder.top/2019.08.30/6.png" alt=""></p>
+<p>创建k8s项目<strong>[各worker节点]</strong>:</p>
+<p><img src="http://img.bcoder.top/2019.08.30/7.png" alt=""></p>
+<p>创建用户pusher:<strong>[各worker节点]</strong>:</p>
+<p><img src="http://img.bcoder.top/2019.08.30/8.png" alt=""></p>
+<p>将该用户添加为k8s为开发人员<strong>[各worker节点]</strong>:</p>
+<p><img src="http://img.bcoder.top/2019.08.30/9.png" alt=""></p>
+<h2 id="4-Harbor体验"><a href="#4-Harbor体验" class="headerlink" title="4 Harbor体验"></a>4 Harbor体验</h2><h3 id="4-1-配置域名解析以及docker仓库"><a href="#4-1-配置域名解析以及docker仓库" class="headerlink" title="4.1 配置域名解析以及docker仓库"></a>4.1 配置域名解析以及docker仓库</h3><p>1)配置/etc/hosts</p>
+<p>①k8s-master1</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1 hub.pml.com</span><br></pre></td></tr></table></figure>
+
+
+
+<p>②k8s-worker1</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">172.171.15.90 hub.pml.com</span><br></pre></td></tr></table></figure>
+
+<p>–insecure-registry 172.171.15.90</p>
+<p>2）配置docker仓库<strong>[各节点]：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim &#x2F;etc&#x2F;docker&#x2F;daemon.json</span><br></pre></td></tr></table></figure>
+
+<p>内容如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"exec-opts"</span>: [<span class="string">"native.cgroupdriver=systemd"</span>],</span><br><span class="line">  <span class="attr">"registry-mirrors"</span>: [<span class="string">"https://kdzfmmxg.mirror.aliyuncs.com"</span>],</span><br><span class="line">  <span class="attr">"insecure-registries"</span>:[<span class="string">"hub.pml.com"</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-2-上传镜像测试"><a href="#4-2-上传镜像测试" class="headerlink" title="4.2 上传镜像测试"></a>4.2 上传镜像测试</h3><p>1）将之前的ngin镜像打tag<strong>[master节点]</strong>:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker tag nginx:1.13.12 hub.pml.com/k8s/nginx:1.13.12</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2）用户登录<strong>[master节点]</strong>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker login -u pusher -p Harbor12345 hub.pml.com</span><br></pre></td></tr></table></figure>
+
+
+
+<p>3）上传镜像<strong>[master节点]</strong>:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker push hub.pml.com/k8s/nginx:1.13.12</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://img.bcoder.top/2019.08.30/10.png" alt=""></p>
+<p>4)查看：</p>
+<p><img src="http://img.bcoder.top/2019.08.30/11.png" alt=""></p>
+<p>5）worker1拉取该镜像</p>
+<p><img src="http://img.bcoder.top/2019.08.30/12.png" alt=""></p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2019/08/31/kubernetes%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93Harbor/>https://www.bcoder.top/2019/08/31/kubernetes%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93Harbor/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/docker/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>docker</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Harbor/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Harbor</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/k8s/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>k8s</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Kubernetes/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Kubernetes</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>持续集成</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2019/08/31/kubernetes%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93Harbor/&title=kubernetes镜像仓库Harbor - zln's blog&summary=1 Harbor入门1.1 Harbor简介Harbor是一个开源的可信云本机注册表项目，用于存储，签名和扫描内容。Harbor通过添加用户通常需要的功能（如安全性，身份和管理）来扩展开源Docker Distribution。使注册表更接近构建和运行环境可以提高图像传输效率。Harbor支持在注册表之间复制映像，还提供高级安全功能，如用户管理，访问控制和活动审计。
+镜像的存储harbor使用的是官方的docker registry(v2命名是distribution)服务去完成。harbor在docker distribution的基础上增加了一些安全、访问控制、管理的功能以满足企业对于镜像仓库的需求。harbor以docker-compose的规范形式组织各个组件，并通过docker-compose工具进行启停。
+docker的registry是用本地存储或者s3都是可以的，harbor的功能是在此之上提供用户权限管理、镜像复制等功能，提高使用的registry的效率。Harbor的镜像拷贝功能是通过docker registry的API去拷贝，这种做法屏蔽了繁琐的底层文件操作、不仅可以利用现有docker registry功能不必重复造轮子，而且可以解决冲突和一致性的问题。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2019/08/31/kubernetes%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93Harbor/&title=kubernetes镜像仓库Harbor - zln's blog&summary=1 Harbor入门1.1 Harbor简介Harbor是一个开源的可信云本机注册表项目，用于存储，签名和扫描内容。Harbor通过添加用户通常需要的功能（如安全性，身份和管理）来扩展开源Docker Distribution。使注册表更接近构建和运行环境可以提高图像传输效率。Harbor支持在注册表之间复制映像，还提供高级安全功能，如用户管理，访问控制和活动审计。
+镜像的存储harbor使用的是官方的docker registry(v2命名是distribution)服务去完成。harbor在docker distribution的基础上增加了一些安全、访问控制、管理的功能以满足企业对于镜像仓库的需求。harbor以docker-compose的规范形式组织各个组件，并通过docker-compose工具进行启停。
+docker的registry是用本地存储或者s3都是可以的，harbor的功能是在此之上提供用户权限管理、镜像复制等功能，提高使用的registry的效率。Harbor的镜像拷贝功能是通过docker registry的API去拷贝，这种做法屏蔽了繁琐的底层文件操作、不仅可以利用现有docker registry功能不必重复造轮子，而且可以解决冲突和一致性的问题。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2019/08/31/kubernetes%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93Harbor/&title=kubernetes镜像仓库Harbor - zln's blog&summary=1 Harbor入门1.1 Harbor简介Harbor是一个开源的可信云本机注册表项目，用于存储，签名和扫描内容。Harbor通过添加用户通常需要的功能（如安全性，身份和管理）来扩展开源Docker Distribution。使注册表更接近构建和运行环境可以提高图像传输效率。Harbor支持在注册表之间复制映像，还提供高级安全功能，如用户管理，访问控制和活动审计。
+镜像的存储harbor使用的是官方的docker registry(v2命名是distribution)服务去完成。harbor在docker distribution的基础上增加了一些安全、访问控制、管理的功能以满足企业对于镜像仓库的需求。harbor以docker-compose的规范形式组织各个组件，并通过docker-compose工具进行启停。
+docker的registry是用本地存储或者s3都是可以的，harbor的功能是在此之上提供用户权限管理、镜像复制等功能，提高使用的registry的效率。Harbor的镜像拷贝功能是通过docker registry的API去拷贝，这种做法屏蔽了繁琐的底层文件操作、不仅可以利用现有docker registry功能不必重复造轮子，而且可以解决冲突和一致性的问题。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2019/11/04/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>Java内存区域</p>
+                <p class='content'>如果没有特殊说明，都是针对的是 HotSpot 虚拟机。
+JVM脑图http://naotu.baidu.com/file/98a20864db61df2282ffc424d408bcd6?to...</p>
+              </a>
+            
+            
+              <a class='next' href='/2019/08/28/%E4%BD%BF%E7%94%A8kubeadm%E5%AE%89%E8%A3%85Kubernetes/'>
+                <p class='title'>使用kubeadm安装Kubernetes<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>kubeadm是Kubernetes官方提供的用于快速安装Kubernetes集群的工具，伴随Kubernetes每个版本的发布都会同步更新，kubeadm会对集群配置方面的一些实践做调整，通过...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'kubernetes镜像仓库Harbor',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Harbor入门"><span class="toc-text">1 Harbor入门</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-Harbor简介"><span class="toc-text">1.1 Harbor简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-Harbor尝鲜"><span class="toc-text">1.2 Harbor尝鲜</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-架构与设计"><span class="toc-text">1.3 架构与设计</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Harbor安装准备"><span class="toc-text">2 Harbor安装准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-版本说明"><span class="toc-text">2.1 版本说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-环境说明"><span class="toc-text">2.2 环境说明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Harbor安装与配置"><span class="toc-text">3 Harbor安装与配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Worker节点安装Harbor"><span class="toc-text">3.1 Worker节点安装Harbor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Master节点安装Nginx"><span class="toc-text">3.2 Master节点安装Nginx</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-配置Hashboard用户"><span class="toc-text">3.3 配置Hashboard用户</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Harbor体验"><span class="toc-text">4 Harbor体验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-配置域名解析以及docker仓库"><span class="toc-text">4.1 配置域名解析以及docker仓库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-上传镜像测试"><span class="toc-text">4.2 上传镜像测试</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>JAVA内存泄露分析 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="javase,内存泄露">
+  
+  
+    <meta name="description" content="
+引言    java的一个重要特性就是通过垃圾收集器(GC)自动管理内存的回收，而不需要程序员自己来释放内存。理论上Java中所有不会再被利用的对象所占用的内存，都可以被GC回收，但是Java也存在内存泄露，但它的表现与C++不同。
+">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/03/22/JAVA%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%88%86%E6%9E%90/">
+        JAVA内存泄露分析
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/java/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>java</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-03-22 18:22:21</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言<br>    java的一个重要特性就是通过垃圾收集器(GC)自动管理内存的回收，而不需要程序员自己来释放内存。理论上Java中所有不会再被利用的对象所占用的内存，都可以被GC回收，但是Java也存在内存泄露，但它的表现与C++不同。</p>
+</blockquote>
+<a id="more"></a>
+
+<p><img src="/img/20170322_1.png" alt=""></p>
+<h2 id="JAVA-中的内存管理"><a href="#JAVA-中的内存管理" class="headerlink" title="JAVA 中的内存管理"></a>JAVA 中的内存管理</h2><p>要了解Java中的内存泄露，首先就得知道Java中的内存是如何管理的。<br>在Java程序中，我们通常使用new为对象分配内存，而这些内存空间都在堆（Heap）上。<br>下面看一个示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Simple</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;</span><br><span class="line">        Object object1 = <span class="keyword">new</span> Object();<span class="comment">//obj1</span></span><br><span class="line">        Object object2 = <span class="keyword">new</span> Object();<span class="comment">//obj2</span></span><br><span class="line">        object2 = object1;</span><br><span class="line">        <span class="comment">//...此时，obj2是可以被清理的</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> Java使用有向图的方式进行内存管理:</p>
+<p><img src="/img/20170322_2.jpg" alt="2"></p>
+<p> 在有向图中，我们叫作obj1是可达的，obj2就是不可达的，显然不可达的可以被清理。<br>    内存的释放，也即清理那些不可达的对象，是由GC决定和执行的，所以GC会监控每一个对象的状态，包括申请、引用、被引用和赋值等。<span style="color: #E21035;">释放对象的根本原则就是对象不会再被使用：<br></span></p>
+<p>第一个给对象赋予了空值null，之后再没有调用过。<br>另一个是给对象赋予了新值，这样重新分配了内存空间。</p>
+<p>通常，会认为在堆上分配对象的代价比较大，但是GC却优化了这一操作：C++中，在堆上分配一块内存，会查找一块适用的内存加以分配，如果对象销毁，这块内存就可以重用；而Java中，就想一条长的带子，每分配一个新的对象，Java的“堆指针”就向后移动到尚未分配的区域。所以，Java分配内存的效率，可与C++媲美。</p>
+<p>但是这种工作方式有一个问题：如果频繁的申请内存，资源将会耗尽。这时GC就介入了进来，它会回收空间，并使堆中的对象排列更紧凑。这样，就始终会有足够大的内存空间可以分配。</p>
+<p>gc清理时的引用计数方式：当引用连接至新对象时，引用计数+1；当某个引用离开作用域或被设置为null时，引用计数-1，GC发现这个计数为0时，就回收其占用的内存。这个开销会在引用程序的整个生命周期发生，并且不能处理循环引用的情况。所以这种方式只是用来说明GC的工作方式，而不会被任何一种Java虚拟机应用。</p>
+<p>多数GC采用一种自适应的清理方式（加上其他附加的用于提升速度的技术），主要依据是找出任何“活”的对象，然后采用“自适应的、分代的、停止-复制、标记-清理”式的垃圾回收器。具体不介绍太多，这不是本文重点。</p>
+<h2 id="JAVA-中的内存泄露"><a href="#JAVA-中的内存泄露" class="headerlink" title="JAVA 中的内存泄露"></a>JAVA 中的内存泄露</h2><p>Java中的内存泄露，广义并通俗的说，就是：不再会被使用的对象的内存不能被回收，就是内存泄露。</p>
+<p>Java中的内存泄露与C++中的表现有所不同。<strong>在C++中</strong>，所有被分配了内存的对象，不再使用后，都必须程序员手动的释放他们。所以，每个类，都会含有一个析构函数，作用就是完成清理工作，如果我们忘记了某些对象的释放，就会造成内存泄露。<strong>但是在Java中</strong>，我们不用（也没办法）自己释放内存，无用的对象由GC自动清理，这也极大的简化了我们的编程工作。但，实际有时候一些不再会被使用的对象，在GC看来不能被释放，就会造成内存泄露。</p>
+<p> 我们知道，对象都是有生命周期的，有的长，有的短，如果长生命周期的对象持有短生命周期的引用，就很可能会出现内存泄露。我们举一个简单的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Simple</span> </span>&#123;</span><br><span class="line">    Object object;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method1</span><span class="params">()</span></span>&#123;</span><br><span class="line">        object = <span class="keyword">new</span> Object();</span><br><span class="line">        <span class="comment">//...其他代码</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的object实例，其实我们期望它只作用于method1()方法中，且其他地方不会再用到它，但是，当method1()方法执行完成后，object对象所分配的内存不会马上被认为是可以被释放的对象，只有在Simple类创建的对象被释放后才会被释放，严格的说，这就是一种内存泄露。解决方法就是将object作为method1()方法中的局部变量。当然，如果一定要这么写，可以改为这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Simple</span> </span>&#123;</span><br><span class="line">    Object object;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method1</span><span class="params">()</span></span>&#123;</span><br><span class="line">        object = <span class="keyword">new</span> Object();</span><br><span class="line">        <span class="comment">//...其他代码</span></span><br><span class="line">        object = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样，之前“new Object()”分配的内存，就可以被GC回收。</p>
+<p>到这里，Java的内存泄露应该都比较清楚了。下面再进一步说明：</p>
+<ul>
+<li>在堆中的分配的内存，在没有将其释放掉的时候，就将所有能访问这块内存的方式都删掉（如指针重新赋值），这是针对c++等语言的，Java中的GC会帮我们处理这种情况，所以我们无需关心。</li>
+<li>在内存对象明明已经不需要的时候，还仍然保留着这块内存和它的访问方式（引用），这是所有语言都有可能会出现的内存泄漏方式。编程时如果不小心，我们很容易发生这种情况，如果不太严重，可能就只是短暂的内存泄露。</li>
+</ul>
+<h2 id="一些容易发生内存泄露的例子和解决方法"><a href="#一些容易发生内存泄露的例子和解决方法" class="headerlink" title="一些容易发生内存泄露的例子和解决方法"></a>一些容易发生内存泄露的例子和解决方法</h2><p>像上面例子中的情况很容易发生，也是我们最容易忽略并引发内存泄露的情况，解决的原则就是尽量减小对象的作用域（比如Android studio中，上面的代码就会发出警告，并给出的建议是将类的成员变量改写为方法内的局部变量）以及手动设置null值。</p>
+<p> 至于作用域，需要在我们编写代码时多注意；null值的手动设置，我们可以看一下Java容器LinkedList源码（可参考：Java之LinkedList源码解读（JDK 1.8））的删除指定节点的内部方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//删除指定节点并返回被删除的元素值</span></span><br><span class="line">  <span class="function">E <span class="title">unlink</span><span class="params">(Node&lt;E&gt; x)</span> </span>&#123;</span><br><span class="line">      <span class="comment">//获取当前值和前后节点</span></span><br><span class="line">      <span class="keyword">final</span> E element = x.item;</span><br><span class="line">      <span class="keyword">final</span> Node&lt;E&gt; next = x.next;</span><br><span class="line">      <span class="keyword">final</span> Node&lt;E&gt; prev = x.prev;</span><br><span class="line">      <span class="keyword">if</span> (prev == <span class="keyword">null</span>) &#123;</span><br><span class="line">          first = next;   <span class="comment">//如果前一个节点为空(如当前节点为首节点)，后一个节点成为新的首节点</span></span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          prev.next = next;<span class="comment">//如果前一个节点不为空，那么他先后指向当前的下一个节点</span></span><br><span class="line">          x.prev = <span class="keyword">null</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (next == <span class="keyword">null</span>) &#123;</span><br><span class="line">          last = prev;    <span class="comment">//如果后一个节点为空(如当前节点为尾节点)，当前节点前一个成为新的尾节点</span></span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          next.prev = prev;<span class="comment">//如果后一个节点不为空，后一个节点向前指向当前的前一个节点</span></span><br><span class="line">          x.next = <span class="keyword">null</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      x.item = <span class="keyword">null</span>;</span><br><span class="line">      size--;</span><br><span class="line">      modCount++;</span><br><span class="line">      <span class="keyword">return</span> element;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>除了修改节点间的关联关系，我们还要做的就是赋值为null的操作，不管GC何时会开始清理，我们都应及时的将无用的对象标记为可被清理的对象。</p>
+<p>我们知道Java容器ArrayList是数组实现的（可参考：Java之ArrayList源码解读（JDK 1.8）），如果我们要为其写一个pop()（弹出）方法，可能会是这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">pop</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(size == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> (E) elementData[--size];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>写法很简洁，但这里却会造成内存溢出：elementData[size-1]依然持有E类型对象的引用，并且暂时不能被GC回收。我们可以如下修改：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">pop</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(size == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        E e = (E) elementData[--size];</span><br><span class="line">        elementData[size] = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">return</span> e;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们写代码并不能一味的追求简洁，首要是保证其正确性。</p>
+<h3 id="容器使用时的内存泄露"><a href="#容器使用时的内存泄露" class="headerlink" title="容器使用时的内存泄露"></a>容器使用时的内存泄露</h3><p> 在很多文章中可能看到一个如下内存泄露例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Vector v = <span class="keyword">new</span> Vector();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i&lt;<span class="number">100</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    Object o = <span class="keyword">new</span> Object();</span><br><span class="line">    v.add(o);</span><br><span class="line">    o = <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可能很多人一开始并不理解，下面我们将上面的代码完整一下就好理解了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">method</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Vector vector = <span class="keyword">new</span> Vector();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i&lt;<span class="number">100</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        Object object = <span class="keyword">new</span> Object();</span><br><span class="line">        vector.add(object);</span><br><span class="line">        object = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//...对vector的操作</span></span><br><span class="line">    <span class="comment">//...与vector无关的其他操作</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里内存泄露指的是在对vector操作完成之后，执行下面与vector无关的代码时，如果发生了GC操作，这一系列的object是没法被回收的，而此处的内存泄露可能是短暂的，因为在整个method()方法执行完成后，那些对象还是可以被回收。这里要解决很简单，手动赋值为null即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">method</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Vector vector = <span class="keyword">new</span> Vector();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i&lt;<span class="number">100</span>; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            Object object = <span class="keyword">new</span> Object();</span><br><span class="line">            vector.add(object);</span><br><span class="line">            object = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//...对v的操作</span></span><br><span class="line">        vector = <span class="keyword">null</span>;</span><br><span class="line">        <span class="comment">//...与v无关的其他操作</span></span><br><span class="line">    &#125;</span><br><span class="line">```    </span><br><span class="line"></span><br><span class="line">上面Vector已经过时了，不过只是使用老的例子来做内存泄露的介绍。我们使用容器时很容易发生内存泄露，就如上面的例子，不过上例中，容器时方法内的局部变量，造成的内存泄漏影响可能不算很大（但我们也应该避免），但是，如果这个容器作为一个类的成员变量，甚至是一个静态（<span class="keyword">static</span>）的成员变量时，就要更加注意内存泄露了。</span><br><span class="line"></span><br><span class="line">下面也是一种使用容器时可能会发生的错误:</span><br><span class="line">```java</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CollectionMemory</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String s[])</span></span>&#123;</span><br><span class="line">        Set&lt;MyObject&gt; objects = <span class="keyword">new</span> LinkedHashSet&lt;MyObject&gt;();</span><br><span class="line">        objects.add(<span class="keyword">new</span> MyObject());</span><br><span class="line">        objects.add(<span class="keyword">new</span> MyObject());</span><br><span class="line">        objects.add(<span class="keyword">new</span> MyObject());</span><br><span class="line">        System.out.println(objects.size());</span><br><span class="line">        <span class="keyword">while</span>(<span class="keyword">true</span>)&#123;</span><br><span class="line">            objects.add(<span class="keyword">new</span> MyObject());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyObject</span></span>&#123;</span><br><span class="line">    <span class="comment">//设置默认数组长度为99999更快的发生OutOfMemoryError</span></span><br><span class="line">    List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;(<span class="number">99999</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行上面的代码将很快报错：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">3</span><br><span class="line">Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space</span><br><span class="line">    at java.util.ArrayList.&lt;init&gt;(ArrayList.java:152)</span><br><span class="line">    at com.anxpp.memory.MyObject.&lt;init&gt;(CollectionMemory.java:21)</span><br><span class="line">    at com.anxpp.memory.CollectionMemory.main(CollectionMemory.java:16)</span><br></pre></td></tr></table></figure>
+<p>如果足够了解Java的容器，上面的错误是不可能发生的。</p>
+<p>容器Set只存放唯一的元素，是通过对象的equals()方法来比较的，但是Java中所有类都直接或间接继承至Object类，Object类的equals()方法比较的是对象的地址，上例中，就会一直添加元素直到内存溢出。</p>
+<p> 所以，上例严格的说是容器的错误使用导致的内存溢出。</p>
+<p>就Set而言，remove()方法也是通过equals()方法来删除匹配的元素的，如果一个对象确实提供了正确的equals()方法，但是切记不要在修改这个对象后使用remove(Object o)，这也可能会发生内存泄露。</p>
+<h3 id="各种提供了close-方法的对象"><a href="#各种提供了close-方法的对象" class="headerlink" title="各种提供了close()方法的对象"></a>各种提供了close()方法的对象</h3><p>比如数据库连接（dataSourse.getConnection()），网络连接(socket)和io连接，以及使用其他框架的时候，除非其显式的调用了其close()方法（或类似方法）将其连接关闭，否则是不会自动被GC回收的。其实原因依然是长生命周期对象持有短生命周期对象的引用。</p>
+<p>可能很多人使用过hibernate，我们操作数据库时，通过SessionFactory获取一个session：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Session session=sessionFactory.openSession();</span><br><span class="line">    完成后我们必须调用close()方法关闭：</span><br><span class="line">session.close();</span><br></pre></td></tr></table></figure>
+<p>SessionFactory就是一个长生命周期的对象，而session相对是个短生命周期的对象，但是框架这么设计是合理的：它并不清楚我们要使用session到多久，于是只能提供一个方法让我们自己决定何时不再使用。</p>
+<p> 因为在close()方法调用之前，可能会抛出异常而导致方法不能被调用，我们通常使用try语言，然后再finally语句中执行close()等清理工作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">        session=sessionFactory.openSession();</span><br><span class="line">        <span class="comment">//...其他操作</span></span><br><span class="line">    &#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">        session.close();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="单例模式导致的内存泄露"><a href="#单例模式导致的内存泄露" class="headerlink" title="单例模式导致的内存泄露"></a>单例模式导致的内存泄露</h3><p>单例模式，很多时候我们可以把它的生命周期与整个程序的生命周期看做差不多的，所以是一个长生命周期的对象。如果这个对象持有其他对象的引用，也很容易发生内存泄露。</p>
+<h3 id="内部类和外部模块的引用"><a href="#内部类和外部模块的引用" class="headerlink" title="内部类和外部模块的引用"></a>内部类和外部模块的引用</h3><p>其实原理依然是一样的，只是出现的方式不一样而已。</p>
+<p>##与清理相关的方法</p>
+<p>本节主要谈论gc()和finalize()方法。</p>
+<h3 id="gc"><a href="#gc" class="headerlink" title="gc()"></a>gc()</h3><p>对于程序员来说，GC基本是透明的，不可见的。运行GC的函数是System.gc()，调用后启动垃圾回收器开始清理。</p>
+<p>但是根据Java语言规范定义， 该函数不保证JVM的垃圾收集器一定会执行。因为，不同的JVM实现者可能使用不同的算法管理GC。通常，GC的线程的优先级别较低。</p>
+<p>JVM调用GC的策略也有很多种，有的是内存使用到达一定程度时，GC才开始工作，也有定时执行的，有的是平缓执行GC，有的是中断式执行GC。但通常来说，我们不需要关心这些。除非在一些特定的场合，GC的执行影响应用程序的性能，例如对于基于Web的实时系统，如网络游戏等，用户不希望GC突然中断应用程序执行而进行垃圾回收，那么我们需要调整GC的参数，让GC能够通过平缓的方式释放内存，例如将垃圾回收分解为一系列的小步骤执行，Sun提供的HotSpot JVM就支持这一特性。</p>
+<h3 id="finalize"><a href="#finalize" class="headerlink" title="finalize()"></a>finalize()</h3><p>finalize()是Object类中的方法。</p>
+<p>了解C++的都知道有个析构函数，但是注意，finalize()绝不等于C++中的析构函数。</p>
+<p>Java编程思想中是这么解释的：一旦GC准备好释放对象所占用的的存储空间，将先调用其finalize()方法，并在下一次GC回收动作发生时，才会真正回收对象占用的内存，所以一些清理工作，我们可以放到finalize()中。</p>
+<p>该方法的一个重要的用途是：当在java中调用非java代码（如c和c++）时，在这些非java代码中可能会用到相应的申请内存的操作（如c的malloc()函数），而在这些非java代码中并没有有效的释放这些内存，就可以使用finalize()方法，并在里面调用本地方法的free()等函数。</p>
+<p>所以finalize()并不适合用作普通的清理工作。</p>
+<p>不过有时候，该方法也有一定的用处：</p>
+<p>如果存在一系列对象，对象中有一个状态为false，如果我们已经处理过这个对象，状态会变为true，为了避免有被遗漏而没有处理的对象，就可以使用finalize()方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyObject</span></span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> state = <span class="keyword">false</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deal</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//...一些处理操作</span></span><br><span class="line">        state = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">finalize</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!state)&#123;</span><br><span class="line">            System.out.println(<span class="string">"ERROR:"</span> + <span class="string">"对象未处理！"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 但是从很多方面了解，该方法都是被推荐不要使用的，并被认为是多余的。</p>
+<p>总的来说，内存泄露问题，还是编码不认真导致的，我们并不能责怪JVM没有更合理的清理。</p>
+<blockquote>
+<p>本文转自：<a href="http://blog.csdn.net/anxpp/" target="_blank" rel="noopener">http://blog.csdn.net/anxpp/</a></p>
+</blockquote>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/03/22/JAVA%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%88%86%E6%9E%90/>https://www.bcoder.top/2017/03/22/JAVA%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%88%86%E6%9E%90/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/javase/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>javase</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>内存泄露</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/03/22/JAVA%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%88%86%E6%9E%90/&title=JAVA内存泄露分析 - zln's blog&summary=
+引言    java的一个重要特性就是通过垃圾收集器(GC)自动管理内存的回收，而不需要程序员自己来释放内存。理论上Java中所有不会再被利用的对象所占用的内存，都可以被GC回收，但是Java也存在内存泄露，但它的表现与C++不同。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/03/22/JAVA%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%88%86%E6%9E%90/&title=JAVA内存泄露分析 - zln's blog&summary=
+引言    java的一个重要特性就是通过垃圾收集器(GC)自动管理内存的回收，而不需要程序员自己来释放内存。理论上Java中所有不会再被利用的对象所占用的内存，都可以被GC回收，但是Java也存在内存泄露，但它的表现与C++不同。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/03/22/JAVA%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%88%86%E6%9E%90/&title=JAVA内存泄露分析 - zln's blog&summary=
+引言    java的一个重要特性就是通过垃圾收集器(GC)自动管理内存的回收，而不需要程序员自己来释放内存。理论上Java中所有不会再被利用的对象所占用的内存，都可以被GC回收，但是Java也存在内存泄露，但它的表现与C++不同。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/03/25/jdbc%E5%A4%8D%E4%B9%A0%E6%80%BB%E7%BB%93/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>jdbc复习总结</p>
+                <p class='content'>
+前言记得初次学习jdbc已经过去大半年了，基本上忘得差不多了，现在重新完整的回顾一遍jdbc,不求记住，只求在忘的时候过来翻一翻，迅速回忆起来。
+
+
+
+
+第一章 连接数据库第一节 准备工作1....</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/03/19/MySQL%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/'>
+                <p class='title'>MySQL数据类型<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言本文通过对数据型、字符串型、时间日期型的数据结构以及MySQL记录长度两个方面展开。
+
+
+
+数据类型(列类型)所谓的数据类型: 对数据进行统一的分类, 从系统的角度出发为了能够使用统一的方...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'JAVA内存泄露分析',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JAVA-中的内存管理"><span class="toc-text">JAVA 中的内存管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JAVA-中的内存泄露"><span class="toc-text">JAVA 中的内存泄露</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一些容易发生内存泄露的例子和解决方法"><span class="toc-text">一些容易发生内存泄露的例子和解决方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#容器使用时的内存泄露"><span class="toc-text">容器使用时的内存泄露</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#各种提供了close-方法的对象"><span class="toc-text">各种提供了close()方法的对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#单例模式导致的内存泄露"><span class="toc-text">单例模式导致的内存泄露</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#内部类和外部模块的引用"><span class="toc-text">内部类和外部模块的引用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#gc"><span class="toc-text">gc()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#finalize"><span class="toc-text">finalize()</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

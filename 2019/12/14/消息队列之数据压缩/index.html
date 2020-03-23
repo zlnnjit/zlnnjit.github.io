@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>消息队列之数据压缩 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="中间件,消息队列">
+  
+  
+    <meta name="description" content="前面文章中提到过，我在一台配置比较高的服务器上，对 Kafka 做过一个极限的性能压测，想验证一下 Kafka 到底有多快。我使用的种子消息大小为 1KB，只要是并发数量足够多，不开启压缩时，可以打满万兆网卡的全部带宽，TPS 接近 100 万。开启压缩时，TPS 可以达到 2000 万左右，吞吐量提升了大约 2...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2019/12/14/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8B%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9/">
+        消息队列之数据压缩
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/cs-inter/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>cs-inter</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2019-12-14 13:52:22</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <p>前面文章中提到过，我在一台配置比较高的服务器上，对 Kafka 做过一个极限的性能压测，想验证一下 Kafka 到底有多快。我使用的种子消息大小为 1KB，只要是并发数量足够多，不开启压缩时，可以打满万兆网卡的全部带宽，TPS 接近 100 万。开启压缩时，TPS 可以达到 2000 万左右，吞吐量提升了大约 20 倍！</p>
+<a id="more"></a>
+
+<p>算术好的同学可能会立刻反驳我说，2000 万 TPS 乘以 1KB 的消息大小，再把字节 Byte 转换成比特 bit，换算成网络传输的带宽是 200Gb/s，服务器网卡根本达不到这么大的传输带宽！</p>
+<p>我们的测试服务器的网卡就是普通的万兆网卡，极限带宽也就是 10Gb/s，压测时候的实际网络流量大概在 7Gb/s 左右。这里面，最重要的原因就是，我在测试的时候开启了 Kafka 的压缩功能。可以看到，对于 Kafka 来说，使用数据压缩，提升了大概几十倍的吞吐量。当然，在实际生产时，不太可能达到这么高的压缩率，但是合理地使用数据压缩，仍然可以做到提升数倍的吞吐量。</p>
+<p>所以，<strong>数据压缩不仅能节省存储空间，还可以用于提升网络传输性能。</strong>这种使用压缩来提升系统性能的方法，不仅限于在消息队列中使用，我们日常开发的应用程序也可以使用。比如，我们的程序要传输大量的数据，或者要在磁盘、数据库中存储比较大的数据，这些情况下，都可以考虑使用数据压缩来提升性能，还能节省网络带宽和存储空间。</p>
+<p>那如何在你的程序中使用压缩？应该选择什么样的压缩算法更适合我们的系统呢？这节课，我带你一起学习一下，使用数据压缩来提升系统性能的方法。</p>
+<h2 id="什么情况适合使用数据压缩？"><a href="#什么情况适合使用数据压缩？" class="headerlink" title="什么情况适合使用数据压缩？"></a>什么情况适合使用数据压缩？</h2><p>在使用压缩之前，首先你需要考虑，当前这个场景是不是真的适合使用数据压缩。</p>
+<p>比如，进程之间通过网络传输数据，这个数据是不是需要压缩呢？我和你一起来对比一下：</p>
+<ul>
+<li>不压缩直接传输需要的时间是： 传输<strong>未压缩</strong>数据的耗时。</li>
+<li>使用数据压缩需要的时间是： 压缩耗时 + 传输<strong>压缩</strong>数据耗时 + 解压耗时。</li>
+</ul>
+<p>到底是压缩快，还是不压缩快呢？其实不好说。影响的因素非常多，比如数据的压缩率、网络带宽、收发两端服务器的繁忙程度等等。</p>
+<p>压缩和解压的操作都是计算密集型的操作，非常耗费 CPU 资源。如果你的应用处理业务逻辑就需要耗费大量的 CPU 资源，就不太适合再进行压缩和解压。</p>
+<p>又比如说，如果你的系统的瓶颈是磁盘的 IO 性能，CPU 资源又很闲，这种情况就非常适合在把数据写入磁盘前先进行压缩。</p>
+<p>但是，如果你的系统读写比严重不均衡，你还要考虑，每读一次数据就要解压一次是不是划算。</p>
+<p><strong>压缩它的本质是资源的置换，是一个时间换空间，或者说是 CPU 资源换存储资源的游戏。</strong></p>
+<p>就像木桶的那个短板一样，每一个系统它都有一个性能瓶颈资源，可能是磁盘 IO，网络带宽，也可能是 CPU。如果使用压缩，能用长板来换一些短板，那总体上就能提升性能，这样就是划算的。如果用了压缩之后，短板更短了，那就不划算了，不如不用。</p>
+<p>如果通过权衡，使用数据压缩确实可以提升系统的性能，接下来就需要选择合适的压缩算法。</p>
+<h2 id="应该选择什么压缩算法？"><a href="#应该选择什么压缩算法？" class="headerlink" title="应该选择什么压缩算法？"></a>应该选择什么压缩算法？</h2><p>压缩算法可以分为有损压缩和无损压缩。有损压缩主要是用来压缩音视频，它压缩之后是会丢失信息的。我们这里讨论的全都是无损压缩，也就是说，数据经过压缩和解压过程之后，与压缩之前相比，是 100% 相同的。</p>
+<p>数据为什么可以被压缩呢？各种各样的压缩算法又是怎么去压缩数据的呢？我举个例子来简单说明一下。</p>
+<p>比如说，下面这段数据：</p>
+<blockquote>
+<p>00000000000000000000</p>
+</blockquote>
+<p>我来给你人肉压缩一下：</p>
+<blockquote>
+<p>20 个 0</p>
+</blockquote>
+<p>20 个字符就被压缩成了 4 个字符，并且是可以无损还原的。当然，我举的例子比较极端，我的压缩算法也几乎没什么实用性，但是，这确实是一个压缩算法，并且和其他的压缩算法本质是没什么区别的。</p>
+<p>目前常用的压缩算法包括：ZIP，GZIP，SNAPPY，LZ4 等等。选择压缩算法的时候，主要需要考虑数据的压缩率和压缩耗时。一般来说，压缩率越高的算法，压缩耗时也越高。如果是对性能要求高的系统，可以选择压缩速度快的算法，比如 LZ4；如果需要更高的压缩比，可以考虑 GZIP 或者压缩率更高的 XZ 等算法。</p>
+<p>压缩样本对压缩速度和压缩比的影响也是比较大的，同样大小的一段数字和一段新闻的文本，即使是使用相同的压缩算法，压缩率和压缩时间的差异也是比较大的。所以，有的时候在选择压缩算法的之前，用系统的样例业务数据做一个测试，可以帮助你找到最合适的压缩算法。</p>
+<p>在这里，我不会去给你讲某一种压缩算法，因为压缩算法都很复杂，一般来说也不需要我们来实现某种压缩算法，如果你感兴趣的话，可以去学习一下最经典压缩算法：哈夫曼编码（也叫霍夫曼编码，Huffman Coding）。</p>
+<h2 id="如何选择合适的压缩分段？"><a href="#如何选择合适的压缩分段？" class="headerlink" title="如何选择合适的压缩分段？"></a>如何选择合适的压缩分段？</h2><p>大部分的压缩算法，他们的区别主要是，对数据进行编码的算法，压缩的流程和压缩包的结构大致一样的。而在压缩过程中，你最需要了解的就是如何选择合适的压缩分段大小。</p>
+<p>在压缩时，给定的被压缩数据它必须有确定的长度，或者说，是有头有尾的，不能是一个无限的数据流，<strong>如果要对流数据进行压缩，那必须把流数据划分成多个帧，一帧一帧的分段压缩。</strong></p>
+<p>主要原因是，压缩算法在开始压缩之前，一般都需要对被压缩数据从头到尾进行一次扫描，扫描的目的是确定如何对数据进行划分和编码，一般的原则是重复次数多、占用空间大的内容，使用尽量短的编码，这样压缩率会更高。</p>
+<p>另外，被压缩的数据长度越大，重码率会更高，压缩比也就越高。这个很好理解，比如我们这篇文章，可能出现了几十次“压缩”这个词，如果将整篇文章压缩，这个词的重复率是几十次，但如果我们按照每个自然段来压缩，那每段中这个词的重复率只有二三次。显然全文压缩的压缩率肯定高于分段压缩。</p>
+<p>当然，分段也不是越大越好，实际上分段大小超过一定长度之后，再增加长度对压缩率的贡献就不太大了，这是一个原因。另外，过大的分段长度，在解压缩的时候，会有更多的解压浪费。比如，一个 1MB 大小的压缩文件，即使你只是需要读其中很短的几个字节，也不得不把整个文件全部解压缩，造成很大的解压浪费。</p>
+<p>所以，你需要根据你的业务，选择合适的压缩分段，在压缩率、压缩速度和解压浪费之间找到一个合适的平衡。</p>
+<p>确定了如何对数据进行划分和压缩算法之后，就可以进行压缩了，压缩的过程就是用编码来替换原始数据的过程。压缩之后的压缩包就是由这个编码字典和用编码替换之后的数据组成的。</p>
+<p>这就是数据压缩的过程。解压的时候，先读取编码字典，然后按照字典把压缩编码还原成原始的数据就可以了。</p>
+<h2 id="Kafka-是如何处理消息压缩的？"><a href="#Kafka-是如何处理消息压缩的？" class="headerlink" title="Kafka 是如何处理消息压缩的？"></a>Kafka 是如何处理消息压缩的？</h2><p>回过头来，我们再看一下 Kafka 它是如何来处理数据压缩的。</p>
+<p>首先，Kafka 是否开启压缩，这是可以配置，它也支持配置使用哪一种压缩算法。原因我们在上面说过，不同的业务场景是否需要开启压缩，选择哪种压缩算法是不能一概而论的。所以，Kafka 的设计者把这个选择权交给使用者。</p>
+<p>在开启压缩时，Kafka 选择一批消息一起压缩，每一个批消息就是一个压缩分段。使用者也可以通过参数来控制每批消息的大小。</p>
+<p>我们之前讲过，在 Kafka 中，生产者生成一个批消息发给服务端，在服务端中是不会拆分批消息的。那按照批来压缩，意味着，在服务端也不用对这批消息进行解压，可以整批直接存储，然后整批发送给消费者。最后，批消息由消费者进行解压。</p>
+<p>在服务端不用解压，就不会耗费服务端宝贵的 CPU 资源，同时还能获得压缩后，占用传输带宽小，占用存储空间小的这些好处，这是一个非常聪明的设计。</p>
+<p>在使用 Kafka 时，如果生产者和消费者的 CPU 资源不是特别吃紧，开启压缩后，可以节省网络带宽和服务端的存储空间，提升总体的吞吐量，一般都是个不错的选择。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>数据压缩，它本质上是用 CPU 资源换取存储资源，或者说是用压缩解压的时间来换取存储的空间，这个买卖是不是划算，需要你根据自己的情况先衡量一下。</p>
+<p>在选择压缩算法的时候，需要综合考虑压缩时间和压缩率两个因素，被压缩数据的内容也是影响压缩时间和压缩率的重要因素，必要的时候可以先用业务数据做一个压缩测试，这样有助于选择最合适的压缩算法。</p>
+<p>另外一个影响压缩率的重要因素是压缩分段的大小，你需要根据业务情况选择一个合适的分段策略，在保证不错的压缩率的前提下，尽量减少解压浪费。</p>
+<p>最后，我们讲了一下 Kafka 它是如何处理消息压缩的。Kafka 在生产者上，对每批消息进行压缩，批消息在服务端不解压，消费者在收到消息之后再进行解压。简单地说，Kafka 的压缩和解压都是在客户端完成的。</p>
+<h2 id="思考题"><a href="#思考题" class="headerlink" title="思考题"></a>思考题</h2><p>课后，你可以去看一下 RocketMQ 的文档或者源代码，看一下，RocketMQ 是怎么处理消息压缩的。然后和 Kafka 的压缩方式对比一下，想一想哪种处理方式更适合你的系统？</p>
+<p>RocketMq: 默认压缩大于4K的消息（可配置），压缩算法是zip，默认级别5（可配置），同样也是客户端做解压缩工作，服务端只存储；对于批量消息的压缩，目前并不支持。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2019/12/14/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8B%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9/>https://www.bcoder.top/2019/12/14/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8B%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E4%B8%AD%E9%97%B4%E4%BB%B6/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>中间件</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>消息队列</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2019/12/14/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8B%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9/&title=消息队列之数据压缩 - zln's blog&summary=前面文章中提到过，我在一台配置比较高的服务器上，对 Kafka 做过一个极限的性能压测，想验证一下 Kafka 到底有多快。我使用的种子消息大小为 1KB，只要是并发数量足够多，不开启压缩时，可以打满万兆网卡的全部带宽，TPS 接近 100 万。开启压缩时，TPS 可以达到 2000 万左右，吞吐量提升了大约 20 倍！"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2019/12/14/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8B%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9/&title=消息队列之数据压缩 - zln's blog&summary=前面文章中提到过，我在一台配置比较高的服务器上，对 Kafka 做过一个极限的性能压测，想验证一下 Kafka 到底有多快。我使用的种子消息大小为 1KB，只要是并发数量足够多，不开启压缩时，可以打满万兆网卡的全部带宽，TPS 接近 100 万。开启压缩时，TPS 可以达到 2000 万左右，吞吐量提升了大约 20 倍！"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2019/12/14/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8B%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9/&title=消息队列之数据压缩 - zln's blog&summary=前面文章中提到过，我在一台配置比较高的服务器上，对 Kafka 做过一个极限的性能压测，想验证一下 Kafka 到底有多快。我使用的种子消息大小为 1KB，只要是并发数量足够多，不开启压缩时，可以打满万兆网卡的全部带宽，TPS 接近 100 万。开启压缩时，TPS 可以达到 2000 万左右，吞吐量提升了大约 20 倍！"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2019/12/14/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8BRocketMQ%E6%B6%88%E6%81%AF%E7%94%9F%E4%BA%A7%E5%AE%9E%E7%8E%B0%E8%BF%87%E7%A8%8B/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>消息队列之锁</p>
+                <p class='content'>对于消息队列来说，它最核心的功能就是收发消息。也就是消息生产和消费这两个流程。我们在之前提到了消息队列一些常见问题，比如，“如何保证消息不会丢失？”“为什么会收到重复消息？”“消费时为什么要先执...</p>
+              </a>
+            
+            
+              <a class='next' href='/2019/12/14/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B9%8BCAS&FAA/'>
+                <p class='title'>消息队列之CAS&FAA<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>在一些特定的情况下，我们可以使用硬件同步原语来替代锁，可以保证和锁一样的数据安全性，同时具有更好的性能。
+
+
+什么是硬件同步原语？为什么硬件同步原语可以替代锁呢？要理解这个问题，你要首先知道硬件...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '消息队列之数据压缩',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么情况适合使用数据压缩？"><span class="toc-text">什么情况适合使用数据压缩？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#应该选择什么压缩算法？"><span class="toc-text">应该选择什么压缩算法？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何选择合适的压缩分段？"><span class="toc-text">如何选择合适的压缩分段？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kafka-是如何处理消息压缩的？"><span class="toc-text">Kafka 是如何处理消息压缩的？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#小结"><span class="toc-text">小结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#思考题"><span class="toc-text">思考题</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

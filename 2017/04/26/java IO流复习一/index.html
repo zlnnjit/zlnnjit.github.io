@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>java IO流复习一 - zln&#39;s blog</title>
+  
+  
+    <meta name="description" content="1_IO流(IO流概述及其分类)
+1.概念
+IO流用来处理设备之间的数据传输
+Java对数据的操作是通过流的方式
+Java用于操作流的类都在IO包中
+流按流向分为两种：输入流，输出流。
+流按操作类型分为两种：
+字节流 : 字节流可以操作任何数据,因为在计算机中任何数据都是以字节的形式存储的
+字符流 : 字符流只能...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/04/26/java%20IO%E6%B5%81%E5%A4%8D%E4%B9%A0%E4%B8%80/">
+        java IO流复习一
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/java/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>java</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-04-26 18:02:55</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <h2 id="1-IO流-IO流概述及其分类"><a href="#1-IO流-IO流概述及其分类" class="headerlink" title="1_IO流(IO流概述及其分类)"></a>1_IO流(IO流概述及其分类)</h2><ul>
+<li>1.概念<ul>
+<li>IO流用来处理设备之间的数据传输</li>
+<li>Java对数据的操作是通过流的方式</li>
+<li>Java用于操作流的类都在IO包中</li>
+<li>流按流向分为两种：输入流，输出流。</li>
+<li>流按操作类型分为两种：<ul>
+<li>字节流 : 字节流可以操作任何数据,因为在计算机中任何数据都是以字节的形式存储的</li>
+<li>字符流 : 字符流只能操作纯字符数据，比较方便。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+
+
+<ul>
+<li>2.IO流常用父类<ul>
+<li>字节流的抽象父类：<ul>
+<li>InputStream </li>
+<li>OutputStream</li>
+</ul>
+</li>
+<li>字符流的抽象父类：<ul>
+<li>Reader </li>
+<li>Writer        </li>
+</ul>
+</li>
+</ul>
+</li>
+<li>3.IO程序书写<ul>
+<li>使用前，导入IO包中的类</li>
+<li>使用时，进行IO异常处理</li>
+<li>使用后，释放资源</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-IO流-FileInputStream"><a href="#2-IO流-FileInputStream" class="headerlink" title="2_IO流(FileInputStream)"></a>2_IO流(FileInputStream)</h2><ul>
+<li>read()一次读取一个字节</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个文件输入流对象,并关联aaa.txt</span></span><br><span class="line">FileInputStream fis = <span class="keyword">new</span> FileInputStream(<span class="string">"aaa.txt"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> b;<span class="comment">// 定义变量,记录每次读到的字节</span></span><br><span class="line"><span class="comment">// 将每次读到的字节赋值给b并判断是否是-1</span></span><br><span class="line"><span class="keyword">while</span> ((b = fis.read()) != -<span class="number">1</span>) &#123;</span><br><span class="line">	System.out.println(b); <span class="comment">// 打印每一个字节</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fis.close(); <span class="comment">// 关闭流释放资源</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-IO流-read-方法返回值为什么是int"><a href="#3-IO流-read-方法返回值为什么是int" class="headerlink" title="3_IO流(read()方法返回值为什么是int)"></a>3_IO流(read()方法返回值为什么是int)</h2><ul>
+<li><p>read()方法读取的是一个字节,为什么返回是int,而不是byte</p>
+<p>  因为字节输入流可以操作任意类型的文件,比如图片音频等,这些文件底层都是以二进制形式的存储的,如果每次读取都返回byte,有可能在读到中间的时候遇到111111111<br>  那么这11111111是byte类型的-1,我们的程序是遇到-1就会停止不读了,后面的数据就读不到了,所以在读取的时候用int类型接收,如果11111111会在其前面补上<br>  24个0凑足4个字节,那么byte类型的-1就变成int类型的255了这样可以保证整个数据读完,而结束标记的-1就是int类型</p>
+</li>
+</ul>
+<h2 id="4-IO流-FileOutputStream"><a href="#4-IO流-FileOutputStream" class="headerlink" title="4_IO流(FileOutputStream)"></a>4_IO流(FileOutputStream)</h2><ul>
+<li>write()一次写出一个字节</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果没有bbb.txt,会创建出一个</span></span><br><span class="line">FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(<span class="string">"bbb.txt"</span>); </span><br><span class="line"><span class="comment">// fos.write(97); //虽然写出的是一个int数,但是在</span></span><br><span class="line"><span class="comment">// 写出的时候会将前面的24个0去掉,所以写出的一个byte</span></span><br><span class="line">fos.write(<span class="number">98</span>);</span><br><span class="line">fos.write(<span class="number">99</span>);</span><br><span class="line">fos.close();</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-IO流-FileOutputStream追加"><a href="#5-IO流-FileOutputStream追加" class="headerlink" title="5_IO流(FileOutputStream追加)"></a>5_IO流(FileOutputStream追加)</h2><ul>
+<li>A:案例演示<ul>
+<li>FileOutputStream的构造方法写出数据如何实现数据的追加写入</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(<span class="string">"bbb.txt"</span>,<span class="keyword">true</span>);	<span class="comment">//如果没有bbb.txt,会创建出一个</span></span><br><span class="line"><span class="comment">//fos.write(97);						</span></span><br><span class="line"><span class="comment">//虽然写出的是一个int数,但是在写出的时候会将前面的24个0去掉,</span></span><br><span class="line"><span class="comment">//所以写出的一个byte</span></span><br><span class="line">fos.write(<span class="number">98</span>);</span><br><span class="line">fos.write(<span class="number">99</span>);</span><br><span class="line">fos.close();</span><br></pre></td></tr></table></figure>
+
+<h2 id="6-IO流-拷贝图片"><a href="#6-IO流-拷贝图片" class="headerlink" title="6_IO流(拷贝图片)"></a>6_IO流(拷贝图片)</h2><ul>
+<li>FileInputStream读取</li>
+<li>FileOutputStream写出</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">FileInputStream fis = <span class="keyword">new</span> FileInputStream(<span class="string">"致青春.mp3"</span>);	<span class="comment">//创建输入流对象,关联致青春.mp3</span></span><br><span class="line">FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(<span class="string">"copy.mp3"</span>);<span class="comment">//创建输出流对象,关联copy.mp3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> b;</span><br><span class="line"><span class="keyword">while</span>((b = fis.read()) != -<span class="number">1</span>) &#123;</span><br><span class="line">	fos.write(b);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fis.close();</span><br><span class="line">fos.close();</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="7-IO流-拷贝音频文件画原理图"><a href="#7-IO流-拷贝音频文件画原理图" class="headerlink" title="7_IO流(拷贝音频文件画原理图)"></a>7_IO流(拷贝音频文件画原理图)</h2><ul>
+<li>A:案例演示<ul>
+<li>字节流一次读写一个字节复制音频</li>
+</ul>
+</li>
+<li>弊端:效率太低</li>
+</ul>
+<h2 id="8-IO流-字节数组拷贝之available-方法"><a href="#8-IO流-字节数组拷贝之available-方法" class="headerlink" title="8_IO流(字节数组拷贝之available()方法)"></a>8_IO流(字节数组拷贝之available()方法)</h2><ul>
+<li>A:案例演示<ul>
+<li>int read(byte[] b):一次读取一个字节数组</li>
+<li>write(byte[] b):一次写出一个字节数组</li>
+<li>available()获取读的文件所有的字节个数</li>
+</ul>
+</li>
+<li>弊端:有可能会内存溢出 </li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">FileInputStream fis = <span class="keyword">new</span> FileInputStream(<span class="string">"致青春.mp3"</span>);</span><br><span class="line">FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(<span class="string">"copy.mp3"</span>);</span><br><span class="line"><span class="keyword">byte</span>[] arr = <span class="keyword">new</span> <span class="keyword">byte</span>[fis.available()];					<span class="comment">//根据文件大小做一个字节数组</span></span><br><span class="line">fis.read(arr);											<span class="comment">//将文件上的所有字节读取到数组中</span></span><br><span class="line">fos.write(arr);											<span class="comment">//将数组中的所有字节一次写到了文件上</span></span><br><span class="line">fis.close();</span><br><span class="line">fos.close();</span><br></pre></td></tr></table></figure>
+
+<h2 id="9-IO流-定义小数组"><a href="#9-IO流-定义小数组" class="headerlink" title="9_IO流(定义小数组)"></a>9_IO流(定义小数组)</h2><ul>
+<li>write(byte[] b)</li>
+<li>write(byte[] b, int off, int len)写出有效的字节个数</li>
+</ul>
+<h2 id="10-IO流-定义小数组的标准格式"><a href="#10-IO流-定义小数组的标准格式" class="headerlink" title="10_IO流(定义小数组的标准格式)"></a>10_IO流(定义小数组的标准格式)</h2><ul>
+<li>A:案例演示<ul>
+<li>字节流一次读写一个字节数组复制图片和视频</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">FileInputStream fis = <span class="keyword">new</span> FileInputStream(<span class="string">"致青春.mp3"</span>);</span><br><span class="line">FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(<span class="string">"copy.mp3"</span>);</span><br><span class="line"><span class="keyword">int</span> len;</span><br><span class="line"><span class="keyword">byte</span>[] arr = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span> * <span class="number">8</span>];	<span class="comment">//自定义字节数组</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>((len = fis.read(arr)) != -<span class="number">1</span>) &#123;</span><br><span class="line">	<span class="comment">//fos.write(arr);</span></span><br><span class="line">	fos.write(arr, <span class="number">0</span>, len);							<span class="comment">//写出字节数组写出有效个字节个数</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fis.close();</span><br><span class="line">fos.close();</span><br></pre></td></tr></table></figure>
+
+<h2 id="11-IO流-BufferedInputStream和BufferOutputStream拷贝"><a href="#11-IO流-BufferedInputStream和BufferOutputStream拷贝" class="headerlink" title="11_IO流(BufferedInputStream和BufferOutputStream拷贝)"></a>11_IO流(BufferedInputStream和BufferOutputStream拷贝)</h2><ul>
+<li><p>A:缓冲思想</p>
+<ul>
+<li>字节流一次读写一个数组的速度明显比一次读写一个字节的速度快很多，</li>
+<li>这是加入了数组这样的缓冲区效果，java本身在设计的时候，</li>
+<li>也考虑到了这样的设计思想(装饰设计模式后面讲解)，所以提供了字节缓冲区流</li>
+</ul>
+</li>
+<li><p>B.BufferedInputStream</p>
+<ul>
+<li>BufferedInputStream内置了一个缓冲区(数组)</li>
+<li>从BufferedInputStream中读取一个字节时</li>
+<li>BufferedInputStream会一次性从文件中读取8192个, 存在缓冲区中, 返回给程序一个</li>
+<li>程序再次读取时, 就不用找文件了, 直接从缓冲区中获取</li>
+<li>直到缓冲区中所有的都被使用过, 才重新从文件中读取8192个</li>
+</ul>
+</li>
+<li><p>C.BufferedOutputStream</p>
+<ul>
+<li>BufferedOutputStream也内置了一个缓冲区(数组)</li>
+<li>程序向流中写出字节时, 不会直接写到文件, 先写到缓冲区中</li>
+<li>直到缓冲区写满, BufferedOutputStream才会把缓冲区中的数据一次性写到文件里</li>
+</ul>
+</li>
+<li><p>D.拷贝的代码 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">FileInputStream fis = <span class="keyword">new</span> FileInputStream(<span class="string">"致青春.mp3"</span>);			<span class="comment">//创建文件输入流对象,关联致青春.mp3</span></span><br><span class="line">BufferedInputStream bis = <span class="keyword">new</span> BufferedInputStream(fis);			<span class="comment">//创建缓冲区对fis装饰</span></span><br><span class="line">FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(<span class="string">"copy.mp3"</span>);		<span class="comment">//创建输出流对象,关联copy.mp3</span></span><br><span class="line">BufferedOutputStream bos = <span class="keyword">new</span> BufferedOutputStream(fos);		<span class="comment">//创建缓冲区对fos装饰</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> b;</span><br><span class="line"><span class="keyword">while</span>((b = bis.read()) != -<span class="number">1</span>) &#123;		</span><br><span class="line">	bos.write(b);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">bis.close();	<span class="comment">//只关装饰后的对象即可</span></span><br><span class="line">bos.close();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>E.小数组的读写和带Buffered的读取哪个更快?</p>
+<ul>
+<li>定义小数组如果是8192个字节大小和Buffered比较的话</li>
+<li>定义小数组会略胜一筹,因为读和写操作的是同一个数组</li>
+<li>而Buffered操作的是两个数组</li>
+</ul>
+</li>
+</ul>
+<h2 id="12-IO流-flush和close方法的区别"><a href="#12-IO流-flush和close方法的区别" class="headerlink" title="12_IO流(flush和close方法的区别)"></a>12_IO流(flush和close方法的区别)</h2><ul>
+<li>flush()方法<ul>
+<li>用来刷新缓冲区的,刷新后可以再次写出 </li>
+</ul>
+</li>
+<li>close()方法<ul>
+<li>用来关闭流释放资源的的,如果是带缓冲区的流对象的close()方法,不但会关闭流,还会再关闭流之前刷新缓冲区,关闭后不能再写出 </li>
+</ul>
+</li>
+</ul>
+<h2 id="13-IO流-字节流读写中文"><a href="#13-IO流-字节流读写中文" class="headerlink" title="13_IO流(字节流读写中文)"></a>13_IO流(字节流读写中文)</h2><ul>
+<li>字节流读取中文的问题<ul>
+<li>字节流在读中文的时候有可能会读到半个中文,造成乱码 </li>
+</ul>
+</li>
+<li>字节流写出中文的问题<ul>
+<li>字节流直接操作的字节,所以写出中文必须将字符串转换成字节数组 </li>
+<li>写出回车换行 write(“\r\n”.getBytes());</li>
+</ul>
+</li>
+</ul>
+<h2 id="14-IO流-流的标准处理异常代码1-6版本及其以前"><a href="#14-IO流-流的标准处理异常代码1-6版本及其以前" class="headerlink" title="14_IO流(流的标准处理异常代码1.6版本及其以前)"></a>14_IO流(流的标准处理异常代码1.6版本及其以前)</h2><ul>
+<li>try finally嵌套</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">FileInputStream fis = <span class="keyword">null</span>;</span><br><span class="line">FileOutputStream fos = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	fis = <span class="keyword">new</span> FileInputStream(<span class="string">"aaa.txt"</span>);</span><br><span class="line">	fos = <span class="keyword">new</span> FileOutputStream(<span class="string">"bbb.txt"</span>);</span><br><span class="line">	<span class="keyword">int</span> b;</span><br><span class="line">	<span class="keyword">while</span>((b = fis.read()) != -<span class="number">1</span>) &#123;</span><br><span class="line">		fos.write(b);</span><br><span class="line">	&#125;</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="keyword">if</span>(fis != <span class="keyword">null</span>)</span><br><span class="line">			fis.close();</span><br><span class="line">	&#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">		<span class="keyword">if</span>(fos != <span class="keyword">null</span>)</span><br><span class="line">			fos.close();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="15-IO流-流的标准处理异常代码1-7版本"><a href="#15-IO流-流的标准处理异常代码1-7版本" class="headerlink" title="15_IO流(流的标准处理异常代码1.7版本)"></a>15_IO流(流的标准处理异常代码1.7版本)</h2><ul>
+<li>try close</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(</span><br><span class="line">	FileInputStream fis = <span class="keyword">new</span> FileInputStream(<span class="string">"aaa.txt"</span>);</span><br><span class="line">	FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(<span class="string">"bbb.txt"</span>);</span><br><span class="line">	MyClose mc = <span class="keyword">new</span> MyClose();</span><br><span class="line">)&#123;</span><br><span class="line">	<span class="keyword">int</span> b;</span><br><span class="line">	<span class="keyword">while</span>((b = fis.read()) != -<span class="number">1</span>) &#123;</span><br><span class="line">		fos.write(b);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>原理<ul>
+<li>在try()中创建的流对象必须实现了AutoCloseable这个接口,如果实现了,在try后面的{}(读写代码)执行后就会自动调用,流对象的close方法将流关掉 </li>
+</ul>
+</li>
+</ul>
+<h2 id="16-IO流-图片加密"><a href="#16-IO流-图片加密" class="headerlink" title="16_IO流(图片加密)"></a>16_IO流(图片加密)</h2><ul>
+<li>给图片加密<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">BufferedInputStream bis = <span class="keyword">new</span> BufferedInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">"a.jpg"</span>));</span><br><span class="line">BufferedOutputStream bos = <span class="keyword">new</span> BufferedOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">"b.jpg"</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> b;</span><br><span class="line"><span class="keyword">while</span>((b = bis.read()) != -<span class="number">1</span>) &#123;</span><br><span class="line">	bos.write(b ^ <span class="number">123</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">bis.close();</span><br><span class="line">bos.close();</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="17-IO流-拷贝文件"><a href="#17-IO流-拷贝文件" class="headerlink" title="17_IO流(拷贝文件)"></a>17_IO流(拷贝文件)</h2><ul>
+<li>在控制台录入文件的路径,将文件拷贝到当前项目下<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Scanner sc &#x3D; new Scanner(System.in);</span><br><span class="line">System.out.println(&quot;请输入一个文件路径&quot;);</span><br><span class="line">String line &#x3D; sc.nextLine();				&#x2F;&#x2F;将键盘录入的文件路径存储在line中</span><br><span class="line">File file &#x3D; new File(line);					&#x2F;&#x2F;封装成File对象</span><br><span class="line">FileInputStream fis &#x3D; new FileInputStream(file);</span><br><span class="line">FileOutputStream fos &#x3D; new FileOutputStream(file.getName());</span><br><span class="line"></span><br><span class="line">int len;</span><br><span class="line">byte[] arr &#x3D; new byte[8192];				&#x2F;&#x2F;定义缓冲区</span><br><span class="line">while((len &#x3D; fis.read(arr)) !&#x3D; -1) &#123;</span><br><span class="line">	fos.write(arr,0,len);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fis.close();</span><br><span class="line">fos.close();</span><br></pre></td></tr></table></figure>
+<h2 id="18-IO流-录入数据拷贝到文件"><a href="#18-IO流-录入数据拷贝到文件" class="headerlink" title="18_IO流(录入数据拷贝到文件)"></a>18_IO流(录入数据拷贝到文件)</h2></li>
+<li>将键盘录入的数据拷贝到当前项目下的text.txt文件中,键盘录入数据当遇到quit时就退出<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Scanner sc = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line">FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(<span class="string">"text.txt"</span>);</span><br><span class="line">System.out.println(<span class="string">"请输入:"</span>);</span><br><span class="line"><span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">	String line = sc.nextLine();</span><br><span class="line">	<span class="keyword">if</span>(<span class="string">"quit"</span>.equals(line))</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	fos.write(line.getBytes());</span><br><span class="line">	fos.write(<span class="string">"\r\n"</span>.getBytes());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fos.close();</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/04/26/java%20IO%E6%B5%81%E5%A4%8D%E4%B9%A0%E4%B8%80/>https://www.bcoder.top/2017/04/26/java%20IO%E6%B5%81%E5%A4%8D%E4%B9%A0%E4%B8%80/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/04/26/java%20IO%E6%B5%81%E5%A4%8D%E4%B9%A0%E4%B8%80/&title=java IO流复习一 - zln's blog&summary=1_IO流(IO流概述及其分类)
+1.概念
+IO流用来处理设备之间的数据传输
+Java对数据的操作是通过流的方式
+Java用于操作流的类都在IO包中
+流按流向分为两种：输入流，输出流。
+流按操作类型分为两种：
+字节流 : 字节流可以操作任何数据,因为在计算机中任何数据都是以字节的形式存储的
+字符流 : 字符流只能操作纯字符数据，比较方便。
+
+
+
+
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/04/26/java%20IO%E6%B5%81%E5%A4%8D%E4%B9%A0%E4%B8%80/&title=java IO流复习一 - zln's blog&summary=1_IO流(IO流概述及其分类)
+1.概念
+IO流用来处理设备之间的数据传输
+Java对数据的操作是通过流的方式
+Java用于操作流的类都在IO包中
+流按流向分为两种：输入流，输出流。
+流按操作类型分为两种：
+字节流 : 字节流可以操作任何数据,因为在计算机中任何数据都是以字节的形式存储的
+字符流 : 字符流只能操作纯字符数据，比较方便。
+
+
+
+
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/04/26/java%20IO%E6%B5%81%E5%A4%8D%E4%B9%A0%E4%B8%80/&title=java IO流复习一 - zln's blog&summary=1_IO流(IO流概述及其分类)
+1.概念
+IO流用来处理设备之间的数据传输
+Java对数据的操作是通过流的方式
+Java用于操作流的类都在IO包中
+流按流向分为两种：输入流，输出流。
+流按操作类型分为两种：
+字节流 : 字节流可以操作任何数据,因为在计算机中任何数据都是以字节的形式存储的
+字符流 : 字符流只能操作纯字符数据，比较方便。
+
+
+
+
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/04/27/java%20IO%E6%B5%81%E5%A4%8D%E4%B9%A0%E4%BA%8C/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>java IO流复习二</p>
+                <p class='content'>1_IO流(字符流FileReader)
+1.字符流是什么
+字符流是可以直接读写字符的IO流
+字符流读取字符, 就要先读取到字节数据, 然后转为字符. 如果要写出字符, 需要把字符转为字节再写出...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/04/11/SSH%E4%B8%8B%E7%9A%84%E5%88%86%E9%A1%B5%E5%8A%9F%E8%83%BD%E7%9A%84%E5%AE%9E%E7%8E%B0/'>
+                <p class='title'>SSH下的分页功能的实现<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+前言分页功能是WEB开发中经常用到的功能点，分页主要是对当前页和总页面最大的显示数量进行简单的计算，在SQL中使用limit关键字（SSH 中使用Hibernate中的HQL实现）可查询到分页...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'java IO流复习一',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-IO流-IO流概述及其分类"><span class="toc-text">1_IO流(IO流概述及其分类)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-IO流-FileInputStream"><span class="toc-text">2_IO流(FileInputStream)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-IO流-read-方法返回值为什么是int"><span class="toc-text">3_IO流(read()方法返回值为什么是int)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-IO流-FileOutputStream"><span class="toc-text">4_IO流(FileOutputStream)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-IO流-FileOutputStream追加"><span class="toc-text">5_IO流(FileOutputStream追加)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-IO流-拷贝图片"><span class="toc-text">6_IO流(拷贝图片)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-IO流-拷贝音频文件画原理图"><span class="toc-text">7_IO流(拷贝音频文件画原理图)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-IO流-字节数组拷贝之available-方法"><span class="toc-text">8_IO流(字节数组拷贝之available()方法)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-IO流-定义小数组"><span class="toc-text">9_IO流(定义小数组)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-IO流-定义小数组的标准格式"><span class="toc-text">10_IO流(定义小数组的标准格式)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-IO流-BufferedInputStream和BufferOutputStream拷贝"><span class="toc-text">11_IO流(BufferedInputStream和BufferOutputStream拷贝)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-IO流-flush和close方法的区别"><span class="toc-text">12_IO流(flush和close方法的区别)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-IO流-字节流读写中文"><span class="toc-text">13_IO流(字节流读写中文)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-IO流-流的标准处理异常代码1-6版本及其以前"><span class="toc-text">14_IO流(流的标准处理异常代码1.6版本及其以前)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-IO流-流的标准处理异常代码1-7版本"><span class="toc-text">15_IO流(流的标准处理异常代码1.7版本)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-IO流-图片加密"><span class="toc-text">16_IO流(图片加密)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-IO流-拷贝文件"><span class="toc-text">17_IO流(拷贝文件)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-IO流-录入数据拷贝到文件"><span class="toc-text">18_IO流(录入数据拷贝到文件)</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

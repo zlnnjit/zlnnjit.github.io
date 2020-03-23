@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>SVG学习笔记之实践篇 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="HTML5,SVG,笔记">
+  
+  
+    <meta name="description" content="前言
+本文通过对SVG了解的基础上进行运用，对一些具有代表性实例进行实现，并提供实现源码和实现效果。通过实例，展现SVG强大之处。
+">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2016/11/23/SVG%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%AE%9E%E8%B7%B5%E7%AF%87/">
+        SVG学习笔记之实践篇
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/Web%E5%9F%BA%E7%A1%80/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>Web基础</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2016-11-23 14:05:29</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><blockquote>
+<p>本文通过对SVG了解的基础上进行运用，对一些具有代表性实例进行实现，并提供实现源码和实现效果。通过实例，展现SVG强大之处。</p>
+</blockquote>
+<a id="more"></a>
+
+
+<h1 id="SVG之房屋-简单图形"><a href="#SVG之房屋-简单图形" class="headerlink" title="SVG之房屋(简单图形)"></a>SVG之房屋(简单图形)</h1><h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"4cm"</span> <span class="attr">height</span>=<span class="string">"5cm"</span> <span class="attr">viewBox</span>=<span class="string">"0 0 64 80"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>House<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"10"</span> <span class="attr">y</span>=<span class="string">"35"</span> <span class="attr">width</span>=<span class="string">"40"</span> <span class="attr">height</span>=<span class="string">"40"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: black; fill: none"</span>/&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- roof --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">polyline</span> <span class="attr">points</span>=<span class="string">"10 35, 30 7.68, 50 35"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: black; fill: none"</span>/&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- door --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">polyline</span> <span class="attr">points</span>=<span class="string">"30 75, 30 55, 40 55, 40 75"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: black; fill: none"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_1.png" alt="svg"></p>
+<h1 id="SVG之笑脸"><a href="#SVG之笑脸" class="headerlink" title="SVG之笑脸"></a>SVG之笑脸</h1><h2 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>SVG SMIL Animate with Path<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">xmlns</span>=<span class="string">"http://www.w3.org/2000/svg"</span> </span></span><br><span class="line"><span class="tag">    <span class="attr">width</span>=<span class="string">"200"</span> <span class="attr">height</span>=<span class="string">"200"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--Face--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">circle</span> <span class="attr">cx</span>=<span class="string">"100"</span> <span class="attr">cy</span>=<span class="string">"100"</span> <span class="attr">r</span>=<span class="string">"90"</span> <span class="attr">fill</span>=<span class="string">"#39F"</span> /&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--Eyes--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">circle</span> <span class="attr">cx</span>=<span class="string">"70"</span> <span class="attr">cy</span>=<span class="string">"80"</span> <span class="attr">r</span>=<span class="string">"20"</span> <span class="attr">fill</span>=<span class="string">"white"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">circle</span> <span class="attr">cx</span>=<span class="string">"130"</span> <span class="attr">cy</span>=<span class="string">"80"</span> <span class="attr">r</span>=<span class="string">"20"</span> <span class="attr">fill</span>=<span class="string">"white"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">circle</span> <span class="attr">cx</span>=<span class="string">"65"</span> <span class="attr">cy</span>=<span class="string">"75"</span> <span class="attr">r</span>=<span class="string">"10"</span> <span class="attr">fill</span>=<span class="string">"black"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">circle</span> <span class="attr">cx</span>=<span class="string">"125"</span> <span class="attr">cy</span>=<span class="string">"75"</span> <span class="attr">r</span>=<span class="string">"10"</span> <span class="attr">fill</span>=<span class="string">"black"</span>/&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--Smile--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 50 140 A 60 60 0 0 0 150 140"</span> </span></span><br><span class="line"><span class="tag">        <span class="attr">stroke</span>=<span class="string">"white"</span> <span class="attr">stroke-width</span>=<span class="string">"3"</span> <span class="attr">fill</span>=<span class="string">"none"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-1"><a href="#效果-1" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_2.png" alt="svg"></p>
+<h1 id="SVG之箭头（线段组合）"><a href="#SVG之箭头（线段组合）" class="headerlink" title="SVG之箭头（线段组合）"></a>SVG之箭头（线段组合）</h1><h2 id="代码-2"><a href="#代码-2" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"200px"</span> <span class="attr">height</span>=<span class="string">"200px"</span> <span class="attr">viewBox</span>=<span class="string">"0 0 200 200"</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- horizontal line --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"40"</span> <span class="attr">y1</span>=<span class="string">"20"</span> <span class="attr">x2</span>=<span class="string">"80"</span> <span class="attr">y2</span>=<span class="string">"20"</span> <span class="attr">style</span>=<span class="string">"stroke: black;"</span>/&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- vertical line --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"0.7cm"</span> <span class="attr">y1</span>=<span class="string">"1cm"</span> <span class="attr">x2</span>=<span class="string">"0.7cm"</span> <span class="attr">y2</span>=<span class="string">"2.0cm"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: black;"</span>/&gt;</span></span><br><span class="line">   <span class="comment">&lt;!-- diagonal line --&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"30"</span> <span class="attr">y1</span>=<span class="string">"30"</span> <span class="attr">x2</span>=<span class="string">"85"</span> <span class="attr">y2</span>=<span class="string">"85"</span> <span class="attr">style</span>=<span class="string">"stroke: black;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-2"><a href="#效果-2" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_3.png" alt="svg"></p>
+<h1 id="SVG之颜色深入"><a href="#SVG之颜色深入" class="headerlink" title="SVG之颜色深入"></a>SVG之颜色深入</h1><h2 id="代码-3"><a href="#代码-3" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"200px"</span> <span class="attr">height</span>=<span class="string">"200px"</span> <span class="attr">viewBox</span>=<span class="string">"0 0 200 200"</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- red --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"10"</span> <span class="attr">y1</span>=<span class="string">"10"</span> <span class="attr">x2</span>=<span class="string">"50"</span> <span class="attr">y2</span>=<span class="string">"10"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: red; stroke-width: 5;"</span>/&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- light green --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"10"</span> <span class="attr">y1</span>=<span class="string">"20"</span> <span class="attr">x2</span>=<span class="string">"50"</span> <span class="attr">y2</span>=<span class="string">"20"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: #9f9; stroke-width: 5;"</span>/&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- light blue --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"10"</span> <span class="attr">y1</span>=<span class="string">"30"</span> <span class="attr">x2</span>=<span class="string">"50"</span> <span class="attr">y2</span>=<span class="string">"30"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: #9999ff; stroke-width: 5;"</span>/&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- medium orange --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"10"</span> <span class="attr">y1</span>=<span class="string">"40"</span> <span class="attr">x2</span>=<span class="string">"50"</span> <span class="attr">y2</span>=<span class="string">"40"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: rgb(255, 128, 64); stroke-width: 5;"</span>/&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- deep purple --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"10"</span> <span class="attr">y1</span>=<span class="string">"50"</span> <span class="attr">x2</span>=<span class="string">"50"</span> <span class="attr">y2</span>=<span class="string">"50"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: rgb(60%, 20%, 60%); stroke-width: 5;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-3"><a href="#效果-3" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_4.png" alt="svg"> </p>
+<h1 id="SVG之透明度"><a href="#SVG之透明度" class="headerlink" title="SVG之透明度"></a>SVG之透明度</h1><h2 id="代码-4"><a href="#代码-4" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"200px"</span> <span class="attr">height</span>=<span class="string">"40px"</span> <span class="attr">viewBox</span>=<span class="string">"0 0 200 40"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"30"</span> <span class="attr">y1</span>=<span class="string">"2"</span> <span class="attr">x2</span>=<span class="string">"30"</span> <span class="attr">y2</span>=<span class="string">"60"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke:red; stroke-width: 5"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"10"</span> <span class="attr">y1</span>=<span class="string">"10"</span> <span class="attr">x2</span>=<span class="string">"50"</span> <span class="attr">y2</span>=<span class="string">"10"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke-opacity: 0.1; stroke: black; stroke-width: 5;"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"10"</span> <span class="attr">y1</span>=<span class="string">"20"</span> <span class="attr">x2</span>=<span class="string">"50"</span> <span class="attr">y2</span>=<span class="string">"20"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke-opacity: 0.5; stroke: black; stroke-width: 5;"</span>/&gt;</span>   </span><br><span class="line">  <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"10"</span> <span class="attr">y1</span>=<span class="string">"30"</span> <span class="attr">x2</span>=<span class="string">"50"</span> <span class="attr">y2</span>=<span class="string">"30"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke-opacity: 0.8; stroke: black; stroke-width: 5;"</span>/&gt;</span>      </span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-4"><a href="#效果-4" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_5.png" alt="svg"> </p>
+<h1 id="SVG之虚线"><a href="#SVG之虚线" class="headerlink" title="SVG之虚线"></a>SVG之虚线</h1><h2 id="代码-5"><a href="#代码-5" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"200px"</span> <span class="attr">height</span>=<span class="string">"100px"</span> <span class="attr">viewBox</span>=<span class="string">"0 0 200 100"</span>&gt;</span></span><br><span class="line">   <span class="comment">&lt;!-- nine-pixel dash, five-pixel gap --&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"10"</span> <span class="attr">y1</span>=<span class="string">"10"</span> <span class="attr">x2</span>=<span class="string">"100"</span> <span class="attr">y2</span>=<span class="string">"10"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">style</span>=<span class="string">"stroke-dasharray: 9, 5;</span></span></span><br><span class="line"><span class="tag"><span class="string">       stroke: black; stroke-width: 2;"</span>/&gt;</span></span><br><span class="line">   <span class="comment">&lt;!-- five-pixel dash, three-pixel gap, nine-pixel dash, two-pixel gap --&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"10"</span> <span class="attr">y1</span>=<span class="string">"20"</span> <span class="attr">x2</span>=<span class="string">"100"</span> <span class="attr">y2</span>=<span class="string">"20"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">style</span>=<span class="string">"stroke-dasharray: 5, 3, 9, 2;</span></span></span><br><span class="line"><span class="tag"><span class="string">       stroke: black; stroke-width: 2;"</span>/&gt;</span></span><br><span class="line">   <span class="comment">&lt;!-- Odd number of entries is duplicated; this is equivalent to:</span></span><br><span class="line"><span class="comment">        nine-pixel dash, three-pixel gap,  five-pixel dash,</span></span><br><span class="line"><span class="comment">        nine-pixel gap,  three-pixel dash, five-pixel gap --&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"10"</span> <span class="attr">y1</span>=<span class="string">"30"</span> <span class="attr">x2</span>=<span class="string">"100"</span> <span class="attr">y2</span>=<span class="string">"30"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">style</span>=<span class="string">"stroke-dasharray: 9, 3, 5;</span></span></span><br><span class="line"><span class="tag"><span class="string">       stroke: black; stroke-width: 2;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-5"><a href="#效果-5" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_6.png" alt="svg"> </p>
+<h1 id="SVG之矩形深入"><a href="#SVG之矩形深入" class="headerlink" title="SVG之矩形深入"></a>SVG之矩形深入</h1><h2 id="代码-6"><a href="#代码-6" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"200px"</span> <span class="attr">height</span>=<span class="string">"200px"</span> <span class="attr">viewBox</span>=<span class="string">"0 0 200 200"</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- black interior, no outline --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"10"</span> <span class="attr">y</span>=<span class="string">"10"</span> <span class="attr">width</span>=<span class="string">"30"</span> <span class="attr">height</span>=<span class="string">"50"</span>/&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- no interior, black outline --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"50"</span> <span class="attr">y</span>=<span class="string">"10"</span> <span class="attr">width</span>=<span class="string">"20"</span> <span class="attr">height</span>=<span class="string">"40"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"fill: none; stroke: black;"</span>/&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- blue interior, thick semi-transparent red outline --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"10"</span> <span class="attr">y</span>=<span class="string">"70"</span> <span class="attr">width</span>=<span class="string">"25"</span> <span class="attr">height</span>=<span class="string">"30"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"fill: #0000ff;</span></span></span><br><span class="line"><span class="tag"><span class="string">      stroke: red; stroke-width: 7; stroke-opacity: 0.5;"</span>/&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- semi-transparent yellow interior, dashed green outline --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"50"</span> <span class="attr">y</span>=<span class="string">"70"</span> <span class="attr">width</span>=<span class="string">"35"</span> <span class="attr">height</span>=<span class="string">"20"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"fill: yellow; fill-opacity: 0.5;</span></span></span><br><span class="line"><span class="tag"><span class="string">      stroke: green; stroke-width: 2; stroke-dasharray: 5 2"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-6"><a href="#效果-6" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_7.png" alt="svg"> </p>
+<h1 id="SVG之矩形圆角"><a href="#SVG之矩形圆角" class="headerlink" title="SVG之矩形圆角"></a>SVG之矩形圆角</h1><h2 id="代码-7"><a href="#代码-7" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"200px"</span> <span class="attr">height</span>=<span class="string">"200px"</span> <span class="attr">viewBox</span>=<span class="string">"0 0 200 200"</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- rx and ry equal, increasing --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"10"</span> <span class="attr">y</span>=<span class="string">"10"</span> <span class="attr">width</span>=<span class="string">"20"</span> <span class="attr">height</span>=<span class="string">"40"</span> <span class="attr">rx</span>=<span class="string">"2"</span> <span class="attr">ry</span>=<span class="string">"2"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"40"</span> <span class="attr">y</span>=<span class="string">"10"</span> <span class="attr">width</span>=<span class="string">"20"</span> <span class="attr">height</span>=<span class="string">"40"</span> <span class="attr">rx</span>=<span class="string">"5"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"70"</span> <span class="attr">y</span>=<span class="string">"10"</span> <span class="attr">width</span>=<span class="string">"20"</span> <span class="attr">height</span>=<span class="string">"40"</span> <span class="attr">ry</span>=<span class="string">"10"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;"</span>/&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- rx and ry unequal --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"10"</span> <span class="attr">y</span>=<span class="string">"60"</span> <span class="attr">width</span>=<span class="string">"20"</span> <span class="attr">height</span>=<span class="string">"40"</span> <span class="attr">rx</span>=<span class="string">"10"</span> <span class="attr">ry</span>=<span class="string">"5"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"40"</span> <span class="attr">y</span>=<span class="string">"60"</span> <span class="attr">width</span>=<span class="string">"20"</span> <span class="attr">height</span>=<span class="string">"40"</span> <span class="attr">rx</span>=<span class="string">"5"</span> <span class="attr">ry</span>=<span class="string">"10"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-7"><a href="#效果-7" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_8.png" alt="svg"> </p>
+<h1 id="SVG之圆和椭圆"><a href="#SVG之圆和椭圆" class="headerlink" title="SVG之圆和椭圆"></a>SVG之圆和椭圆</h1><h2 id="代码-8"><a href="#代码-8" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"200px"</span> <span class="attr">height</span>=<span class="string">"200px"</span> <span class="attr">viewBox</span>=<span class="string">"0 0 200 200"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">circle</span> <span class="attr">cx</span>=<span class="string">"30"</span> <span class="attr">cy</span>=<span class="string">"30"</span> <span class="attr">r</span>=<span class="string">"20"</span> <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">circle</span> <span class="attr">cx</span>=<span class="string">"80"</span> <span class="attr">cy</span>=<span class="string">"30"</span> <span class="attr">r</span>=<span class="string">"20"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke-width: 5; stroke: black; fill: none;"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ellipse</span> <span class="attr">cx</span>=<span class="string">"30"</span> <span class="attr">cy</span>=<span class="string">"80"</span> <span class="attr">rx</span>=<span class="string">"10"</span> <span class="attr">ry</span>=<span class="string">"20"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ellipse</span> <span class="attr">cx</span>=<span class="string">"80"</span> <span class="attr">cy</span>=<span class="string">"80"</span> <span class="attr">rx</span>=<span class="string">"20"</span> <span class="attr">ry</span>=<span class="string">"10"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-8"><a href="#效果-8" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_9.png" alt="svg"> </p>
+<h1 id="SVG之多边形深入"><a href="#SVG之多边形深入" class="headerlink" title="SVG之多边形深入"></a>SVG之多边形深入</h1><h2 id="代码-9"><a href="#代码-9" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"200px"</span> <span class="attr">height</span>=<span class="string">"200px"</span> <span class="attr">viewBox</span>=<span class="string">"0 0 200 200"</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- parallelogram --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">polygon</span> <span class="attr">points</span>=<span class="string">"15,10  55, 10  45, 20  5, 20"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"fill: red; stroke: black;"</span>/&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- star --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">polygon</span></span></span><br><span class="line"><span class="tag">    <span class="attr">points</span>=<span class="string">"35,37.5  37.9,46.1 46.9,46.1  39.7,51.5</span></span></span><br><span class="line"><span class="tag"><span class="string">      42.3,60.1  35,55  27.7,60.1  30.3,51.5</span></span></span><br><span class="line"><span class="tag"><span class="string">      23.1,46.1  32.1,46.1"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">style</span>=<span class="string">"fill: #ccffcc; stroke: green;"</span>/&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- weird shape --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">polygon</span></span></span><br><span class="line"><span class="tag">    <span class="attr">points</span>=<span class="string">"60 60,  65 72,  80 60,  90 90, 72 80, 72 85, 50 95"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"fill: yellow; fill-opacity: 0.5; stroke: black;</span></span></span><br><span class="line"><span class="tag"><span class="string">      stroke-width: 2;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-9"><a href="#效果-9" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_10.png" alt="svg"> </p>
+<h1 id="SVG之填充"><a href="#SVG之填充" class="headerlink" title="SVG之填充"></a>SVG之填充</h1><h2 id="代码-10"><a href="#代码-10" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"100px"</span> <span class="attr">height</span>=<span class="string">"100px"</span> <span class="attr">viewBox</span>=<span class="string">"0 0 100 100"</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- &lt;polygon style="fill-rule: nonzero; fill: yellow; stroke: black;"</span></span><br><span class="line"><span class="comment">    points="48,16  16,96  96,48  0,48  80,96" /&gt; --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">polygon</span> <span class="attr">style</span>=<span class="string">"fill-rule: evenodd; fill: yellow; stroke: black;"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">points</span>=<span class="string">"48,16  16,96  96,48  0,48  80,96"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-10"><a href="#效果-10" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_11.png" alt="svg"> </p>
+<h1 id="SVG之心率图（折线运用）"><a href="#SVG之心率图（折线运用）" class="headerlink" title="SVG之心率图（折线运用）"></a>SVG之心率图（折线运用）</h1><h2 id="代码-11"><a href="#代码-11" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"100px"</span> <span class="attr">height</span>=<span class="string">"50px"</span> <span class="attr">viewBox</span>=<span class="string">"0 0 100 50"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">polyline</span></span></span><br><span class="line"><span class="tag">    <span class="attr">points</span>=<span class="string">"5 20, 20 20, 25 10, 35 30, 45 10,</span></span></span><br><span class="line"><span class="tag"><span class="string">        55 30, 65 10, 75 30, 80 20, 95 20"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: black; stroke-width: 3; fill: none;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-11"><a href="#效果-11" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_12.png" alt="svg"> </p>
+<h1 id="SVG之小球碰撞"><a href="#SVG之小球碰撞" class="headerlink" title="SVG之小球碰撞"></a>SVG之小球碰撞</h1><h2 id="代码-12"><a href="#代码-12" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>SVG SMIL Animate with Path<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">svg</span> <span class="attr">xmlns</span>=<span class="string">"http://www.w3.org/2000/svg"</span> <span class="attr">width</span>=<span class="string">"300px"</span> <span class="attr">height</span>=<span class="string">"100px"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"0"</span> <span class="attr">y</span>=<span class="string">"0"</span> <span class="attr">width</span>=<span class="string">"300"</span> <span class="attr">height</span>=<span class="string">"100"</span> <span class="attr">stroke</span>=<span class="string">"black"</span> <span class="attr">stroke-width</span>=<span class="string">"1"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">circle</span> <span class="attr">cx</span>=<span class="string">"0"</span> <span class="attr">cy</span>=<span class="string">"50"</span> <span class="attr">r</span>=<span class="string">"15"</span> <span class="attr">fill</span>=<span class="string">"blue"</span> <span class="attr">stroke</span>=<span class="string">"black"</span> <span class="attr">stroke-width</span>=<span class="string">"1"</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">animateMotion</span> <span class="attr">path</span>=<span class="string">"M 0 0 H 300 Z"</span> <span class="attr">dur</span>=<span class="string">"3s"</span> <span class="attr">repeatCount</span>=<span class="string">"indefinite"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">circle</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-12"><a href="#效果-12" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_13.gif" alt="svg"></p>
+<h1 id="SVG之方块环绕"><a href="#SVG之方块环绕" class="headerlink" title="SVG之方块环绕"></a>SVG之方块环绕</h1><h2 id="代码-13"><a href="#代码-13" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>SVG SMIL Animate with Path<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- Curved motion --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"300px"</span> <span class="attr">height</span>=<span class="string">"100px"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"0"</span> <span class="attr">y</span>=<span class="string">"0"</span> <span class="attr">width</span>=<span class="string">"300"</span> <span class="attr">height</span>=<span class="string">"100"</span> <span class="attr">stroke</span>=<span class="string">"black"</span> <span class="attr">stroke-width</span>=<span class="string">"1"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"0"</span> <span class="attr">y</span>=<span class="string">"0"</span> <span class="attr">width</span>=<span class="string">"20"</span> <span class="attr">height</span>=<span class="string">"20"</span> <span class="attr">fill</span>=<span class="string">"blue"</span> <span class="attr">stroke</span>=<span class="string">"black"</span> <span class="attr">stroke-width</span>=<span class="string">"1"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">animateMotion</span> <span class="attr">path</span>=<span class="string">"M 250,80 H 50 Q 30,80 30,50 Q 30,20 50,20 H 250 Q 280,20,280,50 Q 280,80,250,80Z"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">dur</span>=<span class="string">"3s"</span> <span class="attr">repeatCount</span>=<span class="string">"indefinite"</span> <span class="attr">rotate</span>=<span class="string">"auto"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">rect</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-13"><a href="#效果-13" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_14.gif" alt="svg"></p>
+<h1 id="SVG之曲线编辑器-设计曲线"><a href="#SVG之曲线编辑器-设计曲线" class="headerlink" title="SVG之曲线编辑器(设计曲线)"></a>SVG之曲线编辑器(设计曲线)</h1><h2 id="代码-14"><a href="#代码-14" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>Arcs<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">type</span>=<span class="string">"text/css"</span> <span class="attr">href</span>=<span class="string">"svg_style.css"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"svg_utils.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="actionscript"><span class="comment">// &lt;![CDATA[</span></span></span><br><span class="line">/*</span><br><span class="line">  x0, y0: beginning point</span><br><span class="line">  rx, ry: x and y ellipse radius</span><br><span class="line">  xAngle: angle of x-rotation for ellipse</span><br><span class="line"><span class="handlebars"><span class="xml">  largeArc: 0 for <span class="tag">&lt; <span class="attr">180</span> <span class="attr">degreees</span>, <span class="attr">1</span> <span class="attr">for</span> &gt;</span>= 180 degrees</span></span></span><br><span class="line">  sweep: 0 for positive (CW), 1 for negative (CCW)</span><br><span class="line">  x, y: ending point</span><br><span class="line">*/</span><br><span class="line"> </span><br><span class="line"><span class="actionscript"><span class="function"><span class="keyword">function</span> <span class="title">convertArc</span><span class="params">(x0, y0, rx, ry, xAngle, largeArcFlag, sweepFlag, x, y)</span></span></span></span><br><span class="line">&#123;</span><br><span class="line"><span class="actionscript">  <span class="comment">// Step 1: compute half the distance between the current and final point.</span></span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> dx2 = (x0 - x) / <span class="number">2.0</span>;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> dy2 = (y0 - y) / <span class="number">2.0</span>;</span></span><br><span class="line">  </span><br><span class="line"><span class="actionscript">  <span class="comment">// convert angle from degrees to radians</span></span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> xAngle = <span class="built_in">Math</span>.PI * (xAngle % <span class="number">360.0</span>) / <span class="number">180.0</span>;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> cosXAngle = <span class="built_in">Math</span>.cos(xAngle);</span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> sinXAngle = <span class="built_in">Math</span>.sin(xAngle);</span></span><br><span class="line">  </span><br><span class="line"><span class="actionscript">  <span class="comment">// Compute x1, y1</span></span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> x1 = (cosXAngle * dx2 + sinXAngle * dy2);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> y1 = (-sinXAngle * dx2 + cosXAngle * dy2);</span></span><br><span class="line">  </span><br><span class="line"><span class="actionscript">  <span class="comment">// Ensure radii are large enough</span></span></span><br><span class="line"><span class="javascript">  rx = <span class="built_in">Math</span>.abs(rx);</span></span><br><span class="line"><span class="javascript">  ry = <span class="built_in">Math</span>.abs(ry);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> rxSq = rx * rx;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> rySq = ry * ry;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> x1Sq = x1 * x1;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> y1Sq = y1 * y1;</span></span><br><span class="line">  </span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> radiiCheck = x1Sq / rxSq + y1Sq / rySq</span></span><br><span class="line">  if (radiiCheck &gt; 1) &#123;</span><br><span class="line"><span class="javascript">    rx = <span class="built_in">Math</span>.sqrt(radiiCheck) * rx;</span></span><br><span class="line"><span class="javascript">    ry = <span class="built_in">Math</span>.sqrt(radiiCheck) * ry;</span></span><br><span class="line">    rxSq = rx * rx;</span><br><span class="line">    rySq = ry * ry;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line"><span class="actionscript">  <span class="comment">// Step 2: Compute (cx1, cy1)</span></span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> sign = (largeArcFlag == sweepFlag) ? <span class="number">-1</span> : <span class="number">1</span>;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> sq = ((rxSq * rySq) - (rxSq * y1Sq) - (rySq * x1Sq)) /</span></span><br><span class="line">    ((rxSq * y1Sq) + (rySq * x1Sq));</span><br><span class="line">  sq = (sq &lt; 0) ? 0 : sq;</span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> coef = (sign * <span class="built_in">Math</span>.sqrt(sq));</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> cx1 = coef * ((rx * y1) / ry);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> cy1 = coef * -((ry * x1) / rx);</span></span><br><span class="line">  </span><br><span class="line"><span class="actionscript">  <span class="comment">// Step 3 : Compute (cx, cy) from (cx1, cy1)</span></span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> sx2 = (x0 + x) / <span class="number">2.0</span>;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> sy2 = (y0 + y) / <span class="number">2.0</span>;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> cx = sx2 + (cosXAngle * cx1 - sinXAngle * cy1);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> cy = sy2 + (sinXAngle * cx1 + cosXAngle * cy1);</span></span><br><span class="line"><span class="actionscript">  <span class="comment">// Step 4 : Compute the angleStart (angle1) and the angleExtent (dangle)</span></span></span><br><span class="line"><span class="actionscript">  <span class="comment">//</span></span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> ux = (x1 - cx1) / rx;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> uy = (y1 - cy1) / ry;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> vx = (-x1 - cx1) / rx;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> vy = (-y1 - cy1) / ry;</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> p, n;</span></span><br><span class="line"><span class="actionscript">  <span class="comment">// Compute the angle start</span></span></span><br><span class="line"><span class="javascript">  n = <span class="built_in">Math</span>.sqrt((ux * ux) + (uy * uy));</span></span><br><span class="line"><span class="actionscript">  p = ux; <span class="comment">// (1 * ux) + (0 * uy)</span></span></span><br><span class="line">  sign = (uy &lt; 0) ? -1.0 : 1.0;</span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> angleStart = <span class="number">180.0</span> * (sign * <span class="built_in">Math</span>.acos(p / n)) / <span class="built_in">Math</span>.PI;</span></span><br><span class="line"><span class="actionscript">  <span class="comment">// Compute the angle extent</span></span></span><br><span class="line"><span class="javascript">  n = <span class="built_in">Math</span>.sqrt((ux * ux + uy * uy) * (vx * vx + vy * vy));</span></span><br><span class="line">  p = ux * vx + uy * vy;</span><br><span class="line">  sign = (ux * vy - uy * vx &lt; 0) ? -1.0 : 1.0;</span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> angleExtent = <span class="number">180.0</span> * (sign * <span class="built_in">Math</span>.acos(p / n)) / <span class="built_in">Math</span>.PI;</span></span><br><span class="line">  if(!sweepFlag &amp;&amp; angleExtent &gt; 0)</span><br><span class="line">  &#123;</span><br><span class="line">    angleExtent -= 360.0;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="actionscript">  <span class="keyword">else</span> <span class="keyword">if</span> (sweepFlag &amp;&amp; angleExtent &lt; <span class="number">0</span>)</span></span><br><span class="line">  &#123;</span><br><span class="line">    angleExtent += 360.0;</span><br><span class="line">  &#125;</span><br><span class="line">  angleExtent %= 360;</span><br><span class="line">  angleStart %= 360;</span><br><span class="line">  </span><br><span class="line"><span class="actionscript">  <span class="keyword">return</span>( [cx, cy, rx, ry, angleStart, angleExtent, xAngle] );</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="actionscript"><span class="function"><span class="keyword">function</span> <span class="title">redisplay</span><span class="params">()</span></span></span></span><br><span class="line">&#123;</span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> startX = getFloat(<span class="string">"startXInput"</span>);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> startY = getFloat(<span class="string">"startYInput"</span>);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> xRadius = getFloat(<span class="string">"xRadiusInput"</span>);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> yRadius = getFloat(<span class="string">"yRadiusInput"</span>);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> xRotate = getFloat(<span class="string">"xRotateInput"</span>);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> largeArc = getInt(<span class="string">"largeArcInput"</span>);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> sweep = getInt(<span class="string">"sweepInput"</span>);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> endX = getFloat(<span class="string">"endXInput"</span>);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> endY = getFloat(<span class="string">"endYInput"</span>);</span></span><br><span class="line">  </span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> arcPath = <span class="string">"M"</span> + startX + <span class="string">","</span> + startY + <span class="string">" A"</span> + xRadius + <span class="string">","</span> + yRadius +</span></span><br><span class="line"><span class="actionscript">    <span class="string">" "</span> + xRotate + <span class="string">" "</span> + largeArc + <span class="string">" "</span> + sweep + <span class="string">" "</span> + endX + <span class="string">","</span> + endY;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> arc = <span class="built_in">document</span>.getElementById(<span class="string">"arc"</span>);</span></span><br><span class="line"><span class="actionscript">  arc.setAttribute(<span class="string">"d"</span>, arcPath);</span></span><br><span class="line"><span class="javascript">  <span class="keyword">if</span> (<span class="built_in">document</span>.getElementById(<span class="string">"ckDirection"</span>).checked)</span></span><br><span class="line">  &#123;</span><br><span class="line"><span class="actionscript">    arc.setAttribute(<span class="string">"style"</span>, <span class="string">"marker-end: url(#mArrow);"</span>);</span></span><br><span class="line">  &#125;</span><br><span class="line"><span class="actionscript">  <span class="keyword">else</span></span></span><br><span class="line">  &#123;</span><br><span class="line"><span class="actionscript">    arc.removeAttribute(<span class="string">"style"</span>);</span></span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line"><span class="javascript">  <span class="built_in">document</span>.getElementById(<span class="string">"arcSource"</span>).innerHTML=<span class="string">"&lt;path d=\""</span> + arcPath + <span class="string">"\"/&gt;"</span></span></span><br><span class="line">  </span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> result = convertArc(startX, startY, xRadius, yRadius, xRotate,</span></span><br><span class="line">      largeArc, sweep, endX, endY);</span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> ellipse = <span class="built_in">document</span>.getElementById(<span class="string">"ellipse"</span>);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> transform = <span class="string">"translate("</span> + result[<span class="number">0</span>] + <span class="string">","</span> + result[<span class="number">1</span>] + <span class="string">")"</span>;</span></span><br><span class="line">  if (xRotate != 0)</span><br><span class="line">  &#123;</span><br><span class="line"><span class="actionscript">    transform += <span class="string">" rotate("</span> + xRotate + <span class="string">")"</span>;</span></span><br><span class="line">  &#125;</span><br><span class="line"><span class="actionscript">  ellipse.setAttribute(<span class="string">"rx"</span>, result[<span class="number">2</span>]);</span></span><br><span class="line"><span class="actionscript">  ellipse.setAttribute(<span class="string">"ry"</span>, result[<span class="number">3</span>]);</span></span><br><span class="line"><span class="actionscript">  ellipse.setAttribute(<span class="string">"transform"</span>, transform);</span></span><br><span class="line"><span class="actionscript">  <span class="keyword">var</span> styleAttr = <span class="string">"stroke: #ccc;"</span>;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">if</span> (<span class="built_in">document</span>.getElementById(<span class="string">"ckEllipse"</span>).checked)</span></span><br><span class="line">  &#123;</span><br><span class="line"><span class="actionscript">    styleAttr += <span class="string">"display:block;"</span></span></span><br><span class="line">  &#125;</span><br><span class="line"><span class="actionscript">  <span class="keyword">else</span></span></span><br><span class="line">  &#123;</span><br><span class="line"><span class="actionscript">    styleAttr += <span class="string">"display:none;"</span></span></span><br><span class="line">  &#125;</span><br><span class="line"><span class="actionscript">  ellipse.setAttribute(<span class="string">"style"</span>, styleAttr);</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="actionscript"><span class="comment">// ]]&gt;</span></span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span> <span class="attr">onload</span>=<span class="string">"initElements(); redisplay();"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"svgInput"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">table</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>起点坐标 <span class="tag">&lt;<span class="name">i</span>&gt;</span>x<span class="tag">&lt;/<span class="name">i</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">value</span>=<span class="string">"125"</span> <span class="attr">id</span>=<span class="string">"startXInput"</span> <span class="attr">size</span>=<span class="string">"4"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">onchange</span>=<span class="string">"redisplay();"</span>/&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>起点坐标 <span class="tag">&lt;<span class="name">i</span>&gt;</span>y<span class="tag">&lt;/<span class="name">i</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">value</span>=<span class="string">"75"</span> <span class="attr">id</span>=<span class="string">"startYInput"</span> <span class="attr">size</span>=<span class="string">"4"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">onchange</span>=<span class="string">"redisplay();"</span>/&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">i</span>&gt;</span>x<span class="tag">&lt;/<span class="name">i</span>&gt;</span>-radius<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">value</span>=<span class="string">"100"</span> <span class="attr">id</span>=<span class="string">"xRadiusInput"</span>  <span class="attr">size</span>=<span class="string">"4"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">onchange</span>=<span class="string">"redisplay();"</span>/&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">i</span>&gt;</span>y<span class="tag">&lt;/<span class="name">i</span>&gt;</span>-radius<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">value</span>=<span class="string">"50"</span> <span class="attr">id</span>=<span class="string">"yRadiusInput"</span> <span class="attr">size</span>=<span class="string">"4"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">onchange</span>=<span class="string">"redisplay();"</span>/&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">i</span>&gt;</span>x<span class="tag">&lt;/<span class="name">i</span>&gt;</span>-axis rotation<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">value</span>=<span class="string">"0"</span> <span class="attr">id</span>=<span class="string">"xRotateInput"</span> <span class="attr">size</span>=<span class="string">"4"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">onchange</span>=<span class="string">"redisplay();"</span>/&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>large-arc-flag<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"largeArcInput"</span> <span class="attr">onchange</span>=<span class="string">"redisplay();"</span>&gt;</span></span><br><span class="line">      &lt;option value="0"&gt;0 (&lt; 180°)&lt;/option&gt;</span><br><span class="line">      <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"1"</span>&gt;</span>1 (≥ 180°)<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">select</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>sweep-flag<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"sweepInput"</span> <span class="attr">onchange</span>=<span class="string">"redisplay();"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"0"</span>&gt;</span>0 (negative angle)<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"1"</span>&gt;</span>1 (positive angle)<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">select</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>ending <span class="tag">&lt;<span class="name">i</span>&gt;</span>x<span class="tag">&lt;/<span class="name">i</span>&gt;</span>-coordinate<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">value</span>=<span class="string">"225"</span> <span class="attr">id</span>=<span class="string">"endXInput"</span> <span class="attr">size</span>=<span class="string">"4"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">onchange</span>=<span class="string">"redisplay()"</span>/&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>ending <span class="tag">&lt;<span class="name">i</span>&gt;</span>y<span class="tag">&lt;/<span class="name">i</span>&gt;</span>-coordinate<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">value</span>=<span class="string">"125"</span> <span class="attr">id</span>=<span class="string">"endYInput"</span> <span class="attr">size</span>=<span class="string">"4"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">onchange</span>=<span class="string">"redisplay()"</span>/&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">pre</span> <span class="attr">id</span>=<span class="string">"arcSource"</span>&gt;</span><span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 125,75 A100,50 0 0 0 225,125"</span>/&gt;</span><span class="tag">&lt;/<span class="name">pre</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">id</span>=<span class="string">"ckDirection"</span> <span class="attr">onclick</span>=<span class="string">"redisplay()"</span> /&gt;</span> Show Direction</span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">id</span>=<span class="string">"ckEllipse"</span> <span class="attr">onclick</span>=<span class="string">"redisplay()"</span>/&gt;</span> Show Ellipse</span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">id</span>=<span class="string">"svgZoom"</span> <span class="attr">onclick</span>=<span class="string">"zoom()"</span> /&gt;</span> Zoom</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span> <span class="comment">&lt;!-- svgInput--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"svgOutput"</span> <span class="attr">style</span>=<span class="string">"margin-top: 1em"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"400"</span> <span class="attr">height</span>=<span class="string">"400"</span> <span class="attr">viewBox</span>=<span class="string">"0 0 400 400"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xmlns:xlink</span>=<span class="string">"http://www.w3.org/1999/xlink"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">defs</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">marker</span> <span class="attr">id</span>=<span class="string">"mArrow"</span> <span class="attr">markerWidth</span>=<span class="string">"5"</span> <span class="attr">markerHeight</span>=<span class="string">"10"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">refX</span>=<span class="string">"5"</span> <span class="attr">refY</span>=<span class="string">"5"</span> <span class="attr">orient</span>=<span class="string">"auto"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 0 0 5 5 0 10 Z"</span> <span class="attr">style</span>=<span class="string">"fill:black"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">marker</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">defs</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">g</span> <span class="attr">style</span>=<span class="string">"fill:none; stroke:black"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ellipse</span> <span class="attr">id</span>=<span class="string">"ellipse"</span> <span class="attr">cx</span>=<span class="string">"0"</span> <span class="attr">cy</span>=<span class="string">"0"</span> <span class="attr">rx</span>=<span class="string">"100"</span> <span class="attr">ry</span>=<span class="string">"50"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">style</span>=<span class="string">"stroke:#ccc; display:none"</span> <span class="attr">transform</span>=<span class="string">"translate(225,75)"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">path</span> <span class="attr">id</span>=<span class="string">"arc"</span> <span class="attr">d</span>=<span class="string">"M 125,75 A100,50 0 0 0 225,125"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">g</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-14"><a href="#效果-14" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_15.gif" alt="svg"></p>
+<h1 id="SVG之猫"><a href="#SVG之猫" class="headerlink" title="SVG之猫"></a>SVG之猫</h1><h2 id="代码-15"><a href="#代码-15" class="headerlink" title="代码"></a>代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">xmlns</span>=<span class="string">"http://www.w3.org/2000/svg"</span> <span class="attr">version</span>=<span class="string">"1.1"</span> <span class="attr">height</span>=<span class="string">"190"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">circle</span> <span class="attr">cx</span>=<span class="string">"70"</span> <span class="attr">cy</span>=<span class="string">"95"</span> <span class="attr">r</span>=<span class="string">"50"</span> <span class="attr">style</span>=<span class="string">"stroke: black; fill: none"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">circle</span> <span class="attr">cx</span>=<span class="string">"55"</span> <span class="attr">cy</span>=<span class="string">"80"</span> <span class="attr">r</span>=<span class="string">"5"</span> <span class="attr">stroke</span>=<span class="string">"black"</span> <span class="attr">fill</span>=<span class="string">"#339933"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">circle</span> <span class="attr">cx</span>=<span class="string">"85"</span> <span class="attr">cy</span>=<span class="string">"80"</span> <span class="attr">r</span>=<span class="string">"5"</span> <span class="attr">stroke</span>=<span class="string">"black"</span> <span class="attr">fill</span>=<span class="string">"#339933"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">g</span> <span class="attr">id</span>=<span class="string">"whiskers"</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"75"</span> <span class="attr">y1</span>=<span class="string">"95"</span> <span class="attr">x2</span>=<span class="string">"135"</span> <span class="attr">y2</span>=<span class="string">"85"</span> <span class="attr">style</span>=<span class="string">"stroke: black;"</span>/&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">line</span> <span class="attr">x1</span>=<span class="string">"75"</span> <span class="attr">y1</span>=<span class="string">"95"</span> <span class="attr">x2</span>=<span class="string">"135"</span> <span class="attr">y2</span>=<span class="string">"105"</span> <span class="attr">style</span>=<span class="string">"stroke: black;"</span>/&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">g</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">use</span> <span class="attr">xlink:href</span>=<span class="string">"#whiskers"</span> <span class="attr">transform</span>=<span class="string">"scale(-1 1) translate(-140 0)"</span>/&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- ears --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">polyline</span> <span class="attr">points</span>=<span class="string">"108 62,  90 10,  70 45,  50, 10,  32, 62"</span></span></span><br><span class="line"><span class="tag">   <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;"</span> /&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- mouth --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">polyline</span> <span class="attr">points</span>=<span class="string">"35 110, 45 120, 95 120, 105, 110"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;"</span> /&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- nose --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 75 90 L 65 90 A 5 10 0  0 0 75 90"</span></span></span><br><span class="line"><span class="tag">   <span class="attr">style</span>=<span class="string">"stroke: black; fill: #ffcccc"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">text</span> <span class="attr">x</span>=<span class="string">"60"</span> <span class="attr">y</span>=<span class="string">"165"</span> <span class="attr">style</span>=<span class="string">"font-family: sans-serif; font-size: 14pt;</span></span></span><br><span class="line"><span class="tag"><span class="string">   stroke: none; fill: black;"</span>&gt;</span>Cat<span class="tag">&lt;/<span class="name">text</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="效果-15"><a href="#效果-15" class="headerlink" title="效果"></a>效果</h2><p><img src="/img/20161123_16.png" alt="svg"></p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2016/11/23/SVG%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%AE%9E%E8%B7%B5%E7%AF%87/>https://www.bcoder.top/2016/11/23/SVG%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%AE%9E%E8%B7%B5%E7%AF%87/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/HTML5/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>HTML5</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/SVG/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>SVG</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E7%AC%94%E8%AE%B0/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>笔记</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2016/11/23/SVG%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%AE%9E%E8%B7%B5%E7%AF%87/&title=SVG学习笔记之实践篇 - zln's blog&summary=前言
+本文通过对SVG了解的基础上进行运用，对一些具有代表性实例进行实现，并提供实现源码和实现效果。通过实例，展现SVG强大之处。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2016/11/23/SVG%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%AE%9E%E8%B7%B5%E7%AF%87/&title=SVG学习笔记之实践篇 - zln's blog&summary=前言
+本文通过对SVG了解的基础上进行运用，对一些具有代表性实例进行实现，并提供实现源码和实现效果。通过实例，展现SVG强大之处。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2016/11/23/SVG%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%AE%9E%E8%B7%B5%E7%AF%87/&title=SVG学习笔记之实践篇 - zln's blog&summary=前言
+本文通过对SVG了解的基础上进行运用，对一些具有代表性实例进行实现，并提供实现源码和实现效果。通过实例，展现SVG强大之处。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2016/12/21/Linux%E5%B0%8F%E7%BB%93/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>Linux小结</p>
+                <p class='content'>linux系统入门1.退出shell:在系统提示符下，按 Ctrl+D         组合键（不用回车）或者，输入exit命令（需要回车）
+2.会话:用户使用一次计算机的全过程:从登录开始——...</p>
+              </a>
+            
+            
+              <a class='next' href='/2016/11/22/SVG%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%9F%BA%E7%A1%80%E7%AF%87/'>
+                <p class='title'>SVG学习笔记之基础篇<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>前言
+前面论述了Canvas画布的运用，这几天又把HTML5中的SVG的知识点看了一下，通过对SVG的学习，感觉到SVG的强大和简单，SVG不像Canvas一样需要进行写JavaScript代码...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'SVG学习笔记之实践篇',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#代码"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-1"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-1"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-2"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-2"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-3"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-3"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-4"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-4"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-5"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-5"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-6"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-6"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-7"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-7"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-8"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-8"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-9"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-9"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-10"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-10"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-11"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-11"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-12"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-12"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-13"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-13"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-14"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-14"><span class="toc-text">效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码-15"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果-15"><span class="toc-text">效果</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

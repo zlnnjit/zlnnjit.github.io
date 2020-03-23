@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>Google Guava:java扩展类库（上） - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="java,Guava">
+  
+  
+    <meta name="description" content="
+引言Guava 是一个 Google 的基于java1.6的类库集合的扩展项目。Guava工程包含了若干被Google的Java项目广泛依赖的核心库，例如：集合（collections）、缓存（caching） 、原生类型支持（primitives support）、并发库（concurrency librar...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2018/03/07/Google-Guava-java%E6%89%A9%E5%B1%95%E7%B1%BB%E5%BA%93%EF%BC%88%E4%B8%8A%EF%BC%89/">
+        Google Guava:java扩展类库（上）
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/Guava/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>Guava</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2018-03-07 21:01:43</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言<br>Guava 是一个 Google 的基于java1.6的类库集合的扩展项目。Guava工程包含了若干被Google的Java项目广泛依赖的核心库，例如：集合（collections）、缓存（caching） 、原生类型支持（primitives support）、并发库（concurrency libraries）、通用注解（common annotations）、字符串处理（string processing）、I/O 等等。 所有这些工具每天都在被Google的工程师应用在产品服务中。</p>
+</blockquote>
+<a id="more"></a>
+
+
+<h2 id="Guava类库简介"><a href="#Guava类库简介" class="headerlink" title="Guava类库简介"></a>Guava类库简介</h2><p>Guava 是一个 Google 的基于java1.6的类库集合的扩展项目，包括 collections, caching, primitives support, concurrency libraries, common annotations, string processing, I/O, 等等. 这些高质量的 API 可以使你的JAVa代码更加优雅，更加简洁，让你工作更加轻松愉悦。</p>
+<p><strong>1.项目相关信息：</strong></p>
+<p>官方首页：<a href="http://code.google.com/p/guava-libraries" target="_blank" rel="noopener">http://code.google.com/p/guava-libraries</a><br>官方下载：<a href="http://code.google.com/p/guava-libraries/downloads/list" target="_blank" rel="noopener">http://code.google.com/p/guava-libraries/downloads/list</a><br>官方文档：<a href="http://docs.guava-libraries.googlecode.com/git/javadoc" target="_blank" rel="noopener">http://docs.guava-libraries.googlecode.com/git/javadoc</a><br>          <a href="http://www.ostools.net/apidocs/apidoc?api=guava" target="_blank" rel="noopener">http://www.ostools.net/apidocs/apidoc?api=guava</a></p>
+<p><strong>2.源码包的简单说明：</strong> </p>
+<p>com.google.common.annotations：普通注解类型。<br>com.google.common.base：基本工具类库和接口。<br>com.google.common.cache：缓存工具包，非常简单易用且功能强大的JVM内缓存。<br>com.google.common.collect：带泛型的集合接口扩展和实现，以及工具类，这里你会发现很多好玩的集合。<br>com.google.common.eventbus：发布订阅风格的事件总线。<br>com.google.common.hash： 哈希工具包。<br>com.google.common.io：I/O工具包。<br>com.google.common.math：原始算术类型和超大数的运算工具包。<br>com.google.common.net：网络工具包。<br>com.google.common.primitives：八种原始类型和无符号类型的静态工具包。<br>com.google.common.reflect：反射工具包。<br>com.google.common.util.concurrent：多线程工具包。</p>
+<p>通过上面的源码包，我们接着来看看Guava特性：</p>
+<p><strong>一.  基本工具类</strong>：</p>
+<ol>
+<li>使用和避免null，null有语言歧义，会产生令人费解的错误，反正他总是让人不爽。很多 Guava 的工具类在遇到 null 时会直接拒绝或出错，而不是默默地接受他们。</li>
+<li>前提条件：更容易的对你的方法进行前提条件的测试。</li>
+<li>常见的对象方法： 简化了Object常用方法的实现， 如 hashCode() 和 toString()。</li>
+<li>排序： Guava 强大的 “fluent Comparator”比较器， 提供多关键字排序。</li>
+<li>Throwable类： 简化了异常检查和错误传播。</li>
+</ol>
+<p><strong>二.  集合类</strong>：集合类库是 Guava 对 JDK 集合类的扩展， 这是 Guava项目最完善和为人所知的部分。</p>
+<ol>
+<li>Immutable collections（不变的集合）：防御性编程，不可修改的集合，并且提高了效率。</li>
+<li>New collection types(新集合类型)：JDK collections没有的一些集合类型，主要有：multisets，multimaps，tables， bidirectional maps等等</li>
+<li>Powerful collection utilities（强大的集合工具类）： java.util.Collections 中未包含的常用操作工具类</li>
+<li>Extension utilities（扩展工具类）: 给 Collection 对象添加一个装饰器? 实现迭代器? 我们可以更容易使用这些方法。</li>
+</ol>
+<p><strong>三.  缓存</strong>: 本地缓存，可以很方便的操作缓存对象，并且支持各种缓存失效行为模式。</p>
+<p><strong>四.  Functional idioms（函数式）</strong>: 简洁, Guava实现了Java的函数式编程，可以显著简化代码。</p>
+<p><strong>五. Concurrency（并发）</strong>：强大,简单的抽象,让我们更容易实现简单正确的并发性代码。</p>
+<ol>
+<li>ListenableFuture（可监听的Future）: Futures,用于异步完成的回调。</li>
+<li>Service: 控制事件的启动和关闭，为你管理复杂的状态逻辑。</li>
+</ol>
+<p><strong>六. Strings</strong>: 一个非常非常有用的字符串工具类: 提供 splitting，joining， padding 等操作。</p>
+<p><strong>七. Primitives</strong>: 扩展 JDK 中未提供的对原生类型（如int、char等）的操作， 包括某些类型的无符号的变量。</p>
+<p><strong>八. Ranges</strong>: Guava 一个强大的 API，提供 Comparable 类型的范围处理， 包括连续和离散的情况。</p>
+<p><strong>九. I/O</strong>: 简化 I/O 操作, 特别是对 I/O 流和文件的操作, for Java 5 and 6.</p>
+<p><strong>十. Hashing</strong>: 提供比 Object.hashCode() 更复杂的 hash 方法, 提供 Bloom filters.</p>
+<p><strong>十一. EventBus</strong>: 基于发布-订阅模式的组件通信，但是不需要明确地注册在委托对象中。</p>
+<p><strong>十二. Math</strong>: 优化的 math 工具类，经过完整测试。</p>
+<p><strong>十三. Reflection</strong>: Guava 的 Java 反射机制工具类。</p>
+<h2 id="Optional避免null"><a href="#Optional避免null" class="headerlink" title="Optional避免null"></a>Optional避免null</h2><h3 id="Optional介绍"><a href="#Optional介绍" class="headerlink" title="Optional介绍"></a>Optional介绍</h3><p>在我们学习和使用Guava的Optional之前，我们需要来了解一下Java中null。因为，只有我们深入的了解了null的相关知识，我们才能更加深入体会领悟到Guava的Optional设计和使用上的优雅和简单。</p>
+<p>null代表不确定的对象。Java中，null是一个关键字，用来标识一个不确定的对象。因此可以将null赋给引用类型变量，但不可以将null赋给基本类型变量。</p>
+<p>Java中，变量的使用都遵循一个原则：先定义，并且初始化后，才可以使用。例如下代码中，我们不能定义int age后，不给age指定值，就去打印age的值。这条对于引用类型变量也是适用的（String name也同样适用），在编译的时候就会提示为初始化。</p>
+<p>我们来看看Guava的Optional：</p>
+<p>大多数情况下程序员使用null是为了表示某种不存在的意思，也许应该有一个value，但是这个value是空或者这个value找不到。比方说，在用不存在的key值从map中取value，Map.get返回null表示没有该map中不包含这个key。　</p>
+<p>若T类型数据可以为null，Optional<code>&lt;T&gt;</code>是用来以非空值替代T数据类型的一种方法。一个Optional对象可以包含一个非空的T引用（这种情况下我们称之为“存在的”）或者不包含任何东西（这种情况下我们称之为“空缺的”）。但Optional从来不会包含对null值的引用。</p>
+<p>由于这些原因，Guava库设计了Optional来解决null的问题。许多Guava的工具被设计成如果有null值存在即刻报错而不是只要上下文接受处理null值就默认使用null值继续运行。而且，Guava提供了Optional等一些工具让你在不得不使用null值的时候，可以更加简便的使用null并帮助你避免直接使用null。</p>
+<p>Optional<code>&lt;T&gt;</code>的最常用价值在于，例如，假设一个方法返回某一个数据类型，调用这个方法的代码来根据这个方法的返回值来做下一步的动作，若该方法可以返回一个null值表示成功，或者表示失败，在这里看来都是意义含糊的，所以使用Optional<code>&lt;T&gt;</code>作为返回值，则后续代码可以通过isPresent()来判断是否返回了期望的值（原本期望返回null或者返回不为null，其意义不清晰），并且可以使用get()来获得实际的返回值。</p>
+<p>我们来看下面一个简单的例子（本文基于guava-23.0.jar）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.google.common.base.Optional;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OptionalTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testOptional</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123; </span><br><span class="line">        Optional&lt;Integer&gt; possible=Optional.of(<span class="number">6</span>);</span><br><span class="line">        <span class="keyword">if</span>(possible.isPresent())&#123;</span><br><span class="line">            System.out.println(<span class="string">"possible isPresent:"</span>+possible.isPresent());</span><br><span class="line">            System.out.println(<span class="string">"possible value:"</span>+possible.get());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">possible isPresent:true</span><br><span class="line">possible value:6</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="Optional使用"><a href="#Optional使用" class="headerlink" title="Optional使用"></a>Optional使用</h3><p><strong>1.常用静态方法：</strong></p>
+<ul>
+<li>Optional.of(T)：获得一个Optional对象，其内部包含了一个非null的T数据类型实例，若T=null，则立刻报错。</li>
+<li>Optional.absent()：获得一个Optional对象，其内部包含了空值。</li>
+<li>Optional.fromNullable(T)：将一个T的实例转换为Optional对象，T的实例可以不为空，也可以为空（Optional.fromNullable(null)和Optional.absent()等价）。<br>。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testOptional2</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    Optional&lt;Integer&gt; possible=Optional.of(<span class="number">6</span>);</span><br><span class="line">    Optional&lt;Integer&gt; absentOpt=Optional.absent();</span><br><span class="line">    Optional&lt;Integer&gt; NullableOpt=Optional.fromNullable(<span class="keyword">null</span>);</span><br><span class="line">    Optional&lt;Integer&gt; NoNullableOpt=Optional.fromNullable(<span class="number">10</span>);</span><br><span class="line">    <span class="keyword">if</span>(possible.isPresent())&#123;</span><br><span class="line">        System.out.println(<span class="string">"possible isPresent:"</span>+possible.isPresent());</span><br><span class="line">        System.out.println(<span class="string">"possible value:"</span>+possible.get());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(absentOpt.isPresent())&#123;</span><br><span class="line">        System.out.println(<span class="string">"absentOpt isPresent:"</span>+absentOpt.isPresent()); ;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(NullableOpt.isPresent())&#123;</span><br><span class="line">        System.out.println(<span class="string">"fromNullableOpt isPresent:"</span>+NullableOpt.isPresent()); ;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(NoNullableOpt.isPresent())&#123;</span><br><span class="line">        System.out.println(<span class="string">"NoNullableOpt isPresent:"</span>+NoNullableOpt.isPresent()); ;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">possible isPresent:true</span><br><span class="line">possible value:6</span><br><span class="line">NoNullableOpt isPresent:true</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.实例方法：</strong></p>
+<p>boolean isPresent()：如果Optional包含的T实例不为null，则返回true；若T实例为null，返回false。<br>T get()：返回Optional包含的T实例，该T实例必须不为空；否则，对包含null的Optional实例调用get()会抛出一个IllegalStateException异常。<br>T or(T)：若Optional实例中包含了传入的T的相同实例，返回Optional包含的该T实例，否则返回输入的T实例作为默认值。<br>T orNull()：返回Optional实例中包含的非空T实例，如果Optional中包含的是空值，返回null，逆操作是fromNullable()。<br>Set<T> asSet()：返回一个不可修改的Set，该Set中包含Optional实例中包含的所有非空存在的T实例，且在该Set中，每个T实例都是单态，如果Optional中没有非空存在的T实例，返回的将是一个空的不可修改的Set,如果强行修改，在运行阶段UnsupportedOperationException异常。</p>
+<p>我们来看demo:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testOptional3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Optional&lt;Long&gt; value = Optional.fromNullable(<span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">if</span>(value.isPresent()==<span class="keyword">true</span>)&#123;</span><br><span class="line">        System.out.println(<span class="string">"获得返回值: "</span> + value.get());</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"获得返回值: "</span> + value.or(-<span class="number">12L</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"获得返回值 orNull: "</span> + value.orNull());</span><br><span class="line"></span><br><span class="line">    Optional&lt;Long&gt; valueNoNull = Optional.fromNullable(<span class="number">15L</span>);</span><br><span class="line">    <span class="keyword">if</span>(valueNoNull.isPresent()==<span class="keyword">true</span>)&#123;</span><br><span class="line">        Set&lt;Long&gt; set=valueNoNull.asSet();</span><br><span class="line">        System.out.println(<span class="string">"获得返回值 set 的 size : "</span> + set.size());</span><br><span class="line">        System.out.println(<span class="string">"获得返回值: "</span> + valueNoNull.get());</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"获得返回值: "</span> + valueNoNull.or(-<span class="number">12L</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"获得返回值 orNull: "</span> + valueNoNull.orNull());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">获得返回值: -12</span><br><span class="line">获得返回值 orNull: null</span><br><span class="line">获得返回值 set 的 size : 1</span><br><span class="line">获得返回值: 15</span><br><span class="line">获得返回值 orNull: 15</span><br></pre></td></tr></table></figure>
+
+<p>Optional除了给null值命名所带来的代码可阅读性的提高，最大的好处莫过于Optional是傻瓜式的。Optional对象的使用强迫你去积极的思考这样一种情况，如果你想让你的程序返回null值，这null值代表的含义是什么，因为你想要取得返回值，必然从Optional对象内部去获得，所以你必然会这么去思考。但是只是简单的使用一个Null值会很轻易的让人忘记去思索代码所要表达的含义到底是什么，尽管FindBugs有些帮助，但是我们还是认为它并没有尽可能的解决好帮助程序员去思索null值代表的含义这个问题。</p>
+<p>这种思考会在你返回某些存在的值或者不存在的值的时候显得特别相关。和其他人一样，你绝对很可能会忘记别人写的方法method(a,b)可能会返回一个null值，就好像当你去写method(a,b)的实现时，你也很可能忘记输入参数a也可以是null。如果返回的是Optional对象，对于调用者来说，就可以忘却怎么去度量null代表的是什么含义，因为他们始终要从optional对象中去获得真正的返回值。</p>
+<p>另外，令我们欣喜的是，Optional在Java8的java.util包下也支持了Opentional类。具体该类的使用参见我的博客:<a href="https://www.bcoder.top/2017/11/10/学习与使用Java8中的Optional/" target="_blank" rel="noopener">学习与使用Java8中的Optional</a></p>
+<h2 id="Preconditions检验参数"><a href="#Preconditions检验参数" class="headerlink" title="Preconditions检验参数"></a>Preconditions检验参数</h2><h3 id="Preconditions介绍"><a href="#Preconditions介绍" class="headerlink" title="Preconditions介绍"></a>Preconditions介绍</h3><p>在日常开发中，我们经常会对方法的输入参数做一些数据格式上的验证，以便保证方法能够按照正常流程执行下去。对于可预知的一些数据上的错误，我们一定要做事前检测和判断，来避免程序流程出错，而不是完全通过错误处理来保证流程正确执行，毕竟错误处理是比较消耗资源的方式。在平常情况下我们对参数的判断都需要自己来逐个写方法判断，代码量不少并且复用性不高，如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PreconditionsTest</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Preconditions</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123; </span><br><span class="line">        </span><br><span class="line">        getPerson(<span class="number">8</span>,<span class="string">"peida"</span>);</span><br><span class="line">        </span><br><span class="line">        getPerson(-<span class="number">9</span>,<span class="string">"peida"</span>);</span><br><span class="line">        </span><br><span class="line">        getPerson(<span class="number">8</span>,<span class="string">""</span>);</span><br><span class="line">        </span><br><span class="line">        getPerson(<span class="number">8</span>,<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">getPerson</span><span class="params">(<span class="keyword">int</span> age,String neme)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(age&gt;<span class="number">0</span>&amp;&amp;neme!=<span class="keyword">null</span>&amp;&amp;neme.isEmpty()!=<span class="keyword">true</span>)&#123;</span><br><span class="line">            System.out.println(<span class="string">"a person age:"</span>+age+<span class="string">",neme:"</span>+neme);</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"参数输入有误！"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a person age:8,neme:peida</span><br><span class="line">参数输入有误！</span><br><span class="line">参数输入有误！</span><br><span class="line">参数输入有误！</span><br></pre></td></tr></table></figure>
+<p>说明：参数验证，我们每次都要添加if语句来做判断, 重复的工作会做好多次。getPerson方法只有2个参数，验证规则也不是很复杂，如果参数过度，验证规则复杂后，上面代码的可读性都会很差的，复用性就更谈不上了。</p>
+<p>Guava类库中提供了一个作参数检查的工具类–Preconditions类，该类可以大大地简化我们代码中对于参数的预判断和处理，让我们对方法输入参数的验证实现起来更加简单优雅，下面我们看看Preconditions类的使用实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Preconditions2</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    getPersonByPrecondition(<span class="number">8</span>,<span class="string">"peida"</span>);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        getPersonByPrecondition(-<span class="number">9</span>,<span class="string">"peida"</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        System.out.println(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        getPersonByPrecondition(<span class="number">8</span>,<span class="string">""</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        System.out.println(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        getPersonByPrecondition(<span class="number">8</span>,<span class="keyword">null</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        System.out.println(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">getPersonByPrecondition</span><span class="params">(<span class="keyword">int</span> age,String neme)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">    Preconditions.checkNotNull(neme, <span class="string">"neme为null"</span>);</span><br><span class="line">    Preconditions.checkArgument(neme.length()&gt;<span class="number">0</span>, <span class="string">"neme为\'\'"</span>);</span><br><span class="line">    Preconditions.checkArgument(age&gt;<span class="number">0</span>, <span class="string">"age 必须大于0"</span>);</span><br><span class="line">    System.out.println(<span class="string">"a person age:"</span>+age+<span class="string">",neme:"</span>+neme);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a person age:8,neme:peida</span><br><span class="line">age 必须大于0</span><br><span class="line">neme为&#39;&#39;</span><br><span class="line">neme为null</span><br></pre></td></tr></table></figure>
+
+<h3 id="Preconditions使用"><a href="#Preconditions使用" class="headerlink" title="Preconditions使用"></a>Preconditions使用</h3><p>　Preconditions方法介绍：</p>
+<p><strong>1 .checkArgument(boolean) ：</strong><br>功能描述：检查boolean是否为真。 用作方法中检查参数<br>失败时抛出的异常类型: IllegalArgumentException</p>
+<p><strong>2.checkNotNull(T)：</strong><br>功能描述：检查value不为null， 直接返回value；<br>失败时抛出的异常类型：NullPointerException</p>
+<p><strong>3.checkState(boolean)：</strong><br>功能描述：检查对象的一些状态，不依赖方法参数。 例如， Iterator可以用来next是否在remove之前被调用。<br>失败时抛出的异常类型：IllegalStateException</p>
+<p><strong>4.checkElementIndex(int index, int size)：</strong><br>功能描述：检查index是否为在一个长度为size的list， string或array合法的范围。 index的范围区间是[0, size)(包含0不包含size)。无需直接传入list， string或array， 只需传入大小。返回index。<br>失败时抛出的异常类型：IndexOutOfBoundsException</p>
+<p><strong>5.checkPositionIndex(int index, int size)：</strong><br>功能描述：检查位置index是否为在一个长度为size的list， string或array合法的范围。 index的范围区间是[0， size)(包含0不包含size)。无需直接传入list， string或array， 只需传入大小。返回index。<br>失败时抛出的异常类型：IndexOutOfBoundsException</p>
+<p><strong>6.checkPositionIndexes(int start, int end, int size)：</strong><br>功能描述：检查[start, end)是一个长度为size的list， string或array合法的范围子集。伴随着错误信息。<br>失败时抛出的异常类型：IndexOutOfBoundsException</p>
+<p>具体示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Preconditions3</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    getPersonByPrecondition3(<span class="number">8</span>, <span class="string">"peida"</span>);</span><br><span class="line">    getPersonByPrecondition3(-<span class="number">9</span>, <span class="string">"peida"</span>);</span><br><span class="line">    getPersonByPrecondition3(<span class="number">8</span>, <span class="string">""</span>);</span><br><span class="line">    getPersonByPrecondition3(<span class="number">8</span>, <span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">    List&lt;Integer&gt; intList = <span class="keyword">new</span> ArrayList&lt;Integer&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">        checkState(intList, <span class="number">9</span>);</span><br><span class="line">        intList.add(i);</span><br><span class="line">    &#125;</span><br><span class="line">    checkPositionIndex(intList, <span class="number">3</span>);</span><br><span class="line">    checkPositionIndex(intList, <span class="number">13</span>);</span><br><span class="line">    checkPositionIndexes(intList, <span class="number">3</span>, <span class="number">7</span>);</span><br><span class="line">    checkPositionIndexes(intList, <span class="number">3</span>, <span class="number">17</span>);</span><br><span class="line">    checkPositionIndexes(intList, <span class="number">13</span>, <span class="number">17</span>);</span><br><span class="line">    checkElementIndex(intList, <span class="number">6</span>);</span><br><span class="line">    checkElementIndex(intList, <span class="number">16</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">getPersonByPrecondition3</span><span class="params">(<span class="keyword">int</span> age, String neme)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">        Preconditions.checkNotNull(neme, <span class="string">"neme为null"</span>);</span><br><span class="line">        Preconditions.checkArgument(neme.length() &gt; <span class="number">0</span>, <span class="string">"neme为\'\'"</span>);</span><br><span class="line">        Preconditions.checkArgument(age &gt; <span class="number">0</span>, <span class="string">"age 必须大于0"</span>);</span><br><span class="line">        System.out.println(<span class="string">"a person age:"</span> + age + <span class="string">",neme:"</span> + neme);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        System.out.println(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">checkState</span><span class="params">(List&lt;Integer&gt; intList, <span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//表达式为true不抛异常</span></span><br><span class="line">        Preconditions.checkState(intList.size() &lt; index, <span class="string">"intList size 不能大于"</span> + index);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        System.out.println(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">checkPositionIndex</span><span class="params">(List&lt;Integer&gt; intList, <span class="keyword">int</span> index)</span>  </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Preconditions.checkPositionIndex(index, intList.size(), <span class="string">"index "</span> + index + <span class="string">" 不在 list中， List size为："</span> + intList.size());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        System.out.println(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">checkPositionIndexes</span><span class="params">(List&lt;Integer&gt; intList, <span class="keyword">int</span> start, <span class="keyword">int</span> end)</span>  </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Preconditions.checkPositionIndexes(start, end, intList.size());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        System.out.println(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">checkElementIndex</span><span class="params">(List&lt;Integer&gt; intList, <span class="keyword">int</span> index)</span></span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Preconditions.checkElementIndex(index, intList.size(), <span class="string">"index 为 "</span> + index + <span class="string">" 不在 list中， List size为： "</span> + intList.size());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        System.out.println(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a person age:8,neme:peida</span><br><span class="line">age 必须大于0</span><br><span class="line">neme为&#39;&#39;</span><br><span class="line">neme为null</span><br><span class="line">intList size 不能大于9</span><br><span class="line">index 13 不在 list中， List size为：10 (13) must not be greater than size (10)</span><br><span class="line">end index (17) must not be greater than size (10)</span><br><span class="line">start index (13) must not be greater than size (10)</span><br><span class="line">index 为 16 不在 list中， List size为： 10 (16) must be less than size (10)</span><br></pre></td></tr></table></figure>
+
+<p>Guava的preconditions有这样几个优点:</p>
+<p>1.在静态导入后, 方法很明确无歧义, checkNotNull可以清楚地告诉你它是干什么的, 它会抛出怎样的异常.</p>
+<p>2.checkNotNull在验证通过后直接返回, 可以这样方便地写代码: this.field = checkNotNull(field).简单而又强大的可变参数’printf’风格的自定义错误信息.</p>
+<h2 id="Object覆写"><a href="#Object覆写" class="headerlink" title="Object覆写"></a>Object覆写</h2><p>在Java中Object类是所有类的父类，其中有几个需要override的方法比如equals,hashCode和toString等方法。每次写这几个方法都要做很多重复性的判断,很多类库提供了覆写这几个方法的工具类, Guava也提供了类似的方式。下面我们来看看Guava中这几个方法简单使用。</p>
+<h3 id="equals方法覆写"><a href="#equals方法覆写" class="headerlink" title="equals方法覆写"></a>equals方法覆写</h3><p>equals是一个经常需要覆写的方法， 可以查看Object的equals方法注释，对equals有几个性质的要求：</p>
+<ul>
+<li><strong>自反性reflexive</strong>：任何非空引用x，x.equals(x)返回为true；</li>
+<li><strong>对称性symmetric</strong>：任何非空引用x和y，x.equals(y)返回true当且仅当y.equals(x)返回true；</li>
+<li><strong>传递性transitive</strong>：任何非空引用x和y，如果x.equals(y)返回true，并且y.equals(z)返回true，那么x.equals(z)返回true；</li>
+<li><strong>一致性consistent</strong>：两个非空引用x和y，x.equals(y)的多次调用应该保持一致的结果，（前提条件是在多次比较之间没有修改x和y用于比较的相关信息）；</li>
+<li><strong>对于所有非null的值x，x.equals(null)都要返回false</strong>。(如果你要用null.equals(x)也可以，会报NullPointerException)。</li>
+</ul>
+<p>当我们要覆写的类中某些值可能为null的时候，就需要对null做很多判断和分支处理。 使用Guava的Objects.equal方法可以避免这个问题， 使得equals的方法的覆写变得更加容易， 而且可读性强，简洁优雅。</p>
+<p>我们来看一下例子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> guava;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.google.common.base.Objects;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ObjectTest</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">equalTest</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(Objects.equal(<span class="string">"a"</span>, <span class="string">"a"</span>));</span><br><span class="line">        System.out.println(Objects.equal(<span class="keyword">null</span>, <span class="string">"a"</span>)); </span><br><span class="line">        System.out.println(Objects.equal(<span class="string">"a"</span>, <span class="keyword">null</span>)); </span><br><span class="line">        System.out.println(Objects.equal(<span class="keyword">null</span>, <span class="keyword">null</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">equalPersonTest</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(Objects.equal(<span class="keyword">new</span> Person(<span class="string">"peida"</span>,<span class="number">23</span>), <span class="keyword">new</span> Person(<span class="string">"peida"</span>,<span class="number">23</span>)));</span><br><span class="line">        Person person=<span class="keyword">new</span> Person(<span class="string">"peida"</span>,<span class="number">23</span>);</span><br><span class="line">        System.out.println(Objects.equal(person,person));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span></span>&#123;</span><br><span class="line">        equalTest();</span><br><span class="line">        equalPersonTest();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">    Person(String name, <span class="keyword">int</span> age) &#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">true</span><br><span class="line">false</span><br><span class="line">false</span><br><span class="line">true</span><br><span class="line">false</span><br><span class="line">true</span><br></pre></td></tr></table></figure>
+
+<h3 id="hashCode方法覆写"><a href="#hashCode方法覆写" class="headerlink" title="hashCode方法覆写"></a>hashCode方法覆写</h3><p>当覆写（override）了equals()方法之后，必须也覆写hashCode()方法，反之亦然。这个方法返回一个整型值（hash code value），如果两个对象被equals()方法判断为相等，那么它们就应该拥有同样的hash code。Object类的hashCode()方法为不同的对象返回不同的值，Object类的hashCode值表示的是对象的地址。</p>
+<p>hashCode的一般性契约（需要满足的条件）如下：<br>1.在Java应用的一次执行过程中，如果对象用于equals比较的信息没有被修改，那么同一个对象多次调用hashCode()方法应该返回同一个整型值。应用的多次执行中，这个值不需要保持一致，即每次执行都是保持着各自不同的值。</p>
+<p>2.如果equals()判断两个对象相等，那么它们的hashCode()方法应该返回同样的值。</p>
+<p>3.并没有强制要求如果equals()判断两个对象不相等，那么它们的hashCode()方法就应该返回不同的值。即，两个对象用equals()方法比较返回false，它们的hashCode可以相同也可以不同。但是，应该意识到，为两个不相等的对象产生两个不同的hashCode可以改善哈希表的性能。</p>
+<p>写一个hashCode本来也不是很难，但是Guava提供给我们了一个更加简单的方法–Objects.hashCode(Object …)， 这是个可变参数的方法，参数列表可以是任意数量，所以可以像这样使用Objects.hashCode(field1， field2， …， fieldn)。非常方便和简洁。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hashcodeTest</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    System.out.println(Objects.hashCode(<span class="string">"a"</span>));</span><br><span class="line">    System.out.println(Objects.hashCode(<span class="string">"a"</span>));</span><br><span class="line">    System.out.println(Objects.hashCode(<span class="string">"a"</span>,<span class="string">"b"</span>));</span><br><span class="line">    System.out.println(Objects.hashCode(<span class="string">"b"</span>,<span class="string">"a"</span>));</span><br><span class="line">    System.out.println(Objects.hashCode(<span class="string">"a"</span>,<span class="string">"b"</span>,<span class="string">"c"</span>));</span><br><span class="line">    </span><br><span class="line">    Person person=<span class="keyword">new</span> Person(<span class="string">"peida"</span>,<span class="number">23</span>);</span><br><span class="line">    System.out.println(Objects.hashCode(person));</span><br><span class="line">    System.out.println(Objects.hashCode(person));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">128</span><br><span class="line">128</span><br><span class="line">4066</span><br><span class="line">4096</span><br><span class="line">126145</span><br><span class="line">326549627</span><br><span class="line">326549627</span><br></pre></td></tr></table></figure>
+
+<h3 id="toString-方法覆写"><a href="#toString-方法覆写" class="headerlink" title="toString()方法覆写"></a>toString()方法覆写</h3><p>因为每个类都直接或间接地继承自Object，因此每个类都有toString()方法。这个方法是用得最多的,覆写得最多,一个好的toString方法对于调试来说是非常重要的,但是写起来确实很不爽。Guava也提供了toString（）方法的覆写。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">toStringTest</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    System.out.println(MoreObjects.toStringHelper(<span class="keyword">this</span>).add(<span class="string">"x"</span>, <span class="number">1</span>).toString());</span><br><span class="line">    System.out.println(MoreObjects.toStringHelper(Person.class).add("x", 1).toString());</span><br><span class="line"></span><br><span class="line">    Person person=<span class="keyword">new</span> Person(<span class="string">"peida"</span>,<span class="number">23</span>);</span><br><span class="line">    String result = MoreObjects.toStringHelper(Person<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line">            .add("name", person.name)</span><br><span class="line">            .add(<span class="string">"age"</span>, person.age).toString();</span><br><span class="line">    System.out.print(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ObjectTest&#123;x&#x3D;1&#125;</span><br><span class="line">Person&#123;x&#x3D;1&#125;</span><br><span class="line">Person&#123;name&#x3D;peida, age&#x3D;23&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>这里需要注意的是，在低版本中，该方法toStringHelper为Objects持有，后面的高版本中移动到MoreObjects类中。</strong></p>
+<h3 id="compare-compareTo方法覆写"><a href="#compare-compareTo方法覆写" class="headerlink" title="compare/compareTo方法覆写"></a>compare/compareTo方法覆写</h3><p><strong>CompareTo</strong>：compareTo(Object o)方法是java.lang.Comparable<code>&lt;T&gt;</code>接口中的方法，当需要对某个类的对象进行排序时，该类需要实现 Comparable<code>&lt;T&gt;</code>接口的，必须重写<strong>public int compareTo(T o)</strong>方法。<br>若a，b是两个对象<br>当a.compareTo(b)&gt;0时，则a&gt;b<br>当a.compareTo(b)&lt;0时，则a&lt;b</p>
+<p><strong>compare</strong>： compare(Object o1,Object o2)方法是java.util.Comparator<code>&lt;T&gt;</code>接口的方法，compare方法内主要靠定义的compareTo规定的对象大小关系规则来确定对象的大小。</p>
+<p>compareTo方法的通用约定与equals类似：将本对象与指定的对象停止比拟，如果本对象小于、等于、或大于指定对象，则分离返回正数、零、或正数。如果指定的对象类型无法与本对象停止比拟，则跑出ClassCastException。 </p>
+<p>compareTo需要满足下面特性：</p>
+<ul>
+<li><strong>对称性</strong>：实现者必须保证对全部的x和y都有sgn(x.compareTo(y)) == -sgn(y.compareTo(x))。这也暗示当且仅当y.compareTo(x)抛出异常时，x.compareTo(y)才抛出异常。</li>
+<li><strong>传递性</strong>：实现者必须保证比拟关系是可传递的，如果x.compareTo(y) &gt; 0且y.compareTo(z) &gt; 0，则x.compareTo(z) &gt; 0。实现者必须保证x.compareTo(y)==0暗示着全部的z都有(x.compareTo(z)) == (y.compareTo(z))。</li>
+<li></li>
+</ul>
+<p><strong>虽不强制要求，但强烈建议(x.compareTo(y)==0)==(x.equals(y))。</strong>一般来说，任何实现了Comparable的类如果违背了这个约定，都应该明白说明。推荐这么说：“注意：本类拥有自然顺序，但与equals不一致”。</p>
+<p>第一条指出，如果颠倒两个比拟对象的比拟顺序，就会发生以下情况：如果第一个对象小于第二个对象，则第二个对象必须大于第一个对象；如果第一个对象等于第二个对象，则第二个对象也必须等于第一个对象；如果第一个对象大于第二个对象，则第二个对象小于第一个对象。<br>第二条指出，如果第一个对象大于第二个对象，第二个对象大于第三个对象，则第一个大于第三个。<br>第三条指出，对于两个相称的对象，他们与其他任何对象比拟结果应该雷同。</p>
+<p>这三条约定的一个结果是，compareTo方法的等同性测试必须与equals方法满意雷同的约束条件：自反性、对称性、传递性。所以也存在类同的约束：不能在扩展一个可实例化的类并添加新的值组件时，同时保证compareTo的约定，除非你愿意放弃面向对象抽象的优势。可以用与equals雷同的规避措施：如果想在实现Comparable接口的类中增加一个值组件，就不要扩展它；应该写一个不相干的类，其中包括第一个类的实例。然后供给一个view方法返回该实例。这样你就可以再第二个类上实现任何compareTo方法，同时允许客户在须要的时候将第二个类看成是第一个类的一个实例。</p>
+<p>compareTo约定的最后一段是一个强烈的建议而非真正的约定，即compareTo方法的等同性测试必须与equals方法的结果雷同。如果遵照了这一条，则称compareTo方法所施加的顺序与equals一致；反之则称为与equals不一致。当然与equals不一致的compareTo方法仍然是可以工作的，但是，如果一个有序集合包括了该类的元素，则这个集合可能就不能遵照响应集合接口（Collection、Set、Map）的通用约定。这是因为这些接口的通用约定是基于equals方法的，但是有序集合却使用了compareTo而非equals来执行。</p>
+<p>下面我们简单实现一个类的compareTo方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"> @Test</span><br><span class="line">public void compareTest()&#123;</span><br><span class="line">    Person person&#x3D;new Person(&quot;peida&quot;,23);</span><br><span class="line">    Person person1&#x3D;new Person(&quot;aida&quot;,25);</span><br><span class="line">    Person person2&#x3D;new Person(&quot;aida&quot;,25);</span><br><span class="line">    Person person3&#x3D;new Person(&quot;aida&quot;,26);</span><br><span class="line">    Person person4&#x3D;new Person(&quot;peida&quot;,26);</span><br><span class="line"></span><br><span class="line">    System.out.println(person.compareTo(person1));</span><br><span class="line">    System.out.println(person1.compareTo(person2));</span><br><span class="line">    System.out.println(person1.compareTo(person3));</span><br><span class="line">    System.out.println(person.compareTo(person4));</span><br><span class="line">    System.out.println(person4.compareTo(person));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class Person implements Comparable&lt;Person&gt;&#123;</span><br><span class="line">    public String name;</span><br><span class="line">    public int age;</span><br><span class="line"></span><br><span class="line">    Person(String name, int age) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">        this.age &#x3D; age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public int compareTo(Person other) &#123;</span><br><span class="line">        int cmpName &#x3D; name.compareTo(other.name);</span><br><span class="line">        if (cmpName !&#x3D; 0) &#123;</span><br><span class="line">            return cmpName;</span><br><span class="line">        &#125;</span><br><span class="line">        if(age&gt;other.age)&#123;</span><br><span class="line">            return 1;</span><br><span class="line">        &#125;</span><br><span class="line">        else if(age&lt;other.age)&#123;</span><br><span class="line">            return -1;</span><br><span class="line">        &#125;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">15</span><br><span class="line">0</span><br><span class="line">-1</span><br><span class="line">-1</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+
+
+<p>上面的compareTo方法，代码看上去并不是十分优雅，如果实体属性很多，数据类型丰富，代码可读性将会很差。在guava里, 对所有原始类型都提供了比较的工具函数来避免这个麻烦. 比如对Integer, 可以用Ints.compare()。利用guava的原始类型的compare，我们对上面的方法做一个简化，实现compare方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PersonComparator</span> <span class="keyword">implements</span> <span class="title">Comparator</span>&lt;<span class="title">Person</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="meta">@Override</span> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Person p1, Person p2)</span> </span>&#123;  </span><br><span class="line">      <span class="keyword">int</span> result = p1.name.compareTo(p2.name);  </span><br><span class="line">      <span class="keyword">if</span> (result != <span class="number">0</span>) &#123;  </span><br><span class="line">        <span class="keyword">return</span> result;  </span><br><span class="line">      &#125;  </span><br><span class="line">      <span class="keyword">return</span> Ints.compare(p1.age, p2.age);  </span><br><span class="line">    &#125;  </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码看上去简单了一点，但还是不那么优雅简单，对此, guava有一个相当聪明的解决办法, 提供了ComparisonChain:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Student</span>&gt;</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> score;    </span><br><span class="line">    </span><br><span class="line">    Student(String name, <span class="keyword">int</span> age,<span class="keyword">int</span> score) &#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">        <span class="keyword">this</span>.score=score;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Student other)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ComparisonChain.start()</span><br><span class="line">        .compare(name, other.name)</span><br><span class="line">        .compare(age, other.age)</span><br><span class="line">        .compare(score, other.score, Ordering.natural().nullsLast())</span><br><span class="line">        .result();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StudentComparator</span> <span class="keyword">implements</span> <span class="title">Comparator</span>&lt;<span class="title">Student</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Student s1, Student s2)</span> </span>&#123;  </span><br><span class="line">      <span class="keyword">return</span> ComparisonChain.start()  </span><br><span class="line">          .compare(s1.name, s2.name)  </span><br><span class="line">          .compare(s1.age, s2.age)  </span><br><span class="line">          .compare(s1.score, s2.score)  </span><br><span class="line">          .result();  </span><br><span class="line">    &#125;  </span><br><span class="line">  &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ComparisonChain是一个lazy的比较过程，当比较结果为0的时候，即相等的时候， 会继续比较下去，出现非0的情况，就会忽略后面的比较。ComparisonChain实现的compare和compareTo在代码可读性和性能上都有很大的提高。</p>
+<p>下面来对整个Object覆写介绍一个综合示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Comparator;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.google.common.base.Objects;</span><br><span class="line"><span class="keyword">import</span> com.google.common.collect.ComparisonChain;</span><br><span class="line"><span class="keyword">import</span> com.google.common.collect.Ordering;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ObjectTest2</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">StudentTest</span><span class="params">()</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">        Student student=<span class="keyword">new</span> Student(<span class="string">"peida"</span>,<span class="number">23</span>,<span class="number">80</span>);</span><br><span class="line">        Student student1=<span class="keyword">new</span> Student(<span class="string">"aida"</span>,<span class="number">23</span>,<span class="number">36</span>);</span><br><span class="line">        Student student2=<span class="keyword">new</span> Student(<span class="string">"jerry"</span>,<span class="number">24</span>,<span class="number">90</span>);</span><br><span class="line">        Student student3=<span class="keyword">new</span> Student(<span class="string">"peida"</span>,<span class="number">23</span>,<span class="number">80</span>);</span><br><span class="line">        </span><br><span class="line">        System.out.println(<span class="string">"==========equals==========="</span>);</span><br><span class="line">        System.out.println(student.equals(student2));</span><br><span class="line">        System.out.println(student.equals(student1));</span><br><span class="line">        System.out.println(student.equals(student3));</span><br><span class="line">        </span><br><span class="line">        System.out.println(<span class="string">"==========hashCode==========="</span>);</span><br><span class="line">        System.out.println(student.hashCode());</span><br><span class="line">        System.out.println(student1.hashCode());</span><br><span class="line">        System.out.println(student3.hashCode());</span><br><span class="line">        System.out.println(student2.hashCode());</span><br><span class="line">        </span><br><span class="line">        System.out.println(<span class="string">"==========toString==========="</span>);</span><br><span class="line">        System.out.println(student.toString());</span><br><span class="line">        System.out.println(student1.toString());</span><br><span class="line">        System.out.println(student2.toString());</span><br><span class="line">        System.out.println(student3.toString());</span><br><span class="line">        </span><br><span class="line">        System.out.println(<span class="string">"==========compareTo==========="</span>);</span><br><span class="line">        System.out.println(student.compareTo(student1));</span><br><span class="line">        System.out.println(student.compareTo(student2));</span><br><span class="line">        System.out.println(student2.compareTo(student1));</span><br><span class="line">        System.out.println(student2.compareTo(student));</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Student</span>&gt;</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> score;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    Student(String name, <span class="keyword">int</span> age,<span class="keyword">int</span> score) &#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">        <span class="keyword">this</span>.score=score;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Objects.hashCode(name, age);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> Student) &#123;</span><br><span class="line">            Student that = (Student) obj;</span><br><span class="line">            <span class="keyword">return</span> Objects.equal(name, that.name)</span><br><span class="line">                    &amp;&amp; Objects.equal(age, that.age)</span><br><span class="line">                    &amp;&amp; Objects.equal(score, that.score);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> MoreObjects.toStringHelper(<span class="keyword">this</span>)</span><br><span class="line">                .addValue(name)</span><br><span class="line">                .addValue(age)</span><br><span class="line">                .addValue(score)</span><br><span class="line">                .toString();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Student other)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ComparisonChain.start()</span><br><span class="line">        .compare(name, other.name)</span><br><span class="line">        .compare(age, other.age)</span><br><span class="line">        .compare(score, other.score, Ordering.natural().nullsLast())</span><br><span class="line">        .result();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StudentComparator</span> <span class="keyword">implements</span> <span class="title">Comparator</span>&lt;<span class="title">Student</span>&gt; </span>&#123;  </span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Student s1, Student s2)</span> </span>&#123;  </span><br><span class="line">      <span class="keyword">return</span> ComparisonChain.start()  </span><br><span class="line">          .compare(s1.name, s2.name)  </span><br><span class="line">          .compare(s1.age, s2.age)  </span><br><span class="line">          .compare(s1.score, s2.score)  </span><br><span class="line">          .result();  </span><br><span class="line">    &#125;  </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;equals&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">false</span><br><span class="line">false</span><br><span class="line">true</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;hashCode&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">-991998617</span><br><span class="line">92809683</span><br><span class="line">-991998617</span><br><span class="line">-1163491205</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;toString&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">Student&#123;peida, 23, 80&#125;</span><br><span class="line">Student&#123;aida, 23, 36&#125;</span><br><span class="line">Student&#123;jerry, 24, 90&#125;</span><br><span class="line">Student&#123;peida, 23, 80&#125;</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;compareTo&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">1</span><br><span class="line">1</span><br><span class="line">1</span><br><span class="line">-1</span><br></pre></td></tr></table></figure>
+
+<h2 id="Throwables类简化异常处理"><a href="#Throwables类简化异常处理" class="headerlink" title="Throwables类简化异常处理"></a>Throwables类简化异常处理</h2><p>有时候，你会想把捕获到的异常再次抛出。这种情况通常发生在Error或RuntimeException被捕获的时候，你没想捕获它们，但是声明捕获Throwable和Exception的时候，也包括了了Error或RuntimeException。Guava提供了若干方法，来判断异常类型并且重新传播异常。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  someMethodThatCouldThrowAnything();</span><br><span class="line">&#125; <span class="keyword">catch</span> (IKnowWhatToDoWithThisException e) &#123;</span><br><span class="line">  handle(e);</span><br><span class="line">&#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">  Throwables.propagateIfInstanceOf(t, IOException<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">  Throwables.propagateIfInstanceOf(t, SQLException<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">  <span class="keyword">throw</span> Throwables.propagate(t);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所有这些方法都会自己决定是否要抛出异常，但也能直接抛出方法返回的结果——例如，throw Throwables.propagate(t);—— 这样可以向编译器声明这里一定会抛出异常。</p>
+<p>传递异常的常用方法：</p>
+<p>1.RuntimeException propagate(Throwable)：把throwable包装成RuntimeException，用该方法保证异常传递，抛出一个RuntimeException异常<br>2.void propagateIfInstanceOf(Throwable, Class<X extends Exception>) throws X：当且仅当它是一个X的实例时，传递throwable<br>3.void propagateIfPossible(Throwable)：当且仅当它是一个RuntimeException和Error时，传递throwable<br>4.void propagateIfPossible(Throwable, Class<X extends Throwable>) throws X：当且仅当它是一个RuntimeException和Error时，或者是一个X的实例时，传递throwable。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"><span class="keyword">import</span> com.google.common.base.Throwables;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThrowablesTest</span> </span>&#123;    </span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testThrowables</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Exception();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">            String ss = Throwables.getStackTraceAsString(t);</span><br><span class="line">            System.out.println(<span class="string">"ss:"</span>+ss);</span><br><span class="line">            Throwables.propagate(t);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IOException();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">            Throwables.propagateIfInstanceOf(t, IOException<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">            <span class="keyword">throw</span> Throwables.propagate(t);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> Void <span class="title">testPropagateIfPossible</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">          <span class="keyword">try</span> &#123;</span><br><span class="line">              <span class="keyword">throw</span> <span class="keyword">new</span> Exception();</span><br><span class="line">          &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">            Throwables.propagateIfPossible(t, Exception<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">            Throwables.propagate(t);</span><br><span class="line">          &#125;</span><br><span class="line"></span><br><span class="line">          <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Guava的异常链处理方法：</p>
+<p>1.Throwable getRootCause(Throwable)<br>2.List<code>&lt;Throwable&gt;</code> getCausalChain(Throwable)<br>3.String getStackTraceAsString(Throwable)</p>
+<h2 id="Immutable-不可变-集合"><a href="#Immutable-不可变-集合" class="headerlink" title="Immutable(不可变)集合"></a>Immutable(不可变)集合</h2><p>不可变集合，顾名思义就是说集合是<strong>不可被修改</strong>的。集合的数据项是在创建的时候提供，并且在整个生命周期中都不可改变。</p>
+<p>为什么要用immutable对象？immutable对象有以下的优点：<br>1.对不可靠的客户代码库来说，它使用安全，可以在未受信任的类库中安全的使用这些对象<br>2.线程安全的：immutable对象在多线程下安全，没有竞态条件<br>3.不需要支持可变性, 可以尽量节省空间和时间的开销. 所有的不可变集合实现都比可变集合更加有效的利用内存 (analysis)<br>4.可以被使用为一个常量，并且期望在未来也是保持不变的</p>
+<p>immutable对象可以很自然地用作常量，因为它们天生就是不可变的对于immutable对象的运用来说，它是一个很好的防御编程（defensive programming）的技术实践。</p>
+<h3 id="JDK中实现immutable集合"><a href="#JDK中实现immutable集合" class="headerlink" title="JDK中实现immutable集合"></a>JDK中实现immutable集合</h3><p>在JDK中提供了Collections.unmodifiableXXX系列方法来实现不可变集合,但是存在一些问题，下面我们先看一个具体实例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ImmutableTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testJDKImmutable</span><span class="params">()</span></span>&#123;                                                                                                                                                                                                                                    </span><br><span class="line">        List&lt;String&gt; list=<span class="keyword">new</span> ArrayList&lt;String&gt;();                                                                               </span><br><span class="line">        list.add(<span class="string">"a"</span>);                                                                                                           </span><br><span class="line">        list.add(<span class="string">"b"</span>);                                                                                                           </span><br><span class="line">        list.add(<span class="string">"c"</span>);</span><br><span class="line">        </span><br><span class="line">        System.out.println(list);</span><br><span class="line">        </span><br><span class="line">        List&lt;String&gt; unmodifiableList=Collections.unmodifiableList(list); </span><br><span class="line">        </span><br><span class="line">        System.out.println(unmodifiableList);</span><br><span class="line">        </span><br><span class="line">        List&lt;String&gt; unmodifiableList1=Collections.unmodifiableList(Arrays.asList(<span class="string">"a"</span>,<span class="string">"b"</span>,<span class="string">"c"</span>)); </span><br><span class="line">        System.out.println(unmodifiableList1);</span><br><span class="line">        </span><br><span class="line">        String temp=unmodifiableList.get(<span class="number">1</span>);</span><br><span class="line">        System.out.println(<span class="string">"unmodifiableList [0]："</span>+temp);</span><br><span class="line">                </span><br><span class="line">        list.add(<span class="string">"baby"</span>);</span><br><span class="line">        System.out.println(<span class="string">"list add a item after list:"</span>+list);</span><br><span class="line">        System.out.println(<span class="string">"list add a item after unmodifiableList:"</span>+unmodifiableList);</span><br><span class="line">        </span><br><span class="line">        unmodifiableList1.add(<span class="string">"bb"</span>);</span><br><span class="line">        System.out.println(<span class="string">"unmodifiableList add a item after list:"</span>+unmodifiableList1);</span><br><span class="line">        </span><br><span class="line">        unmodifiableList.add(<span class="string">"cc"</span>);</span><br><span class="line">        System.out.println(<span class="string">"unmodifiableList add a item after list:"</span>+unmodifiableList);        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[a, b, c]</span><br><span class="line">[a, b, c]</span><br><span class="line">[a, b, c]</span><br><span class="line">unmodifiableList [0]：b</span><br><span class="line">list add a item after list:[a, b, c, baby]</span><br><span class="line">list add a item after unmodifiableList:[a, b, c, baby]</span><br><span class="line"></span><br><span class="line">java.lang.UnsupportedOperationException</span><br><span class="line">	at java.util.Collections$UnmodifiableCollection.add(Collections.java:1055)</span><br><span class="line">	at guava.ImmutableTest.testJDKImmutable(ImmutableTest.java:34)</span><br></pre></td></tr></table></figure>
+
+<p>我们从运行结果可以看出Collections.unmodifiableList实现的不是真正的不可变集合，<strong>当原始集合修改后，不可变集合也发生变化</strong>。不可变集合不可以修改集合数据，当强制修改时会报错，实例中的最后两个add会直接抛出不可修改的错误。</p>
+<p>总结一下JDK的Collections.unmodifiableXXX方法实现不可变集合的一些问题：<br>1.它用起来笨拙繁琐你不得不在每个防御性编程拷贝的地方用这个方法<br>2.它不安全：如果有对象reference原始的被封装的集合类，这些方法返回的集合也就不是正真的不可改变。<br>3.效率低：因为它返回的数据结构本质仍旧是原来的集合类，所以它的操作开销，包括并发下修改检查，hash table里的额外数据空间都和原来的集合是一样的。</p>
+<h3 id="Guava的immutable集合"><a href="#Guava的immutable集合" class="headerlink" title="Guava的immutable集合"></a>Guava的immutable集合</h3><p>Guava提供了对JDK里标准集合类里的immutable版本的简单方便的实现，以及Guava自己的一些专门集合类的immutable实现。当你不希望修改一个集合类，或者想做一个常量集合类的时候，使用immutable集合类就是一个最佳的编程实践。</p>
+<p>注意：每个Guava immutable集合类的实现都拒绝null值。万一你真的需要能接受null值的集合类，你可以考虑用Collections.unmodifiableXXX。</p>
+<p>Immutable集合使用方法：<br>一个immutable集合可以有以下几种方式来创建：<br>1.用copyOf方法, 譬如, ImmutableSet.copyOf(set)<br>2.使用of方法，譬如，ImmutableSet.of(“a”, “b”, “c”)或者ImmutableMap.of(“a”, 1, “b”, 2)<br>3.使用Builder类。</p>
+<p>我们来看具体的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testGuavaImmutable</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">    list.add(<span class="string">"a"</span>);</span><br><span class="line">    list.add(<span class="string">"b"</span>);</span><br><span class="line">    list.add(<span class="string">"c"</span>);</span><br><span class="line">    System.out.println(<span class="string">"list："</span> + list);</span><br><span class="line"></span><br><span class="line">    ImmutableList&lt;String&gt; imlist = ImmutableList.copyOf(list);</span><br><span class="line">    System.out.println(<span class="string">"imlist："</span> + imlist);</span><br><span class="line"></span><br><span class="line">    ImmutableList&lt;String&gt; imOflist = ImmutableList.of(<span class="string">"peida"</span>, <span class="string">"jerry"</span>, <span class="string">"harry"</span>);</span><br><span class="line">    System.out.println(<span class="string">"imOflist："</span> + imOflist);</span><br><span class="line"></span><br><span class="line">    ImmutableSortedSet&lt;String&gt; imSortList = ImmutableSortedSet.of(<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>, <span class="string">"a"</span>, <span class="string">"d"</span>, <span class="string">"b"</span>);</span><br><span class="line">    System.out.println(<span class="string">"imSortList："</span> + imSortList);</span><br><span class="line"></span><br><span class="line">    list.add(<span class="string">"baby"</span>);</span><br><span class="line">    System.out.println(<span class="string">"list add a item after list:"</span> + list);</span><br><span class="line">    System.out.println(<span class="string">"list add a item after imlist:"</span> + imlist);</span><br><span class="line"></span><br><span class="line">    ImmutableSet&lt;Color&gt; imColorSet =</span><br><span class="line">            ImmutableSet.&lt;Color&gt;builder()</span><br><span class="line">                    .add(<span class="keyword">new</span> Color(<span class="number">0</span>, <span class="number">255</span>, <span class="number">255</span>))</span><br><span class="line">                    .add(<span class="keyword">new</span> Color(<span class="number">0</span>, <span class="number">191</span>, <span class="number">255</span>))</span><br><span class="line">                    .build();</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"imColorSet:"</span> + imColorSet);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">list：[a, b, c]</span><br><span class="line">imlist：[a, b, c]</span><br><span class="line">imOflist：[peida, jerry, harry]</span><br><span class="line">imSortList：[a, b, c, d]</span><br><span class="line">list add a item after list:[a, b, c, baby]</span><br><span class="line">list add a item after imlist:[a, b, c]</span><br><span class="line">imColorSet:[java.awt.Color[r&#x3D;0,g&#x3D;255,b&#x3D;255], java.awt.Color[r&#x3D;0,g&#x3D;191,b&#x3D;255]]</span><br></pre></td></tr></table></figure>
+
+<p>对于排序的集合来说有例外，因为元素的顺序在构建集合的时候就被固定下来了。譬如，ImmutableSet.of(“a”, “b”, “c”, “a”, “d”, “b”)，对于这个集合的遍历顺序来说就是”a”, “b”, “c”, “d”。</p>
+<p>我们上文的demo已经讲到了copyOf了，我们深入看一下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testCopyOf</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ImmutableSet&lt;String&gt; imSet = ImmutableSet.of(<span class="string">"peida"</span>, <span class="string">"jerry"</span>, <span class="string">"harry"</span>, <span class="string">"lisa"</span>);</span><br><span class="line">    System.out.println(<span class="string">"imSet："</span> + imSet);</span><br><span class="line">    ImmutableList&lt;String&gt; imlist = ImmutableList.copyOf(imSet);</span><br><span class="line">    System.out.println(<span class="string">"imlist："</span> + imlist);</span><br><span class="line">    ImmutableSortedSet&lt;String&gt; imSortSet = ImmutableSortedSet.copyOf(imSet);</span><br><span class="line">    System.out.println(<span class="string">"imSortSet："</span> + imSortSet);</span><br><span class="line"></span><br><span class="line">    List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++) &#123;</span><br><span class="line">        list.add(i + <span class="string">"x"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(<span class="string">"list："</span> + list);</span><br><span class="line">    ImmutableList&lt;String&gt; imInfolist = ImmutableList.copyOf(list.subList(<span class="number">2</span>, <span class="number">18</span>));</span><br><span class="line">    System.out.println(<span class="string">"imInfolist："</span> + imInfolist);</span><br><span class="line">    <span class="keyword">int</span> imInfolistSize = imInfolist.size();</span><br><span class="line">    System.out.println(<span class="string">"imInfolistSize："</span> + imInfolistSize);</span><br><span class="line">    ImmutableSet&lt;String&gt; imInfoSet = ImmutableSet.copyOf(imInfolist.subList(<span class="number">2</span>, imInfolistSize - <span class="number">3</span>));</span><br><span class="line">    System.out.println(<span class="string">"imInfoSet："</span> + imInfoSet);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">imSet：[peida, jerry, harry, lisa]</span><br><span class="line">imlist：[peida, jerry, harry, lisa]</span><br><span class="line">imSortSet：[harry, jerry, lisa, peida]</span><br><span class="line">list：[0x, 1x, 2x, 3x, 4x, 5x, 6x, 7x, 8x, 9x, 10x, 11x, 12x, 13x, 14x, 15x, 16x, 17x, 18x, 19x]</span><br><span class="line">imInfolist：[2x, 3x, 4x, 5x, 6x, 7x, 8x, 9x, 10x, 11x, 12x, 13x, 14x, 15x, 16x, 17x]</span><br><span class="line">imInfolistSize：16</span><br><span class="line">imInfoSet：[4x, 5x, 6x, 7x, 8x, 9x, 10x, 11x, 12x, 13x, 14x]</span><br></pre></td></tr></table></figure>
+
+<p>在这段代码中，ImmutableList.copyOf(imSet)会智能地返回时间复杂度为常数的ImmutableSet的imSet.asList()。</p>
+<p>一般来说，ImmutableXXX.copyOf(ImmutableCollection)会避免线性复杂度的拷贝操作。如在以下情况：</p>
+<p>这个操作有可能就利用了被封装数据结构的常数复杂度的操作。但例如ImmutableSet.copyOf(list)不能在常数复杂度下实现。</p>
+<p>这样不会导致内存泄漏－例如，你有个ImmutableList<code>&lt;String&gt;</code> imInfolist，然后你显式操作ImmutableList.copyOf(imInfolist.subList(0, 10))。这样的操作可以避免意外持有不再需要的在hugeList里元素的reference。<br>它不会改变集合的语意－像ImmutableSet.copyOf(myImmutableSortedSet)这样的显式拷贝操作，因为在ImmutableSet里的hashCode()和equals()的含义和基于comparator的ImmutableSortedSet是不同的。</p>
+<p>这些特性有助于最优化防御性编程的性能开销。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2018/03/07/Google-Guava-java%E6%89%A9%E5%B1%95%E7%B1%BB%E5%BA%93%EF%BC%88%E4%B8%8A%EF%BC%89/>https://www.bcoder.top/2018/03/07/Google-Guava-java%E6%89%A9%E5%B1%95%E7%B1%BB%E5%BA%93%EF%BC%88%E4%B8%8A%EF%BC%89/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/java/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>java</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Guava/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Guava</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2018/03/07/Google-Guava-java%E6%89%A9%E5%B1%95%E7%B1%BB%E5%BA%93%EF%BC%88%E4%B8%8A%EF%BC%89/&title=Google Guava:java扩展类库（上） - zln's blog&summary=
+引言Guava 是一个 Google 的基于java1.6的类库集合的扩展项目。Guava工程包含了若干被Google的Java项目广泛依赖的核心库，例如：集合（collections）、缓存（caching） 、原生类型支持（primitives support）、并发库（concurrency libraries）、通用注解（common annotations）、字符串处理（string processing）、I/O 等等。 所有这些工具每天都在被Google的工程师应用在产品服务中。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2018/03/07/Google-Guava-java%E6%89%A9%E5%B1%95%E7%B1%BB%E5%BA%93%EF%BC%88%E4%B8%8A%EF%BC%89/&title=Google Guava:java扩展类库（上） - zln's blog&summary=
+引言Guava 是一个 Google 的基于java1.6的类库集合的扩展项目。Guava工程包含了若干被Google的Java项目广泛依赖的核心库，例如：集合（collections）、缓存（caching） 、原生类型支持（primitives support）、并发库（concurrency libraries）、通用注解（common annotations）、字符串处理（string processing）、I/O 等等。 所有这些工具每天都在被Google的工程师应用在产品服务中。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2018/03/07/Google-Guava-java%E6%89%A9%E5%B1%95%E7%B1%BB%E5%BA%93%EF%BC%88%E4%B8%8A%EF%BC%89/&title=Google Guava:java扩展类库（上） - zln's blog&summary=
+引言Guava 是一个 Google 的基于java1.6的类库集合的扩展项目。Guava工程包含了若干被Google的Java项目广泛依赖的核心库，例如：集合（collections）、缓存（caching） 、原生类型支持（primitives support）、并发库（concurrency libraries）、通用注解（common annotations）、字符串处理（string processing）、I/O 等等。 所有这些工具每天都在被Google的工程师应用在产品服务中。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2018/03/10/Google-Guava-java%E6%89%A9%E5%B1%95%E7%B1%BB%E5%BA%93%EF%BC%88%E4%B8%8B%EF%BC%89/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>Google Guava:java扩展类库（下）</p>
+                <p class='content'>
+引言Guava 是一个 Google 的基于java1.6的类库集合的扩展项目。Guava工程包含了若干被Google的Java项目广泛依赖的核心库，例如：集合（collections）、缓存...</p>
+              </a>
+            
+            
+              <a class='next' href='/2018/03/02/%E3%80%8A%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E3%80%8B%E8%AF%BB%E4%B9%A6%E5%B0%8F%E7%BB%93/'>
+                <p class='title'>《深入理解Java虚拟机》读书小结<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言趁着这几天做毕设比较清闲，想再深入了解一下jvm（之前只是把基本内容看了一下）,于是就把周志明的《深入理解Java虚拟机》第二版这本书粗略的看了一遍，看完之后获益良多，但是也有很多地方没搞...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'Google Guava:java扩展类库（上）',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Guava类库简介"><span class="toc-text">Guava类库简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Optional避免null"><span class="toc-text">Optional避免null</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Optional介绍"><span class="toc-text">Optional介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Optional使用"><span class="toc-text">Optional使用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Preconditions检验参数"><span class="toc-text">Preconditions检验参数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Preconditions介绍"><span class="toc-text">Preconditions介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Preconditions使用"><span class="toc-text">Preconditions使用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Object覆写"><span class="toc-text">Object覆写</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#equals方法覆写"><span class="toc-text">equals方法覆写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#hashCode方法覆写"><span class="toc-text">hashCode方法覆写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#toString-方法覆写"><span class="toc-text">toString()方法覆写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#compare-compareTo方法覆写"><span class="toc-text">compare&#x2F;compareTo方法覆写</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Throwables类简化异常处理"><span class="toc-text">Throwables类简化异常处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Immutable-不可变-集合"><span class="toc-text">Immutable(不可变)集合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JDK中实现immutable集合"><span class="toc-text">JDK中实现immutable集合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Guava的immutable集合"><span class="toc-text">Guava的immutable集合</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

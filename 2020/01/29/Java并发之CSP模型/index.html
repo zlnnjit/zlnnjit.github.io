@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>Java并发之CSP模型 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="java,juc">
+  
+  
+    <meta name="description" content="Golang 是一门号称从语言层面支持并发的编程语言，支持并发是 Golang 一个非常重要的特性。之前介绍过，Golang 支持协程，协程可以类比 Java 中的线程，解决并发问题的难点就在于线程（协程）之间的协作。
+那 Golang 是如何解决协作问题的呢？
+总的来说，Golang 提供了两种不同的方案：一种...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8BCSP%E6%A8%A1%E5%9E%8B/">
+        Java并发之CSP模型
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/cs-inter/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>cs-inter</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2020-01-29 14:09:28</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <p>Golang 是一门号称从语言层面支持并发的编程语言，支持并发是 Golang 一个非常重要的特性。之前介绍过，Golang 支持协程，协程可以类比 Java 中的线程，解决并发问题的难点就在于线程（协程）之间的协作。</p>
+<p>那 Golang 是如何解决协作问题的呢？</p>
+<p>总的来说，Golang 提供了两种不同的方案：一种方案支持协程之间以共享内存的方式通信，Golang 提供了管程和原子类来对协程进行同步控制，这个方案与 Java 语言类似；另一种方案支持协程之间以消息传递（Message-Passing）的方式通信，本质上是要避免共享，Golang 的这个方案是基于<strong>CSP</strong>（Communicating Sequential Processes）模型实现的。Golang 比较推荐的方案是后者。</p>
+<a id="more"></a>
+
+<h2 id="什么是-CSP-模型"><a href="#什么是-CSP-模型" class="headerlink" title="什么是 CSP 模型"></a>什么是 CSP 模型</h2><p>ctor 模型中 Actor 之间就是不能共享内存的，彼此之间通信只能依靠消息传递的方式。Golang 实现的 CSP 模型和 Actor 模型看上去非常相似，Golang 程序员中有句格言：“<strong>不要以共享内存方式通信，要以通信方式共享内存</strong>（Don’t communicate by sharing memory, share memory by communicating）。”虽然 Golang 中协程之间，也能够以共享内存的方式通信，但是并不推荐；而推荐的以通信的方式共享内存，实际上指的就是协程之间以消息传递方式来通信。</p>
+<p>下面我们先结合一个简单的示例，看看 Golang 中协程之间是如何以消息传递的方式实现通信的。我们示例的目标是打印从 1 累加到 100 亿的结果，如果使用单个协程来计算，大概需要 4 秒多的时间。单个协程，只能用到 CPU 中的一个核，为了提高计算性能，我们可以用多个协程来并行计算，这样就能发挥多核的优势了。</p>
+<p>在下面的示例代码中，我们用了 4 个子协程来并行执行，这 4 个子协程分别计算 [1, 25 亿]、(25 亿, 50 亿]、(50 亿, 75 亿]、(75 亿, 100 亿]，最后再在主协程中汇总 4 个子协程的计算结果。主协程要汇总 4 个子协程的计算结果，势必要和 4 个子协程之间通信，<strong>Golang 中协程之间通信推荐的是使用 channel</strong>，channel 你可以形象地理解为现实世界里的管道。另外，calc() 方法的返回值是一个只能接收数据的 channel ch，它创建的子协程会把计算结果发送到这个 ch 中，而主协程也会将这个计算结果通过 ch 读取出来。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 变量声明</span></span><br><span class="line">	<span class="keyword">var</span> result, i <span class="keyword">uint64</span></span><br><span class="line">    <span class="comment">// 单个协程执行累加操作</span></span><br><span class="line">	start := time.Now()</span><br><span class="line">	<span class="keyword">for</span> i = <span class="number">1</span>; i &lt;= <span class="number">10000000000</span>; i++ &#123;</span><br><span class="line">		result += i</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 统计计算耗时</span></span><br><span class="line">	elapsed := time.Since(start)</span><br><span class="line">	fmt.Printf(<span class="string">" 执行消耗的时间为:"</span>, elapsed)</span><br><span class="line">	fmt.Println(<span class="string">", result:"</span>, result)</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 4 个协程共同执行累加操作</span></span><br><span class="line">	start = time.Now()</span><br><span class="line">	ch1 := calc(<span class="number">1</span>, <span class="number">2500000000</span>)</span><br><span class="line">	ch2 := calc(<span class="number">2500000001</span>, <span class="number">5000000000</span>)</span><br><span class="line">	ch3 := calc(<span class="number">5000000001</span>, <span class="number">7500000000</span>)</span><br><span class="line">	ch4 := calc(<span class="number">7500000001</span>, <span class="number">10000000000</span>)</span><br><span class="line">    <span class="comment">// 汇总 4 个协程的累加结果</span></span><br><span class="line">	result = &lt;-ch1 + &lt;-ch2 + &lt;-ch3 + &lt;-ch4</span><br><span class="line">	<span class="comment">// 统计计算耗时</span></span><br><span class="line">	elapsed = time.Since(start)</span><br><span class="line">	fmt.Printf(<span class="string">" 执行消耗的时间为:"</span>, elapsed)</span><br><span class="line">	fmt.Println(<span class="string">", result:"</span>, result)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 在协程中异步执行累加操作，累加结果通过 channel 传递</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">calc</span><span class="params">(from <span class="keyword">uint64</span>, to <span class="keyword">uint64</span>)</span> &lt;-<span class="title">chan</span> <span class="title">uint64</span></span> &#123;</span><br><span class="line">    <span class="comment">// channel 用于协程间的通信</span></span><br><span class="line">	ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">uint64</span>)</span><br><span class="line">    <span class="comment">// 在协程中执行累加操作</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		result := from</span><br><span class="line">		<span class="keyword">for</span> i := from + <span class="number">1</span>; i &lt;= to; i++ &#123;</span><br><span class="line">			result += i</span><br><span class="line">		&#125;</span><br><span class="line">        <span class="comment">// 将结果写入 channel</span></span><br><span class="line">		ch &lt;- result</span><br><span class="line">	&#125;()</span><br><span class="line">    <span class="comment">// 返回结果是用于通信的 channel</span></span><br><span class="line">	<span class="keyword">return</span> ch</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="CSP-模型与生产者-消费者模式"><a href="#CSP-模型与生产者-消费者模式" class="headerlink" title="CSP 模型与生产者 - 消费者模式"></a>CSP 模型与生产者 - 消费者模式</h2><p>你可以简单地把 Golang 实现的 CSP 模型类比为生产者 - 消费者模式，而 channel 可以类比为生产者 - 消费者模式中的阻塞队列。不过，需要注意的是 Golang 中 channel 的容量可以是 0，容量为 0 的 channel 在 Golang 中被称为<strong>无缓冲的 channel</strong>，容量大于 0 的则被称为<strong>有缓冲的 channel</strong>。</p>
+<p>无缓冲的 channel 类似于 Java 中提供的 SynchronousQueue，主要用途是在两个协程之间做数据交换。比如上面累加器的示例代码中，calc() 方法内部创建的 channel 就是无缓冲的 channel。</p>
+<p>而创建一个有缓冲的 channel 也很简单，在下面的示例代码中，我们创建了一个容量为 4 的 channel，同时创建了 4 个协程作为生产者、4 个协程作为消费者。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个容量为 4 的 channel </span></span><br><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">4</span>)</span><br><span class="line"><span class="comment">// 创建 4 个协程，作为生产者</span></span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">4</span>; i++ &#123;</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		ch &lt;- <span class="number">7</span></span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 创建 4 个协程，作为消费者</span></span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">4</span>; i++ &#123;</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    	o := &lt;-ch</span><br><span class="line">    	fmt.Println(<span class="string">"received:"</span>, o)</span><br><span class="line">    &#125;()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Golang 中的 channel 是语言层面支持的，所以可以使用一个左向箭头（&lt;-）来完成向 channel 发送数据和读取数据的任务，使用上还是比较简单的。Golang 中的 channel 是支持双向传输的，所谓双向传输，指的是一个协程既可以通过它发送数据，也可以通过它接收数据。</p>
+<p>不仅如此，Golang 中还可以将一个双向的 channel 变成一个单向的 channel，在累加器的例子中，calc() 方法中创建了一个双向 channel，但是返回的就是一个只能接收数据的单向 channel，所以主协程中只能通过它接收数据，而不能通过它发送数据，如果试图通过它发送数据，编译器会提示错误。对比之下，双向变单向的功能，如果以 SDK 方式实现，还是很困难的。</p>
+<h2 id="CSP-模型与-Actor-模型的区别"><a href="#CSP-模型与-Actor-模型的区别" class="headerlink" title="CSP 模型与 Actor 模型的区别"></a>CSP 模型与 Actor 模型的区别</h2><p>同样是以消息传递的方式来避免共享，那 Golang 实现的 CSP 模型和 Actor 模型有什么区别呢？</p>
+<p>第一个最明显的区别就是：<strong>Actor 模型中没有 channel</strong>。虽然 Actor 模型中的 mailbox 和 channel 非常像，看上去都像个 FIFO 队列，但是区别还是很大的。Actor 模型中的 mailbox 对于程序员来说是“透明”的，mailbox 明确归属于一个特定的 Actor，是 Actor 模型中的内部机制；而且 Actor 之间是可以直接通信的，不需要通信中介。但 CSP 模型中的 channel 就不一样了，它对于程序员来说是“可见”的，是通信的中介，传递的消息都是直接发送到 channel 中的。</p>
+<p>第二个区别是：Actor 模型中发送消息是<strong>非阻塞</strong>的，而 CSP 模型中是<strong>阻塞</strong>的。Golang 实现的 CSP 模型，channel 是一个阻塞队列，当阻塞队列已满的时候，向 channel 中发送数据，会导致发送消息的协程阻塞。</p>
+<p>第三个区别则是关于消息送达的。在之前文章中，我们介绍过 Actor 模型理论上不保证消息百分百送达，而在 Golang 实现的<strong>CSP 模型中，是能保证消息百分百送达的</strong>。不过这种百分百送达也是有代价的，那就是有可能会导致<strong>死锁</strong>。</p>
+<p>比如，下面这段代码就存在死锁问题，在主协程中，我们创建了一个无缓冲的 channel ch，然后从 ch 中接收数据，此时主协程阻塞，main() 方法中的主协程阻塞，整个应用就阻塞了。这就是 Golang 中最简单的一种死锁。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 创建一个无缓冲的 channel  </span></span><br><span class="line">    ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    <span class="comment">// 主协程会阻塞在此处，发生死锁</span></span><br><span class="line">    &lt;- ch </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Golang 中虽然也支持传统的共享内存的协程间通信方式，但是推荐的还是使用 CSP 模型，以通信的方式共享内存。</p>
+<p>Golang 中实现的 CSP 模型功能上还是很丰富的，例如支持 select 语句，select 语句类似于网络编程里的多路复用函数 select()，只要有一个 channel 能够发送成功或者接收到数据就可以跳出阻塞状态。鉴于篇幅原因，我就点到这里，不详细介绍那么多了。</p>
+<p>CSP 模型是托尼·霍尔（Tony Hoare）在 1978 年提出的，不过这个模型这些年一直都在发展，其理论远比 Golang 的实现复杂得多，如果你感兴趣，可以参考霍尔写的<a href="http://www.usingcsp.com/cspbook.pdf" target="_blank" rel="noopener">Communicating Sequential Processes</a>这本电子书。另外，霍尔在并发领域还有一项重要成就，那就是提出了霍尔管程模型，这个你应该很熟悉了，Java 领域解决并发问题的理论基础就是它。</p>
+<p>Java 领域可以借助第三方的类库<a href="https://www.cs.kent.ac.uk/projects/ofa/jcsp/" target="_blank" rel="noopener">JCSP</a>来支持 CSP 模型，相比 Golang 的实现，JCSP 更接近理论模型，如果你感兴趣，可以下载学习。不过需要注意的是，JCSP 并没有经过广泛的生产环境检验，所以并不建议你在生产环境中使用。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8BCSP%E6%A8%A1%E5%9E%8B/>https://www.bcoder.top/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8BCSP%E6%A8%A1%E5%9E%8B/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-29T14:12:32+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-29 14:12:32</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/java/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>java</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/juc/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>juc</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8BCSP%E6%A8%A1%E5%9E%8B/&title=Java并发之CSP模型 - zln's blog&summary=Golang 是一门号称从语言层面支持并发的编程语言，支持并发是 Golang 一个非常重要的特性。之前介绍过，Golang 支持协程，协程可以类比 Java 中的线程，解决并发问题的难点就在于线程（协程）之间的协作。
+那 Golang 是如何解决协作问题的呢？
+总的来说，Golang 提供了两种不同的方案：一种方案支持协程之间以共享内存的方式通信，Golang 提供了管程和原子类来对协程进行同步控制，这个方案与 Java 语言类似；另一种方案支持协程之间以消息传递（Message-Passing）的方式通信，本质上是要避免共享，Golang 的这个方案是基于CSP（Communicating Sequential Processes）模型实现的。Golang 比较推荐的方案是后者。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8BCSP%E6%A8%A1%E5%9E%8B/&title=Java并发之CSP模型 - zln's blog&summary=Golang 是一门号称从语言层面支持并发的编程语言，支持并发是 Golang 一个非常重要的特性。之前介绍过，Golang 支持协程，协程可以类比 Java 中的线程，解决并发问题的难点就在于线程（协程）之间的协作。
+那 Golang 是如何解决协作问题的呢？
+总的来说，Golang 提供了两种不同的方案：一种方案支持协程之间以共享内存的方式通信，Golang 提供了管程和原子类来对协程进行同步控制，这个方案与 Java 语言类似；另一种方案支持协程之间以消息传递（Message-Passing）的方式通信，本质上是要避免共享，Golang 的这个方案是基于CSP（Communicating Sequential Processes）模型实现的。Golang 比较推荐的方案是后者。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8BCSP%E6%A8%A1%E5%9E%8B/&title=Java并发之CSP模型 - zln's blog&summary=Golang 是一门号称从语言层面支持并发的编程语言，支持并发是 Golang 一个非常重要的特性。之前介绍过，Golang 支持协程，协程可以类比 Java 中的线程，解决并发问题的难点就在于线程（协程）之间的协作。
+那 Golang 是如何解决协作问题的呢？
+总的来说，Golang 提供了两种不同的方案：一种方案支持协程之间以共享内存的方式通信，Golang 提供了管程和原子类来对协程进行同步控制，这个方案与 Java 语言类似；另一种方案支持协程之间以消息传递（Message-Passing）的方式通信，本质上是要避免共享，Golang 的这个方案是基于CSP（Communicating Sequential Processes）模型实现的。Golang 比较推荐的方案是后者。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2020/01/29/MySQL%E5%AE%9E%E6%88%98%E4%B9%8B%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>MySQL实战之基础架构</p>
+                <p class='content'>我们来聊聊MySQL的基础架构。经常说，看一个事儿千万不要直接陷入细节里，你应该先鸟瞰其全貌，这样能够帮助你从高维度理解问题。同样，对于MySQL的学习也是这样。平时我们使用数据库，看到的通常都...</p>
+              </a>
+            
+            
+              <a class='next' href='/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E5%8D%8F%E7%A8%8B/'>
+                <p class='title'>Java并发之协程<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>Java 语言里解决并发问题靠的是多线程，但线程是个重量级的对象，不能频繁创建、销毁，而且线程切换的成本也很高，为了解决这些问题，Java SDK 提供了线程池。然而用好线程池并不容易，Java...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'Java并发之CSP模型',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-CSP-模型"><span class="toc-text">什么是 CSP 模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CSP-模型与生产者-消费者模式"><span class="toc-text">CSP 模型与生产者 - 消费者模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CSP-模型与-Actor-模型的区别"><span class="toc-text">CSP 模型与 Actor 模型的区别</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>Java并发之协程 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="java,juc">
+  
+  
+    <meta name="description" content="Java 语言里解决并发问题靠的是多线程，但线程是个重量级的对象，不能频繁创建、销毁，而且线程切换的成本也很高，为了解决这些问题，Java SDK 提供了线程池。然而用好线程池并不容易，Java 围绕线程池提供了很多工具类，这些工具类学起来也不容易。那有没有更好的解决方案呢？Java 语言里目前还没有，但是其他语...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E5%8D%8F%E7%A8%8B/">
+        Java并发之协程
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/cs-inter/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>cs-inter</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2020-01-29 13:53:33</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <p>Java 语言里解决并发问题靠的是多线程，但线程是个重量级的对象，不能频繁创建、销毁，而且线程切换的成本也很高，为了解决这些问题，Java SDK 提供了线程池。然而用好线程池并不容易，Java 围绕线程池提供了很多工具类，这些工具类学起来也不容易。那有没有更好的解决方案呢？Java 语言里目前还没有，但是其他语言里有，这个方案就是<strong>协程</strong>（Coroutine）。</p>
+<p>我们可以把<strong>协程</strong>简单地理解<strong>为一种轻量级的线程</strong>。从操作系统的角度来看，线程是在内核态中调度的，而协程是在用户态调度的，所以相对于线程来说，协程切换的成本更低。协程虽然也有自己的栈，但是相比线程栈要小得多，典型的线程栈大小差不多有 1M，而协程栈的大小往往只有几 K 或者几十 K。所以，无论是从时间维度还是空间维度来看，协程都比线程轻量得多。</p>
+<p>支持协程的语言还是挺多的，例如 Golang、Python、Lua、Kotlin 等都支持协程。下面我们就以 Golang 为代表，看看协程是如何在 Golang 中使用的。</p>
+<a id="more"></a>
+
+<h2 id="Golang-中的协程"><a href="#Golang-中的协程" class="headerlink" title="Golang 中的协程"></a>Golang 中的协程</h2><p>在 Golang 中创建协程非常简单，在下面的示例代码中，要让 hello() 方法在一个新的协程中执行，只需要<code>go hello(&quot;World&quot;)</code> 这一行代码就搞定了。你可以对比着想想在 Java 里是如何“辛勤”地创建线程和线程池的吧，我的感觉一直都是：每次写完 Golang 的代码，就再也不想写 Java 代码了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"><span class="function">func <span class="title">hello</span><span class="params">(msg string)</span> </span>&#123;</span><br><span class="line">	fmt.Println(<span class="string">"Hello "</span> + msg)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">func <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 在新的协程中执行 hello 方法</span></span><br><span class="line">	<span class="function">go <span class="title">hello</span><span class="params">(<span class="string">"World"</span>)</span></span></span><br><span class="line"><span class="function">    fmt.<span class="title">Println</span><span class="params">(<span class="string">"Run in main"</span>)</span></span></span><br><span class="line"><span class="function">    <span class="comment">// 等待 100 毫秒让协程执行结束</span></span></span><br><span class="line"><span class="function">	time.<span class="title">Sleep</span><span class="params">(<span class="number">100</span> * time.Millisecond)</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>利用协程能够很好地实现 Thread-Per-Message 模式。Thread-Per-Message 模式非常简单，其实越是简单的模式，功能上就越稳定，可理解性也越好。</p>
+<p>下面的示例代码是用 Golang 实现的 echo 程序的服务端，用的是 Thread-Per-Message 模式，为每个成功建立连接的 socket 分配一个协程，相比 Java 线程池的实现方案，Golang 中协程的方案更简单。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">	<span class="string">"net"</span></span><br><span class="line">)</span><br><span class="line"> </span><br><span class="line"><span class="function">func <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 监听本地 9090 端口</span></span><br><span class="line">	socket, err := net.Listen(<span class="string">"tcp"</span>, <span class="string">"127.0.0.1:9090"</span>)</span><br><span class="line">	<span class="keyword">if</span> err != nil &#123;</span><br><span class="line">		log.Panicln(err)</span><br><span class="line">	&#125;</span><br><span class="line">	defer socket.Close()</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">        <span class="comment">// 处理连接请求  </span></span><br><span class="line">		conn, err := socket.Accept()</span><br><span class="line">		<span class="keyword">if</span> err != nil &#123;</span><br><span class="line">			log.Panicln(err)</span><br><span class="line">		&#125;</span><br><span class="line">        <span class="comment">// 处理已经成功建立连接的请求</span></span><br><span class="line">		<span class="function">go <span class="title">handleRequest</span><span class="params">(conn)</span></span></span><br><span class="line"><span class="function">	&#125;</span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"><span class="comment">// 处理已经成功建立连接的请求</span></span></span><br><span class="line"><span class="function">func <span class="title">handleRequest</span><span class="params">(conn net.Conn)</span> </span>&#123;</span><br><span class="line">	defer conn.Close()</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		buf := make([]<span class="keyword">byte</span>, <span class="number">1024</span>)</span><br><span class="line">        <span class="comment">// 读取请求数据</span></span><br><span class="line">		size, err := conn.Read(buf)</span><br><span class="line">		<span class="keyword">if</span> err != nil &#123;</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">        <span class="comment">// 回写相应数据  </span></span><br><span class="line">		conn.Write(buf[:size])</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="利用协程实现同步"><a href="#利用协程实现同步" class="headerlink" title="利用协程实现同步"></a>利用协程实现同步</h2><p>其实协程并不仅限于实现 Thread-Per-Message 模式，它还可以将异步模式转换为同步模式。异步编程虽然近几年取得了长足发展，但是异步的思维模式对于普通人来讲毕竟是有难度的，只有线性的思维模式才是适合所有人的。而线性的思维模式反映到编程世界，就是同步。</p>
+<p>在 Java 里使用多线程并发地处理 I/O，基本上用的都是<strong>异步非阻塞模型</strong>，这种模型的异步主要是靠注册回调函数实现的，那能否都使用同步处理呢？显然是不能的。因为同步意味着等待，而线程等待，本质上就是一种严重的浪费。不过对于协程来说，等待的成本就没有那么高了，所以基于协程实现<strong>同步非阻塞</strong>是一个可行的方案。</p>
+<p>OpenResty 里实现的 cosocket 就是一种同步非阻塞方案，借助 cosocket 我们可以用线性的思维模式来编写非阻塞的程序。下面的示例代码是用 cosocket 实现的 socket 程序的客户端，建立连接、发送请求、读取响应所有的操作都是同步的，由于 cosocket 本身是非阻塞的，所以这些操作虽然是同步的，但是并不会阻塞。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">-- 创建 socket</span><br><span class="line">local sock = ngx.socket.tcp()</span><br><span class="line">-- 设置 socket 超时时间</span><br><span class="line">sock:settimeouts(connect_timeout, send_timeout, read_timeout)</span><br><span class="line">-- 连接到目标地址</span><br><span class="line">local ok, err = sock:connect(host, port)</span><br><span class="line"><span class="keyword">if</span> not ok then</span><br><span class="line">-  -- 省略异常处理</span><br><span class="line">end</span><br><span class="line">-- 发送请求</span><br><span class="line">local bytes, err = sock:send(request_data)</span><br><span class="line"><span class="keyword">if</span> not bytes then</span><br><span class="line">  -- 省略异常处理</span><br><span class="line">end</span><br><span class="line">-- 读取响应</span><br><span class="line">local line, err = sock:receive()</span><br><span class="line"><span class="keyword">if</span> err then</span><br><span class="line">  -- 省略异常处理</span><br><span class="line">end</span><br><span class="line">-- 关闭 socket</span><br><span class="line">sock:close()   </span><br><span class="line">-- 处理读取到的数据 line</span><br><span class="line">handle(line)</span><br></pre></td></tr></table></figure>
+
+<h2 id="结构化并发编程"><a href="#结构化并发编程" class="headerlink" title="结构化并发编程"></a>结构化并发编程</h2><p>Golang 中的 go 语句让协程用起来太简单了，但是这种简单也蕴藏着风险。要深入了解这个风险是什么，就需要先了解一下 goto 语句的前世今生。</p>
+<p>在我上学的时候，各种各样的编程语言书籍中都会谈到不建议使用 goto 语句，原因是 goto 语句会让程序变得混乱，当时对于这个问题我也没有多想，不建议用那就不用了。那为什么 goto 语句会让程序变得混乱呢？混乱具体指的又是什么呢？多年之后，我才了解到所谓的混乱指的是代码的书写顺序和执行顺序不一致。代码的书写顺序，代表的是我们的思维过程，如果思维的过程与代码执行的顺序不一致，那就会干扰我们对代码的理解。我们的思维是线性的，傻傻地一条道儿跑到黑，而 goto 语句太灵活，随时可以穿越时空，实在是太“混乱”了。</p>
+<p>首先发现 goto 语句是“毒药”的人是著名的计算机科学家艾兹格·迪科斯彻（Edsger Dijkstra），同时他还提出了结构化程序设计。在结构化程序设计中，可以使用三种基本控制结构来代替 goto，这三种基本的控制结构就是今天我们广泛使用的<strong>顺序结构</strong>、<strong>选择结构</strong>和<strong>循环结构</strong>。</p>
+<p><img src="http://img.bcoder.top/2020.01.29.5/1.png" alt=""></p>
+<p><img src="http://img.bcoder.top/2020.01.29.5/2.png" alt=""></p>
+<p><img src="http://img.bcoder.top/2020.01.29.5/3.png" alt=""></p>
+<p><img src="http://img.bcoder.top/2020.01.29.5/4.png" alt=""></p>
+<p>这三种基本的控制结构奠定了今天高级语言的基础，如果仔细观察这三种结构，你会发现它们的入口和出口只有一个，这意味它们是可组合的，而且组合起来一定是线性的，整体来看，代码的书写顺序和执行顺序也是一致的。</p>
+<p>我们以前写的并发程序，是否违背了结构化程序设计呢？这个问题以前并没有被关注，但是最近两年，随着并发编程的快速发展，已经开始有人关注了，而且剑指 Golang 中的 go 语句，指其为“毒药”，类比的是 goto 语句。详情可以参考<a href="https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/" target="_blank" rel="noopener">相关的文章</a>。</p>
+<p>Golang 中的 go 语句不过是快速创建协程的方法而已，这篇文章本质上并不仅仅在批判 Golang 中的 go 语句，而是在批判开启新的线程（或者协程）异步执行这种粗糙的做法，违背了结构化程序设计，Java 语言其实也在其列。</p>
+<p>当开启一个新的线程时，程序会并行地出现两个分支，主线程一个分支，子线程一个分支，这两个分支很多情况下都是天各一方、永不相见。而结构化的程序，可以有分支，但是最终一定要汇聚，不能有多个出口，因为只有这样它们组合起来才是线性的。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>最近几年支持协程的开发语言越来越多了，Java OpenSDK 中 Loom 项目的目标就是支持协程，相信不久的将来，Java 程序员也可以使用协程来解决并发问题了。</p>
+<p>计算机里很多面向开发人员的技术，大多数都是在解决一个问题：<strong>易用性</strong>。协程作为一项并发编程技术，本质上也不过是解决并发工具的易用性问题而已。对于易用性，我觉得最重要的就是<strong>要适应我们的思维模式</strong>，在工作的前几年，我并没有怎么关注它，但是最近几年思维模式已成为我重点关注的对象。因为思维模式对工作的很多方面都会产生影响，例如质量。</p>
+<p>一个软件产品是否能够活下去，从质量的角度看，最核心的就是代码写得好。那什么样的代码是好代码呢？我觉得，最根本的是可读性好。可读性好的代码，意味着大家都可以上手，而且上手后不会大动干戈。那如何让代码的可读性好呢？很简单，换位思考，用大众、普通的思维模式去写代码，而不是炫耀自己的各种设计能力。我觉得好的代码，就像人民的艺术一样，应该是为人民群众服务的，只有根植于广大群众之中，才有生命力。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E5%8D%8F%E7%A8%8B/>https://www.bcoder.top/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E5%8D%8F%E7%A8%8B/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-29T14:05:53+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-29 14:05:53</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/java/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>java</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/juc/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>juc</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E5%8D%8F%E7%A8%8B/&title=Java并发之协程 - zln's blog&summary=Java 语言里解决并发问题靠的是多线程，但线程是个重量级的对象，不能频繁创建、销毁，而且线程切换的成本也很高，为了解决这些问题，Java SDK 提供了线程池。然而用好线程池并不容易，Java 围绕线程池提供了很多工具类，这些工具类学起来也不容易。那有没有更好的解决方案呢？Java 语言里目前还没有，但是其他语言里有，这个方案就是协程（Coroutine）。
+我们可以把协程简单地理解为一种轻量级的线程。从操作系统的角度来看，线程是在内核态中调度的，而协程是在用户态调度的，所以相对于线程来说，协程切换的成本更低。协程虽然也有自己的栈，但是相比线程栈要小得多，典型的线程栈大小差不多有 1M，而协程栈的大小往往只有几 K 或者几十 K。所以，无论是从时间维度还是空间维度来看，协程都比线程轻量得多。
+支持协程的语言还是挺多的，例如 Golang、Python、Lua、Kotlin 等都支持协程。下面我们就以 Golang 为代表，看看协程是如何在 Golang 中使用的。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E5%8D%8F%E7%A8%8B/&title=Java并发之协程 - zln's blog&summary=Java 语言里解决并发问题靠的是多线程，但线程是个重量级的对象，不能频繁创建、销毁，而且线程切换的成本也很高，为了解决这些问题，Java SDK 提供了线程池。然而用好线程池并不容易，Java 围绕线程池提供了很多工具类，这些工具类学起来也不容易。那有没有更好的解决方案呢？Java 语言里目前还没有，但是其他语言里有，这个方案就是协程（Coroutine）。
+我们可以把协程简单地理解为一种轻量级的线程。从操作系统的角度来看，线程是在内核态中调度的，而协程是在用户态调度的，所以相对于线程来说，协程切换的成本更低。协程虽然也有自己的栈，但是相比线程栈要小得多，典型的线程栈大小差不多有 1M，而协程栈的大小往往只有几 K 或者几十 K。所以，无论是从时间维度还是空间维度来看，协程都比线程轻量得多。
+支持协程的语言还是挺多的，例如 Golang、Python、Lua、Kotlin 等都支持协程。下面我们就以 Golang 为代表，看看协程是如何在 Golang 中使用的。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E5%8D%8F%E7%A8%8B/&title=Java并发之协程 - zln's blog&summary=Java 语言里解决并发问题靠的是多线程，但线程是个重量级的对象，不能频繁创建、销毁，而且线程切换的成本也很高，为了解决这些问题，Java SDK 提供了线程池。然而用好线程池并不容易，Java 围绕线程池提供了很多工具类，这些工具类学起来也不容易。那有没有更好的解决方案呢？Java 语言里目前还没有，但是其他语言里有，这个方案就是协程（Coroutine）。
+我们可以把协程简单地理解为一种轻量级的线程。从操作系统的角度来看，线程是在内核态中调度的，而协程是在用户态调度的，所以相对于线程来说，协程切换的成本更低。协程虽然也有自己的栈，但是相比线程栈要小得多，典型的线程栈大小差不多有 1M，而协程栈的大小往往只有几 K 或者几十 K。所以，无论是从时间维度还是空间维度来看，协程都比线程轻量得多。
+支持协程的语言还是挺多的，例如 Golang、Python、Lua、Kotlin 等都支持协程。下面我们就以 Golang 为代表，看看协程是如何在 Golang 中使用的。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8BCSP%E6%A8%A1%E5%9E%8B/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>Java并发之CSP模型</p>
+                <p class='content'>Golang 是一门号称从语言层面支持并发的编程语言，支持并发是 Golang 一个非常重要的特性。之前介绍过，Golang 支持协程，协程可以类比 Java 中的线程，解决并发问题的难点就在于...</p>
+              </a>
+            
+            
+              <a class='next' href='/2020/01/29/Java%E5%B9%B6%E5%8F%91%E4%B9%8B%E8%BD%AF%E4%BB%B6%E4%BA%8B%E5%8A%A1%E5%86%85%E5%AD%98/'>
+                <p class='title'>Java并发之软件事务内存<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>很多同学反馈说，工作了挺长时间但是没有机会接触并发编程，实际上我们天天都在写并发程序，只不过并发相关的问题都被类似 Tomcat 这样的 Web 服务器以及 MySQL 这样的数据库解决了。尤其...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'Java并发之协程',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Golang-中的协程"><span class="toc-text">Golang 中的协程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#利用协程实现同步"><span class="toc-text">利用协程实现同步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结构化并发编程"><span class="toc-text">结构化并发编程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

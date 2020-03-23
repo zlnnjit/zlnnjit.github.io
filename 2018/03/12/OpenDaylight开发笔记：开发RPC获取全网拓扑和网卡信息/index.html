@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>OpenDaylight开发笔记：开发RPC获取全网拓扑和网卡信息 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="SDN,Controller,OpenDaylight,RPC">
+  
+  
+    <meta name="description" content="
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2018/03/12/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%BC%80%E5%8F%91RPC%E8%8E%B7%E5%8F%96%E5%85%A8%E7%BD%91%E6%8B%93%E6%89%91%E5%92%8C%E7%BD%91%E5%8D%A1%E4%BF%A1%E6%81%AF/">
+        OpenDaylight开发笔记：开发RPC获取全网拓扑和网卡信息
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/SDN/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>SDN</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2018-03-12 20:58:36</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言<br>SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。</p>
+</blockquote>
+<a id="more"></a>
+
+
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本篇文章主要通过获取全网拓扑信息以及SDN交换设备的网卡信息来了解RPC的YANG模型定义、RPC注册以及RPC功能实现(前面部分会和前面的文章有一点点重复)。</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p><strong>1.</strong>系统环境：Ubuntu 14.04</p>
+<p><strong>2.</strong>软件环境：</p>
+<ul>
+<li>jdk 1.8</li>
+<li>maven 3.3.9 </li>
+<li>OpenDaylight Carbon SR2</li>
+<li>Mininet</li>
+<li>Eclipse/IntelliJ IDEA</li>
+</ul>
+<h2 id="工程构建"><a href="#工程构建" class="headerlink" title="工程构建"></a>工程构建</h2><p><strong>1.</strong> 在工程构建开始之前，需要配置maven的settings.xml（Linux系统settings.xml的默认位置在/root/.m2），方便起见，可以将settings.xml内容直接替换下面链接的内容。<br><code>https://raw.githubusercontent.com/opendaylight/odlparent/stable/carbon/settings.xml</code></p>
+<p><strong>2.</strong> 根据OpenDaylight官方文档提供的Maven命令生成项目骨架:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn org.apache.maven.plugins:maven-archetype-plugin:2.4:generate -DarchetypeGroupId&#x3D;org.opendaylight.controller -DarchetypeArtifactId&#x3D;opendaylight-startup-archetype -DarchetypeRepository&#x3D;https:&#x2F;&#x2F;nexus.opendaylight.org&#x2F;content&#x2F;repositories&#x2F;public -DarchetypeVersion&#x3D;1.3.2-Carbon</span><br></pre></td></tr></table></figure>
+
+<p>参数说明：</p>
+<p> <img src="http://img.bcoder.top/2018.03.12/1.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<p>运行此命令，输入生成工程的基本信息：</p>
+<p> <img src="http://img.bcoder.top/2018.03.12/2.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<p>红色箭头所指的部分为需要填写的信息，其余部分回车即可。</p>
+<p>此处也可以以参数的方式进行填写相关工程信息，具体命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn org.apache.maven.plugins:maven-archetype-plugin:2.4:generate -DarchetypeGroupId&#x3D;org.opendaylight.controller -DarchetypeArtifactId&#x3D;opendaylight-startup-archetype -DarchetypeRepository&#x3D;https:&#x2F;&#x2F;nexus.opendaylight.org&#x2F;content&#x2F;repositories&#x2F;public -DarchetypeVersion&#x3D;1.3.2-Carbon -DgroupId&#x3D;org.opendaylight.topology -DartifactId&#x3D;topology -DclassPrefix&#x3D;Topology -Dcopyright&#x3D;ZebraDecoder</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.</strong>构建成功后会在当前目录生成名称为topology的文件夹，进入到topology文件夹下即可看到工程目录结构：</p>
+<p> <img src="http://img.bcoder.top/2018.03.12/3.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<p>各部分组成的含义为：    </p>
+<p> <img src="http://img.bcoder.top/2018.03.12/4.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<p><strong>4.</strong>进入到topology文件夹下对构建好的工程进行编译（第一次编译时速度有点慢，等待即可），具体的编译命令为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -DskipTests -Dmaven.javadoc.skip&#x3D;true -Dcheckstyle.skip&#x3D;true</span><br></pre></td></tr></table></figure>
+<p><strong>Tips:</strong><br>-DskipTests表示不执行测试用例<br>-Dmaven.javadoc.skip=true表示跳过javadoc<br>-Dcheckstyle.skip=true表示跳过checkstyle检查</p>
+<p>编译成功后如下图所示：</p>
+<p> <img src="http://img.bcoder.top/2018.03.12/5.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<p><strong>5.</strong>启动控制器，具体启动如下图：</p>
+<p> <img src="http://img.bcoder.top/2018.03.12/6.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<p>接下来，将构建好的项目导入到Java IDE中。常用来开发OpenDaylight的Java IDE工具有Eclipse和IntelliJ IDEA，如果使用的是IntelliJ IDEA的话，需要在topology目录下执行mvn idea:idea，生成topology-aggregator.ipr文件，双击该文件或者在idea中导入该文件即可打开工程。<br> <img src="http://img.bcoder.top/2018.03.12/7.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<h2 id="实例开发"><a href="#实例开发" class="headerlink" title="实例开发"></a>实例开发</h2><h3 id="RPC和YANG模型介绍"><a href="#RPC和YANG模型介绍" class="headerlink" title="RPC和YANG模型介绍"></a>RPC和YANG模型介绍</h3><ul>
+<li><strong>什么是RPC?</strong><br>RPC的含义是远程过程调用，全称是Remote Procedure Call Protocol，最早由在上世纪 80 年代由 Bruce Jay Nelson 提出。RPC是一种进程间的通信方式。其目标是让远程过程（服务）调用透明化。远程过程调用简单说就是发送一个请求给远程机器，远程机器返回一个结果回来的过程。OpenDaylight采用RPC这种通信方式主要是基于以下几点：</li>
+</ul>
+<p><strong>（1）</strong>可以实现跨语言跨平台调用，不同业务系统都可以进行调用OpenDaylight对外提供的服务，使得OpenDaylight服务更具通用性；<br><strong>（2）</strong>每个调用方只需要提出需求，不需要了解OpenDaylight具体的代码逻辑实现；<br><strong>（3）</strong> RPC易于拓展，易于复用。</p>
+<ul>
+<li><strong>什么是YANG?</strong><br>YANG数据建模语言由互联网工程任务组（IETF）中的NETMOD 工作组开发，并以RFC 6020在2010年10月发表。YANG模型作为一种数据建模语言，其产生是为了对NETCONF协议所操作的数据进行建模。YANG模型描述数据模型的层级嵌套结构以及各属性的数据类型时主要采用树形结构的节点定义，总的来说，YANG模型的产生主要是对以下三类数据进行建模：</li>
+</ul>
+<p><strong>（1）</strong>远程过程调用（rpc）：对可在网元上触发的远程程序调用进行建模；<br><strong>（2）</strong>资源（data）：对要操控的资源进行建模，也就是对网元设备的的configure或者operational数据进行建模；<br><strong>（3）</strong>通知（notification）：对网元发出的事件通知消息进行建模。</p>
+<p>OpenDaylight控制器目前主要采用MD-SAL架构，这里的M指的就是YANG 模型。在开发过程中，一般先根据需求先设计YANG模型来确定准备提供哪些数据和服务，然后使用Maven进行编译时，通过YANG Tools插件将YANG文件的转译为相应的java类、接口。开发者通过实现自动生成的Java代码来实现具体的API和服务内容。</p>
+<p>由于YANG文件通俗易懂，我们完全可以仅仅通过YANG文件就可以大概了解到系统提供的数据和服务内容，十分的方便。同时，OpenDaylight访问Data Store的API完全基于Yang模型，这部分代码Yang Tools插件自动生成，这样开发人员只需关注如何进行提供服务，大大提高了开发效率和降低了OpenDaylight控制器的开发难度。</p>
+<h3 id="YANG模型中定义RPC"><a href="#YANG模型中定义RPC" class="headerlink" title="YANG模型中定义RPC"></a>YANG模型中定义RPC</h3><p><strong>（1）</strong>编辑api/src/main/yang目录下的topology.yang，进行yang文件编写，完整的topology.yang文件如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line">module topology &#123;</span><br><span class="line">    yang-version 1;</span><br><span class="line">    namespace &quot;urn:opendaylight:params:xml:ns:yang:topology&quot;;</span><br><span class="line">    prefix &quot;topology&quot;;</span><br><span class="line">    import ietf-inet-types &#123; prefix inet; revision-date 2013-07-15; &#125;</span><br><span class="line">    description &quot;get links and ports information&quot;;</span><br><span class="line">    revision &quot;2018-03-07&quot; &#123;</span><br><span class="line">        description &quot;Initial revision of topology model&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    grouping output-link&#123;</span><br><span class="line">        leaf link-id&#123;</span><br><span class="line">            type inet:uri;</span><br><span class="line">            description &quot;link id&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        leaf src-device&#123;</span><br><span class="line">            type inet:uri;</span><br><span class="line">            description &quot;source device&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        leaf src-port&#123;</span><br><span class="line">            type int32;</span><br><span class="line">            description &quot;source port&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        leaf dst-device&#123;</span><br><span class="line">            type inet:uri;</span><br><span class="line">             description &quot;destination device&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        leaf dst-port&#123;</span><br><span class="line">            type int32;</span><br><span class="line">            description &quot;destination port&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    grouping output-port&#123;</span><br><span class="line">        leaf device-id&#123;</span><br><span class="line">            type inet:uri;</span><br><span class="line">            description &quot;link id&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        leaf port-number&#123;</span><br><span class="line">            type string;</span><br><span class="line">            description &quot;port number&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        leaf port-name&#123;</span><br><span class="line">            type string;</span><br><span class="line">            description &quot;port name&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        leaf hardware-address&#123;</span><br><span class="line">            type string;</span><br><span class="line">            description &quot;hardware address&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        leaf current-speed&#123;</span><br><span class="line">            type int64;</span><br><span class="line">            description &quot;current speed&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        leaf maximum-speed&#123;</span><br><span class="line">            type int64;</span><br><span class="line">            description &quot;maximum speed&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        leaf link-down&#123;</span><br><span class="line">            type boolean;</span><br><span class="line">            description &quot;link down&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    rpc list-links-info&#123;</span><br><span class="line">        output &#123;</span><br><span class="line">            list links-info&#123;</span><br><span class="line">                uses output-link;</span><br><span class="line">                description &quot;link info&quot;;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    rpc list-ports-info&#123;</span><br><span class="line">        output&#123;</span><br><span class="line">            list ports-info&#123;</span><br><span class="line">                uses output-port;</span><br><span class="line">                description &quot;port info&quot;;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>（2）</strong>下面来解读一下这个yang文件相关语法：</p>
+<p><strong>①module</strong>：在实际项目中，一个工程中YANG模型很多，所以可以通过module来划分不同模块的YANG。各个module描述各自的数据模型，不同module之间可以互相引用，十分灵活。</p>
+<p><strong>②namespace和prefix</strong> ：每个module有一个独立的namespace以避免命名冲突，同时还有一个简称prefix。</p>
+<p><strong>③import</strong>：通过import导入外部模块，可以在本模块中使用导入模块中定义的数据结构或数据类型。导入时会给外部模块起一个prefix，引用导入模块中的内容时以prefix开头即可。</p>
+<p><strong>④description</strong>：描述YANG文件的功能或者各个节点的功能。</p>
+<p><strong>⑤revision</strong>：版本信息。</p>
+<p><strong>⑥grouping</strong>：一种可重用的schema nodes的集合。该集合可能在定义处的module中被使用，也可能在包含它的modules中使用，还可能在导入它的modules中被使用。grouping不会生成任何节点，可以看成一种临时树干。</p>
+<p><strong>⑦leaf</strong>：一种数据节点，在data tree中最多只能有一个实例存在。一个leaf节点只能有一个值，并且不能有子节点。leaf主要用来定义属性值。</p>
+<p><strong>⑧type</strong>：指定leaf的数据类型，该类型可以是YANG RFC规定的基本类型，也可以是自定义的派生类型。在YANG文件中，int32为基本类型，inet:uri为派生类型，派生类型的定义由typedef定义。基本的原生数据类型有uint8、uint16、string、bits、binary、boolean等等。</p>
+<p><strong>⑨rpc</strong>：远程过程调用。它可能包含input和output子节点，分别是该rpc所需要的输入和输出数据结构。若没有则表明该操作不需要输入数据或者没有输出数据。</p>
+<p><strong>⑩uses</strong>：实例化在grouping声明中定义的schema nodes。</p>
+<p>更为详细的YANG语法知识可以参考rfc 6020（<code>https://tools.ietf.org/html/rfc6020</code>）</p>
+<p>需要注意的是，由于在YANG文件中引入了ietf-inet-types，需要在api目录下的pom.xml中添加相关依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.opendaylight.mdsal.model<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>ietf-inet-types-2013-07-15<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.2-Carbon<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>Tip</strong>:dependencies标签如果存在则直接添加dependency这一层标签即可。</p>
+<p><strong>（3）</strong>定义好YANG文件，需要重新编译工程，编译时无需整体编译，只需进入到工程主目录下的api目录下进行编译即可，具体命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd api&#x2F;</span><br><span class="line">mvn clean install -DskipTests -Dmaven.javadoc.skip&#x3D;true -Dcheckstyle.skip&#x3D;true</span><br></pre></td></tr></table></figure>
+
+<p><strong>（4）</strong>编译时，maven会通过Yang Tools插件生成基本的Java文件，生成的Java文件如下图所示：</p>
+<p> <img src="http://img.bcoder.top/2018.03.12/8.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<p>如果大家对如何通过Yang Tools插件将yang文件映射成java文件的细节感兴趣，请参考OpenDaylight的官方wiki的相关介绍：“YANG Tools:YANG to Java Mapping”（<code>https://wiki.opendaylight.org/view/Yang_Tools:Code_Generation_Demo:YANG2JAVA_Mapping</code>），这里不再展开叙述。</p>
+<h3 id="RPC实现"><a href="#RPC实现" class="headerlink" title="RPC实现"></a>RPC实现</h3><p>在进行RPC代码实现之前，需要了解一下OpenDaylight默认的数据存储方式。在OpenDaylight中默认采用是DataStore这种数据库。DataStore采用树型结构进行数据存储，它是一种高效的In-Memory（内存）数据库。</p>
+<p>DataStore中的数据存储分两种形式：config和operational。config持有由应用所写的数据，一般是设备的配置信息或者是需要持久化的数据，而operational反映了设备运行时的数据，表明设备的运行状态，从设备读取数据，如果没有错误即可以看到设备的当前实际信息。</p>
+<p>config和operational相同之处在于两者的数据都以树型节点的形式存储在内存中；不同点是config数据生命周期比较长，控制器断电重启后数据会被持久化到硬盘中，持久化主要采用快照（snapshot）和增量日志（journal）这两种方式，而operational数据生命周期比较短，控制器断电重启后数据失效。</p>
+<p>本案例中的全网拓扑信息以及获取网卡信息都是从OpenDaylight的operational数据库中读取出来的状态数据。</p>
+<p>由于DataStore的内容比较多，我们小组将会在后面的系列文章中，对DataStore的知识进行深入探讨。</p>
+<p>具体RPC代码逻辑实现过程：<br><strong>（1）</strong>编辑topology文件夹下的impl/src/main/java/org/opendaylight/topology/impl/TopologyProvider.java文件进行代码实现，由于代码比较少，这里贴出TopologyProvider.java的所有代码（不包括package和import）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TopologyProvider</span> <span class="keyword">implements</span> <span class="title">TopologyService</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger LOG = LoggerFactory.getLogger(TopologyProvider<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> DataBroker dataBroker;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String FLOWID = <span class="string">"flow:1"</span>;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">TopologyProvider</span><span class="params">(<span class="keyword">final</span> DataBroker dataBroker)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.dataBroker = dataBroker;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		LOG.info(<span class="string">"TopologyProvider Session Initiated"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		LOG.info(<span class="string">"TopologyProvider Closed"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> Future&lt;RpcResult&lt;ListLinksInfoOutput&gt;&gt; listLinksInfo() &#123;</span><br><span class="line">		<span class="keyword">final</span> SettableFuture&lt;RpcResult&lt;ListLinksInfoOutput&gt;&gt; futureResult = SettableFuture.create();</span><br><span class="line">		ListLinksInfoOutputBuilder outputBuilder = <span class="keyword">new</span> ListLinksInfoOutputBuilder();</span><br><span class="line">		<span class="keyword">final</span> InstanceIdentifier.InstanceIdentifierBuilder&lt;Topology&gt; topologyId = InstanceIdentifier.builder(NetworkTopology<span class="class">.<span class="keyword">class</span>).</span></span><br><span class="line"><span class="class">				<span class="title">child</span>(<span class="title">Topology</span>.<span class="title">class</span>, <span class="title">new</span> <span class="title">TopologyKey</span>(<span class="title">new</span> <span class="title">TopologyId</span>(<span class="title">new</span> <span class="title">Uri</span>(<span class="title">FLOWID</span>))))</span>;</span><br><span class="line">		InstanceIdentifier&lt;Topology&gt; topologyIId = topologyId.build();</span><br><span class="line">		Topology topology = read(LogicalDatastoreType.OPERATIONAL, topologyIId);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (topology == <span class="keyword">null</span> || topology.getLink() == <span class="keyword">null</span> || topology.getLink().size() &lt; <span class="number">1</span>) &#123;</span><br><span class="line">			futureResult.set(RpcResultBuilder.success(outputBuilder.build()).build());</span><br><span class="line">			<span class="keyword">return</span> futureResult;</span><br><span class="line">		&#125;</span><br><span class="line">		List&lt;LinksInfo&gt; linkInfos = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">		topology.getLink().forEach(temp -&gt; &#123;</span><br><span class="line">			LinksInfoBuilder lib = <span class="keyword">new</span> LinksInfoBuilder();</span><br><span class="line"></span><br><span class="line">			lib.setLinkId(temp.getLinkId())</span><br><span class="line">					.setSrcDevice(temp.getSource().getSourceNode())</span><br><span class="line">					.setDstPort(getPort(temp.getSource().getSourceTp().getValue()))</span><br><span class="line">					.setDstDevice(temp.getDestination().getDestNode())</span><br><span class="line">					.setDstPort(getPort(temp.getDestination().getDestTp().getValue()));</span><br><span class="line">			linkInfos.add(lib.build());</span><br><span class="line">		&#125;);</span><br><span class="line">		outputBuilder.setLinksInfo(linkInfos);</span><br><span class="line">		futureResult.set(RpcResultBuilder.success(outputBuilder.build()).build());</span><br><span class="line">		<span class="keyword">return</span> futureResult;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> Future&lt;RpcResult&lt;ListPortsInfoOutput&gt;&gt; listPortsInfo() &#123;</span><br><span class="line">		<span class="keyword">final</span> SettableFuture&lt;RpcResult&lt;ListPortsInfoOutput&gt;&gt; futureResult = SettableFuture.create();</span><br><span class="line">		ListPortsInfoOutputBuilder listPortsInfoOutputBuilder = <span class="keyword">new</span> ListPortsInfoOutputBuilder();</span><br><span class="line">		Nodes nodes = queryAllNode(LogicalDatastoreType.OPERATIONAL);</span><br><span class="line">		<span class="keyword">if</span> (nodes == <span class="keyword">null</span> || nodes.getNode() == <span class="keyword">null</span> || nodes.getNode().size() &lt; <span class="number">1</span>) &#123;</span><br><span class="line">			futureResult.set(RpcResultBuilder.success(listPortsInfoOutputBuilder.build()).build());</span><br><span class="line">			<span class="keyword">return</span> futureResult;</span><br><span class="line">		&#125;</span><br><span class="line">		List&lt;PortsInfo&gt; portsInfos = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">		nodes.getNode().forEach(tempNode -&gt; &#123;</span><br><span class="line">			List&lt;NodeConnector&gt; nodeConnectors = filterNodeConnectors(tempNode);</span><br><span class="line">			<span class="keyword">if</span> (nodeConnectors == <span class="keyword">null</span> || nodeConnectors.size() &lt; <span class="number">1</span>) &#123;</span><br><span class="line">				<span class="keyword">return</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			nodeConnectors.forEach(tempPort -&gt; &#123;</span><br><span class="line">				PortsInfoBuilder pi = <span class="keyword">new</span> PortsInfoBuilder();</span><br><span class="line">				FlowCapableNodeConnector augmentation = tempPort.getAugmentation(FlowCapableNodeConnector<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">				pi.setDeviceId(tempNode.getId())</span><br><span class="line">						.setPortNumber(<span class="keyword">new</span> String(augmentation.getPortNumber().getValue()))</span><br><span class="line">						.setPortName(augmentation.getName())</span><br><span class="line">						.setHardwareAddress(augmentation.getHardwareAddress().getValue())</span><br><span class="line">						.setLinkDown(augmentation.getState().isLinkDown())</span><br><span class="line">						.setMaximumSpeed(augmentation.getMaximumSpeed())</span><br><span class="line">						.setCurrentSpeed(augmentation.getCurrentSpeed());</span><br><span class="line"></span><br><span class="line">				portsInfos.add(pi.build());</span><br><span class="line">			&#125;);</span><br><span class="line">		&#125;);</span><br><span class="line">		listPortsInfoOutputBuilder.setPortsInfo(portsInfos);</span><br><span class="line">		futureResult.set(RpcResultBuilder.success(listPortsInfoOutputBuilder.build()).build());</span><br><span class="line">		<span class="keyword">return</span> futureResult;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">private</span> &lt;D extends DataObject&gt; <span class="function">D <span class="title">read</span><span class="params">(<span class="keyword">final</span> LogicalDatastoreType store, <span class="keyword">final</span> InstanceIdentifier&lt;D&gt; path)</span> </span>&#123;</span><br><span class="line">		D result = <span class="keyword">null</span>;</span><br><span class="line">		<span class="keyword">final</span> ReadOnlyTransaction transaction = dataBroker.newReadOnlyTransaction();</span><br><span class="line">		Optional&lt;D&gt; optionalDataObject;</span><br><span class="line">		<span class="keyword">final</span> CheckedFuture&lt;Optional&lt;D&gt;, ReadFailedException&gt; future = transaction.read(store, path);</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			optionalDataObject = future.checkedGet();</span><br><span class="line">			<span class="keyword">if</span> (optionalDataObject.isPresent()) &#123;</span><br><span class="line">				result = optionalDataObject.get();</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				LOG.debug(<span class="string">"&#123;&#125;: Failed to read &#123;&#125;"</span>, Thread.currentThread().getStackTrace()[<span class="number">1</span>], path);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (<span class="keyword">final</span> ReadFailedException e) &#123;</span><br><span class="line">			LOG.warn(<span class="string">"Failed to read &#123;&#125; "</span>, path, e);</span><br><span class="line">		&#125;</span><br><span class="line">		transaction.close();</span><br><span class="line">		<span class="keyword">return</span> result;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getPort</span><span class="params">(String tp)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> Integer.parseInt(tp.split(<span class="string">":"</span>)[<span class="number">2</span>]);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> Nodes <span class="title">queryAllNode</span><span class="params">(LogicalDatastoreType configuration)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">final</span> InstanceIdentifier&lt;Nodes&gt; identifierNodes = InstanceIdentifier.create(Nodes<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">		<span class="keyword">return</span> read(configuration, identifierNodes);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> List&lt;NodeConnector&gt; <span class="title">filterNodeConnectors</span><span class="params">(Node node)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">final</span> List&lt;NodeConnector&gt; connectors = Lists.newArrayList();</span><br><span class="line">		<span class="keyword">final</span> List&lt;NodeConnector&gt; list = node.getNodeConnector();</span><br><span class="line">		<span class="keyword">if</span> (list != <span class="keyword">null</span> &amp;&amp; list.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">final</span> NodeConnector nodeConnector : list) &#123;</span><br><span class="line"></span><br><span class="line">				<span class="keyword">if</span> (!nodeConnector.getId().getValue().endsWith(<span class="string">"LOCAL"</span>)) &#123;</span><br><span class="line">					connectors.add(nodeConnector);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> connectors;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>获取网络拓扑信息（listLinks方法）的大致流程如下：<br><strong>①</strong>从network-topology的operational数据库中读取“flow:1”节点的所有内容。<br><strong>②</strong>过滤“flow:1”下的节点内容，从而获取所需的link信息。<br><strong>③</strong>将获取到的link信息封装成Future&lt;RpcResult<ListLinksOutput>&gt;进行返回给消费端。</p>
+<p>获取网卡信息（listPortsInfo方法）的大致流程如下：<br><strong>①</strong>从opendaylight-inventory中获取所有的Node节点，Node表示连接在控制器上的SDN交换机设备。<br><strong>②</strong>获取每个Node节点的所有NodeConnector，然后获取需要的NodeConnector上的参数信息，NodeConnector相当于交换机的端口。<br><strong>③</strong>将获取到信息封装成Future&lt;RpcResult<ListPortsInfoOutput>&gt;进行返回给消费端。</p>
+<p><strong>（2）</strong>我们在代码中使用了ietf-topology、model-inventory、model-flow-service，需要在impl目录的pom.xml文件中添加如下依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.opendaylight.mdsal.model<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>ietf-topology<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>2013.10.21.10.2-Carbon<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.opendaylight.controller.model<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>model-inventory<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.5.2-Carbon<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.opendaylight.openflowplugin.model<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>model-flow-service<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>0.4.2-Carbon<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>（3）</strong>与之相对应的是需要在features目录下的src/main/features/features.xml文件添加引用仓库：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">mvn:org.opendaylight.openflowplugin/features-openflowplugin/$&#123;openflowplugin.version&#125;/xml/features</span><br><span class="line"><span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>（4）</strong>同时也需要在features.xml文件中的name为odl-topology-api的feature标签中添加如下feature：<code>&lt;feature version=&quot;${openflowplugin.version}&quot;&gt;odl-openflowplugin-flow-services&lt;/feature&gt;</code>，该句添加位置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;feature name&#x3D;&#39;odl-topology-api&#39; version&#x3D;&#39;$&#123;project.version&#125;&#39; description&#x3D;&#39;OpenDaylight :: topology:: api&#39;&gt;</span><br><span class="line">	&lt;feature version&#x3D;&#39;$&#123;mdsal.model.version&#125;&#39;&gt;odl-mdsal-models&lt;&#x2F;feature&gt;</span><br><span class="line">	&lt;feature version&#x3D;&quot;$&#123;openflowplugin.version&#125;&quot;&gt;odl-openflowplugin-flow-services&lt;&#x2F;feature&gt;</span><br><span class="line">	&lt;bundle&gt;mvn:org.opendaylight.topology&#x2F;topology-api&#x2F;&#123;&#123;VERSION&#125;&#125;&lt;&#x2F;bundle&gt;</span><br><span class="line">&lt;&#x2F;feature&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>（5）</strong>其中openflowplugin.version在features目录下pom.xml文件中定义，需要在其中的properties标签内添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;openflowplugin.version&gt;0.4.2-Carbon&lt;&#x2F;openflowplugin.version&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="RPC注册"><a href="#RPC注册" class="headerlink" title="RPC注册"></a>RPC注册</h3><p>编写完RPC实现的代码后，需要对RPC进行注册到OpenDaylight控制器以供外部调用，注册RPC方式有多种，后面的系列文章中会对RPC注册问题作详细叙述，本案例中采用的是Blueprint方式来注册RPC。</p>
+<p>Blueprint是针对OSGi的依赖注入解决方案，用法非常类似Spring。当使用服务的时候，Blueprint会马上创建并注入一个代理（Proxy）。对这些服务进行调用时，如果服务在当前不可用的话，将会产生阻塞，直至能够获取到服务或超时。</p>
+<p>其实就是我们把一些原本需要写代码去实现的内容用xml文件的方式简化了，这个xml文件固定放在bundle的src\main\resources\org\opendaylight\blueprint目录下，否则获取不到文件内容，至于文件名可以随意。可以想象到有专门去解析这个xml文件的代码，这个代码的位置就在controller\opendaylight\blueprint目录下，有兴趣的读者可以去看下源码。</p>
+<p>具体操作过程：在impl/src/main/resources/org/opendaylight/blueprint/impl-blueprint.xml中添加：<code>&lt;odl:rpc-implementation ref=&quot;provider&quot;/&gt;</code>，其中provider是实例化类的id，id名称可以改变但必须两者保持一致。</p>
+<p>impl-blueprint.xml文件内容如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">blueprint</span> <span class="attr">xmlns</span>=<span class="string">"http://www.osgi.org/xmlns/blueprint/v1.0.0"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xmlns:odl</span>=<span class="string">"http://opendaylight.org/xmlns/blueprint/v1.0.0"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">odl:use-default-for-reference-types</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">reference</span> <span class="attr">id</span>=<span class="string">"dataBroker"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">interface</span>=<span class="string">"org.opendaylight.controller.md.sal.binding.api.DataBroker"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">odl:type</span>=<span class="string">"default"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"provider"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">class</span>=<span class="string">"org.opendaylight.topology.impl.TopologyProvider"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">init-method</span>=<span class="string">"init"</span> <span class="attr">destroy-method</span>=<span class="string">"close"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">argument</span> <span class="attr">ref</span>=<span class="string">"dataBroker"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">odl:rpc-implementation</span> <span class="attr">ref</span>=<span class="string">"provider"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">blueprint</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="RPC测试"><a href="#RPC测试" class="headerlink" title="RPC测试"></a>RPC测试</h3><p><strong>（1）</strong>RPC测试需要用到OpenDaylight WEB控制台和l2switch相关组件。因此在编译项目之前，需要在features目录下的src/main/features/features.xml文件添加引用仓库：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">mvn:org.opendaylight.l2switch/features-l2switch/$&#123;l2switch.version&#125;/xml/features</span><br><span class="line"><span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>其中l2switch.version变量在features目录下pom.xml文件中定义，需要在其中的properties标签内添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;l2switch.version&gt;0.5.2-Carbon&lt;&#x2F;l2switch.version&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>（2）</strong>进行编译项目，编译完成后启动控制器,具体命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -DskipTests -Dmaven.javadoc.skip&#x3D;true -Dcheckstyle.skip&#x3D;true</span><br><span class="line">.&#x2F;karaf&#x2F;target&#x2F;assembly&#x2F;bin&#x2F;karaf</span><br></pre></td></tr></table></figure>
+
+<p> <img src="http://img.bcoder.top/2018.03.12/9.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<p>启动完成后，可以在karaf控制台命令查看开发的bundle是否安装成功，如果显示Active表示安装成功，具体命令为：</p>
+<p> <img src="http://img.bcoder.top/2018.03.12/10.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<p><strong>（3）</strong>使用mininet生成网络拓扑：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mn --mac --switch&#x3D;ovsk,protocols&#x3D;OpenFlow13 --controller&#x3D;remote,ip&#x3D;127.0.0.1 --topo linear,3</span><br></pre></td></tr></table></figure>
+<p><strong>（4）</strong>在karaf控制台下安装相关组件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">opendaylight-user@root&gt;feature:install odl-dluxapps-nodes odl-dluxapps-yangui odl-dluxapps-topology odl-openflowjava-all odl-openflowplugin-flow-services-ui odl-l2switch-all</span><br></pre></td></tr></table></figure>
+<p>其中odl-dluxapps-nodes odl-dluxapps-yangui odl-dluxapps-topology odl-openflowjava-all odl-openflowplugin-flow-services-ui为OpenDaylight WEB控制台所需组件，odl-l2switch-all组件安装目的是交换机之间进行拓扑发现，从而生成链路。</p>
+<p>组件安装完成后，可以通过浏览器访问OpenDaylight WEB控制台，访问的url为：<code>http://{controller_ip}:8181/index.html</code><br>其中{controller_ip}为OpenDaylight控制器的IP地址，如果是本机，则ip地址可以为127.0.0.1。</p>
+<p> <img src="http://img.bcoder.top/2018.03.12/11.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<p><strong>（5）</strong>上图已经可以看到由mininet生成的拓扑，也可以调用开发的RPC来获得拓扑信息。可以使用OpenDaylight WEB控制台的Yangman进行调用RPC，登录到WEB控制台后，依次鼠标点击Yangman—&gt;topology rev.2018.03.07—&gt;operations</p>
+<p>此时可以看到在operations下有两个RPC：</p>
+<p> <img src="http://img.bcoder.top/2018.03.12/12.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<p><strong>（6）</strong>对RPC进行调用。<br><strong>①</strong>获取网络拓扑：选中list-links-info，然后点击SEND，调用结果如下图所示：</p>
+<p> <img src="http://img.bcoder.top/2018.03.12/13.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<p><strong>②</strong>获取网卡信息：选中list-ports-info，然后点击SEND，调用结果如下图所示：</p>
+<p> <img src="http://img.bcoder.top/2018.03.12/14.png" alt="ODL开发笔记：开发RPC获取全网拓扑和网卡信息"></p>
+<p>至此，关于OpenDaylight的RPC实例的基本开发流程已经介绍完毕。</p>
+<p>本文首发在SDNLAB知识论坛，有疑问的小伙伴可以在下面留言：<a href="https://www.sdnlab.com/community/article/odl/974" target="_blank" rel="noopener">https://www.sdnlab.com/community/article/odl/974</a><br>项目源代码在：<a href="https://github.com/zlnnjit/opendaylight/tree/topology" target="_blank" rel="noopener">https://github.com/zlnnjit/opendaylight/tree/topology</a><br>大家可下载查看。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2018/03/12/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%BC%80%E5%8F%91RPC%E8%8E%B7%E5%8F%96%E5%85%A8%E7%BD%91%E6%8B%93%E6%89%91%E5%92%8C%E7%BD%91%E5%8D%A1%E4%BF%A1%E6%81%AF/>https://www.bcoder.top/2018/03/12/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%BC%80%E5%8F%91RPC%E8%8E%B7%E5%8F%96%E5%85%A8%E7%BD%91%E6%8B%93%E6%89%91%E5%92%8C%E7%BD%91%E5%8D%A1%E4%BF%A1%E6%81%AF/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/SDN/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>SDN</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Controller/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Controller</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/OpenDaylight/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>OpenDaylight</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/RPC/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>RPC</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2018/03/12/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%BC%80%E5%8F%91RPC%E8%8E%B7%E5%8F%96%E5%85%A8%E7%BD%91%E6%8B%93%E6%89%91%E5%92%8C%E7%BD%91%E5%8D%A1%E4%BF%A1%E6%81%AF/&title=OpenDaylight开发笔记：开发RPC获取全网拓扑和网卡信息 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2018/03/12/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%BC%80%E5%8F%91RPC%E8%8E%B7%E5%8F%96%E5%85%A8%E7%BD%91%E6%8B%93%E6%89%91%E5%92%8C%E7%BD%91%E5%8D%A1%E4%BF%A1%E6%81%AF/&title=OpenDaylight开发笔记：开发RPC获取全网拓扑和网卡信息 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2018/03/12/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%BC%80%E5%8F%91RPC%E8%8E%B7%E5%8F%96%E5%85%A8%E7%BD%91%E6%8B%93%E6%89%91%E5%92%8C%E7%BD%91%E5%8D%A1%E4%BF%A1%E6%81%AF/&title=OpenDaylight开发笔记：开发RPC获取全网拓扑和网卡信息 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2018/03/14/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AQOS%E9%98%9F%E5%88%97%E9%99%90%E9%80%9F/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>OpenDaylight开发笔记：ODL实现Qos队列限速</p>
+                <p class='content'>
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关...</p>
+              </a>
+            
+            
+              <a class='next' href='/2018/03/10/Google-Guava-java%E6%89%A9%E5%B1%95%E7%B1%BB%E5%BA%93%EF%BC%88%E4%B8%8B%EF%BC%89/'>
+                <p class='title'>Google Guava:java扩展类库（下）<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言Guava 是一个 Google 的基于java1.6的类库集合的扩展项目。Guava工程包含了若干被Google的Java项目广泛依赖的核心库，例如：集合（collections）、缓存...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'OpenDaylight开发笔记：开发RPC获取全网拓扑和网卡信息',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#环境准备"><span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工程构建"><span class="toc-text">工程构建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实例开发"><span class="toc-text">实例开发</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RPC和YANG模型介绍"><span class="toc-text">RPC和YANG模型介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#YANG模型中定义RPC"><span class="toc-text">YANG模型中定义RPC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RPC实现"><span class="toc-text">RPC实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RPC注册"><span class="toc-text">RPC注册</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RPC测试"><span class="toc-text">RPC测试</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

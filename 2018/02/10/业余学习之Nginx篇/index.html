@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>业余学习之Nginx篇 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="Nginx,反向代理,负载均衡,高可用,keepalived">
+  
+  
+    <meta name="description" content="
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2018/02/10/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BNginx%E7%AF%87/">
+        业余学习之Nginx篇
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/deep/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>deep</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2018-02-10 15:35:42</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言<br>本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="Nginx介绍"><a href="#Nginx介绍" class="headerlink" title="Nginx介绍"></a>Nginx介绍</h2><p>Nginx（发音同 engine x）是一款轻量级的Web 服务器／反向代理服务器及电子邮件（IMAP/POP3）代理服务器，并在一个BSD-like 协议下发行。由俄罗斯的程序设计师Igor Sysoev所开发，最初供俄国大型的入口网站及搜寻引擎Rambler（俄文：Рамблер）使用。 其特点是占有内存少，并发能力强，事实上nginx的并发能力确实在同类型的网页伺服器中表现较好.目前中国大陆使用nginx网站用户有：新浪、网易、 腾讯,另外知名的微网志Plurk也使用nginx。</p>
+<p><strong>Nginx主要优点：</strong></p>
+<p>(1)Nginx 可以在大多数 Unix like OS 上编译运行，并有 Windows 移植版。 </p>
+<p>(2)Nginx 是一个很强大的高性能Web和反向代理服务器，它具有很多非常优越的特性：<br>在高连接并发的情况下，Nginx是Apache服务器不错的替代品：Nginx在美国是做虚拟主机生意的老板们经常选择的软件平台之一。能够支持高达 50,000 个并发连接数的响应，感谢Nginx为我们选择了 epoll and kqueue作为开发模型。</p>
+<p>(3)Nginx作为负载均衡服务器：Nginx 既可以在内部直接支持 Rails 和 PHP 程序对外进行服务，也可以支持作为 HTTP代理服务器对外进行服务。Nginx采用C进行编写，不论是系统资源开销还是CPU使用效率都比 Perlbal 要好很多。</p>
+<p>Nginx 作为邮件代理服务器：Nginx 同时也是一个非常优秀的邮件代理服务器（最早开发这个产品的目的之一也是作为邮件代理服务器），Last. fm 描述了成功并且美妙的使用经验。</p>
+<p>(4)Nginx 是一个安装非常的简单，配置文件非常简洁（还能够支持perl语法），Bugs非常少的服务器：Nginx 启动特别容易，并且几乎可以做到7*24不间断运行，即使运行数个月也不需要重新启动。你还能够不间断服务的情况下进行软件版本的升级。</p>
+<h2 id="Nginx-环境搭建"><a href="#Nginx-环境搭建" class="headerlink" title="Nginx 环境搭建"></a>Nginx 环境搭建</h2><p>部署机器为192.168.1.111，部署前先关闭防火墙，机器系统为centos</p>
+<p>1.wget下载: <a href="http://nginx.org/download/nginx-1.6.2.tar.gz" target="_blank" rel="noopener">http://nginx.org/download/nginx-1.6.2.tar.gz</a> </p>
+<p>2.进行安装： tar -zxvf nginx-1.6.2.tar.gz –C /usr/local/</p>
+<p>3.下载所需要的依赖库文件：<br>    yum install pcre<br>    yum install pcre-devel<br>    yum install zlib<br>    yum install zlib-devel</p>
+<p>4.进行configure配置：cd nginx-1.6.2 &amp;&amp; ./configure –prefix=/usr/local/nginx  查看是否报错</p>
+<p>5.编译安装 make &amp;&amp; make install<br>cd /usr/local/nginx目录下, 看到如下4个目录:</p>
+<p>conf 配置文件<br>html 网页文件<br>logs 日志文件<br>sbin 主要二进制程序</p>
+<p>6 : 启动Nginx：<br>启动命令：/usr/local/nginx/sbin/nginx</p>
+<p>关闭命令：/usr/local/nginx/sbin/nginx -s stop</p>
+<p>重启命令：/usr/local/nginx/sbin/nginx -s reload</p>
+<p>成功：查看是否启动（netstat -ano | grep 80）<br>失败：可能为80端口被占用等。</p>
+<p>浏览器访问地址：<a href="http://192.168.1.111:80或者直接http://192.168.1.111">http://192.168.1.111:80或者直接http://192.168.1.111</a> （看到欢迎页面即可）</p>
+<p><img src="http://img.bcoder.top/2018.02.10/1.png" alt="业余学习之Nginx篇"></p>
+<h2 id="Nginx虚拟机配置"><a href="#Nginx虚拟机配置" class="headerlink" title="Nginx虚拟机配置"></a>Nginx虚拟机配置</h2><p>虚拟主机使用的是特殊的软硬件技术，它把一台运行在因特网上的服务器主机分成一台台“虚拟”的主机，每台虚拟主机都可以是一个独立的网站，可以具有独立的域名，具有完整的Intemet服务器功能（WWW、FTP、Email等），同一台主机上的虚拟主机之间是完全独立的。从网站访问者来看，每一台虚拟主机和一台独立的主机完全一样。</p>
+<p>利用虚拟主机，不用为每个要运行的网站提供一台单独的Nginx服务器或单独运行一组Nginx进程。虚拟主机提供了在同一台服务器、同一组Nginx进程上运行多个网站的功能。</p>
+<p>我们来看conf下的nginx.conf文件，其中有：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  localhost;</span><br><span class="line"></span><br><span class="line">    #charset koi8-r;</span><br><span class="line"></span><br><span class="line">    #access_log  logs&#x2F;host.access.log  main;</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        root   html;</span><br><span class="line">        index  index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个文件就是我们能够访问192.168.1.111的80端口，看到的内容为html文件夹下的：index.html 或者index.htm，我们可以将端口号修改为81，然后重启Nginx：/usr/local/nginx/sbin/nginx -s reload</p>
+<p><img src="http://img.bcoder.top/2018.02.10/2.png" alt="业余学习之Nginx篇"></p>
+<p>我们发现，已经不能正常访问<a href="http://192.168.1.111/" target="_blank" rel="noopener">http://192.168.1.111/</a></p>
+<p>我们来访问<a href="http://192.168.1.111:81/" target="_blank" rel="noopener">http://192.168.1.111:81/</a></p>
+<p><img src="http://img.bcoder.top/2018.02.10/3.png" alt="业余学习之Nginx篇"></p>
+<p>访问正常。</p>
+<p>同时，我们也可以新建虚拟机，同时可以使用域名，比如我们的域名为zlnnjit.com（未购买）</p>
+<p>在nginx.conf中添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       8888;</span><br><span class="line">    server_name  zlnnjit.com;</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        root   zlnnjit.com;</span><br><span class="line">        index  index.html;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同时，在nginx目录下创建名称为zlnnjit.com的文件文件夹，在其中创建index.html内容为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;h2&gt;welcome to zlnnjit.com&lt;&#x2F;h2&gt;</span><br></pre></td></tr></table></figure>
+
+<p>我们需要在windows中访问该域名，因此需要在C:\Windows\System32\drivers\etc的hosts文件夹添加：192.168.1.111 zlnnjit.com</p>
+<p>接下来重启nginx</p>
+<p>重启完成后，我们在windows的浏览器下访问：<a href="http://zlnnjit.com:8888/" target="_blank" rel="noopener">http://zlnnjit.com:8888/</a></p>
+<p><img src="http://img.bcoder.top/2018.02.10/4.png" alt="业余学习之Nginx篇"></p>
+<p>我们发现访问成功。</p>
+<p>我们也可以配置基于IP的虚拟主机，配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">  listen  80;</span><br><span class="line">  server_name  192.168.197.142;</span><br><span class="line">  location &#x2F; &#123;</span><br><span class="line">          root    ip;</span><br><span class="line">          index index.html;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里就不再测试了。</p>
+<h2 id="Nginx日志管理"><a href="#Nginx日志管理" class="headerlink" title="Nginx日志管理"></a>Nginx日志管理</h2><h3 id="Nginx日志介绍"><a href="#Nginx日志介绍" class="headerlink" title="Nginx日志介绍"></a>Nginx日志介绍</h3><p>通过访问日志，你可以得到用户地域来源、跳转来源、使用终端、某个URL访问量等相关信息；通过错误日志，你可以得到系统某个服务或server的性能瓶颈等。因此，将日志好好利用，你可以得到很多有价值的信息。</p>
+<h3 id="Nginx日志格式"><a href="#Nginx日志格式" class="headerlink" title="Nginx日志格式"></a>Nginx日志格式</h3><p>下面来看看Nginx日志格式：<br>打开nginx.conf配置文件：vim /usr/local/nginx/conf/nginx.conf</p>
+<p>日志部分内容：<br>access_log  logs/access.log  main;</p>
+<p>日志生成的到Nginx根目录logs/access.log文件，默认使用“main”日志格式，也可以自定义格式。</p>
+<p><strong>默认“main”日志格式：</strong></p>
+<p><img src="http://img.bcoder.top/2018.02.10/5.png" alt="业余学习之Nginx篇"></p>
+<p>参数明细表：</p>
+<p><img src="http://img.bcoder.top/2018.02.10/6.png" alt="业余学习之Nginx篇"></p>
+<p>我们可以查看我们的日志：<br>tail -f /usr/local/nginx/logs/access.log</p>
+<p><img src="http://img.bcoder.top/2018.02.10/7.png" alt="业余学习之Nginx篇"></p>
+<h3 id="Nginx自定义日志"><a href="#Nginx自定义日志" class="headerlink" title="Nginx自定义日志"></a>Nginx自定义日志</h3><p>首先打开注释<br>打开nginx.conf配置文件去掉#注释，并在域名虚拟主机中应用，具体见下图：</p>
+<p><img src="http://img.bcoder.top/2018.02.10/8.png" alt="业余学习之Nginx篇"></p>
+<p><img src="http://img.bcoder.top/2018.02.10/9.png" alt="业余学习之Nginx篇"></p>
+<p>我们重启删除/usr/local/nginx/logs/access.log，并重启Nginx:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm -rf &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;logs&#x2F;access.log</span><br><span class="line">&#x2F;usr&#x2F;local&#x2F;nginx&#x2F;sbin&#x2F;nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<p>我们发现我们定义的日志文件已经生成：</p>
+<p><img src="http://img.bcoder.top/2018.02.10/10.png" alt="业余学习之Nginx篇"></p>
+<p>需要注意的是，当Nginx在运行中我们删除了日志文件，当有请求继续到达时，将不会再生成新的日志文件。</p>
+<p>我们访问<a href="http://zlnnjit.com:8888/，然后查看我们自己定义的日志" target="_blank" rel="noopener">http://zlnnjit.com:8888/，然后查看我们自己定义的日志</a>:<br>tail -f /usr/local/nginx/logs/zlnnjit.com.access.log</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@zln111 logs]# tail -f &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;logs&#x2F;zlnnjit.com.access.log</span><br><span class="line">192.168.1.105 - - [09&#x2F;Feb&#x2F;2018:14:23:21 +0800] &quot;GET &#x2F; HTTP&#x2F;1.1&quot; 304 0 &quot;-&quot; &quot;Mozilla&#x2F;5.0 (Windows NT 10.0; WOW64) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;58.0.3029.110 Safari&#x2F;537.36 SE 2.X MetaSr 1.0&quot; &quot;-&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Nginx日志分隔"><a href="#Nginx日志分隔" class="headerlink" title="Nginx日志分隔"></a>Nginx日志分隔</h3><p>nginx的日志文件没有rotate功能。编写每天生成一个日志，我们可以写一个nginx日志切割脚本来自动切割日志文件。</p>
+<p>第一步就是重命名日志文件，不用担心重命名后nginx找不到日志文件而丢失日志。在你未重新打开原名字的日志文件前，nginx还是会向你重命名的文件写日志，Linux是靠文件描述符而不是文件名定位文件。</p>
+<p>第二步向nginx主进程发送USR1信号。nginx主进程接到信号后会从配置文件中读取日志文件名称，重新打开日志文件(以配置文件中的日志名称命名)，并以工作进程的用户作为日志文件的所有者。重新打开日志文件后，nginx主进程会关闭重名的日志文件并通知工作进程使用新打开的日志文件。工作进程立刻打开新的日志文件并关闭重名名的日志文件。然后你就可以处理旧的日志文件了。[或者重启nginx服务]。</p>
+<p>具体的脚本如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;sh</span><br><span class="line"></span><br><span class="line">BASE_DIR&#x3D;&#x2F;usr&#x2F;local&#x2F;nginx</span><br><span class="line">BASE_FILE_NAME&#x3D;zlnnjit.com.access.log</span><br><span class="line"></span><br><span class="line">CURRENT_PATH&#x3D;$BASE_DIR&#x2F;logs</span><br><span class="line">BAK_PATH&#x3D;$BASE_DIR&#x2F;datalogs</span><br><span class="line"></span><br><span class="line">CURRENT_FILE&#x3D;$CURRENT_PATH&#x2F;$BASE_FILE_NAME</span><br><span class="line">BAK_TIME&#x3D;&#96;&#x2F;bin&#x2F;date -d yesterday +%Y%m%d%H%M&#96;</span><br><span class="line">BAK_FILE&#x3D;$BAK_PATH&#x2F;$BAK_TIME-$BASE_FILE_NAME</span><br><span class="line">echo $BAK_FILE</span><br><span class="line"></span><br><span class="line">$BASE_DIR&#x2F;sbin&#x2F;nginx -s stop</span><br><span class="line"></span><br><span class="line">mv $CURRENT_FILE $BAK_FILE</span><br><span class="line"></span><br><span class="line">$BASE_DIR&#x2F;sbin&#x2F;nginx</span><br></pre></td></tr></table></figure>
+<p>我们将脚本命名为log.sh 放在sbin文件夹下，同时在nginx目录下创建datalogs文件夹，来存放历史日志。</p>
+<p>创建crontab设置作业，设置日志文件存放目录crontab -e，内容为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*&#x2F;1 * * * *  sh &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;sbin&#x2F;log.sh</span><br></pre></td></tr></table></figure>
+<p>上面设置的是一分钟产生一个日志文件。</p>
+<p>如果要关掉定时的job,，可以crontab -e将其中内容删除即可。</p>
+<p>几分钟过后，我们查看datalogs目录：</p>
+<p><img src="http://img.bcoder.top/2018.02.10/11.png" alt="业余学习之Nginx篇"></p>
+<h2 id="Location配置与ReWrite语法"><a href="#Location配置与ReWrite语法" class="headerlink" title="Location配置与ReWrite语法"></a>Location配置与ReWrite语法</h2><h3 id="Location语法规则"><a href="#Location语法规则" class="headerlink" title="Location语法规则"></a>Location语法规则</h3><p>语法规则： location [=|<del>|</del>*|^~] /uri/ {… }</p>
+<p>首先匹配 =，其次匹配^~,其次是按文件中顺序的正则匹配，最后是交给 /通用匹配。当有匹配成功时候，停止匹配，按当前匹配规则处理请求。</p>
+<p><img src="http://img.bcoder.top/2018.02.10/12.png" alt="业余学习之Nginx篇"></p>
+<p>匹配规则示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">location &#x3D; &#x2F; &#123;</span><br><span class="line">  #规则A</span><br><span class="line">&#125;</span><br><span class="line">location &#x3D; &#x2F;login &#123;</span><br><span class="line">  #规则B</span><br><span class="line">&#125;</span><br><span class="line">location ^~ &#x2F;static&#x2F; &#123;</span><br><span class="line">  #规则C</span><br><span class="line">&#125;</span><br><span class="line">location ~ \.(gif|jpg|png|js|css)$ &#123;</span><br><span class="line">  #规则D</span><br><span class="line">&#125;</span><br><span class="line">location ~* \.png$ &#123;</span><br><span class="line">  #规则E</span><br><span class="line">&#125;</span><br><span class="line">location !~ \.xhtml$ &#123;</span><br><span class="line">  #规则F</span><br><span class="line">&#125;</span><br><span class="line">location !~* \.xhtml$ &#123;</span><br><span class="line">  #规则G</span><br><span class="line">&#125;</span><br><span class="line">location &#x2F; &#123;</span><br><span class="line">  #规则H</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么产生的效果如下：</p>
+<ol>
+<li><p>访问根目录/，比如<a href="http://localhost/将匹配规则A" target="_blank" rel="noopener">http://localhost/将匹配规则A</a></p>
+</li>
+<li><p>访问 <a href="http://localhost/login" target="_blank" rel="noopener">http://localhost/login</a> 将匹配规则B，<a href="http://localhost/register则匹配规则H" target="_blank" rel="noopener">http://localhost/register则匹配规则H</a></p>
+</li>
+<li><p>访问 <a href="http://localhost/static/a.html" target="_blank" rel="noopener">http://localhost/static/a.html</a> 将匹配规则C</p>
+</li>
+<li><p>访问 <a href="http://localhost/a.gif,http://localhost/b.jpg" target="_blank" rel="noopener">http://localhost/a.gif,http://localhost/b.jpg</a> 将匹配规则D和规则E，但是规则D顺序优先，规则E不起作用，而<a href="http://localhost/static/c.png则优先匹配到规则C" target="_blank" rel="noopener">http://localhost/static/c.png则优先匹配到规则C</a></p>
+</li>
+<li><p>访问 <a href="http://localhost/a.PNG" target="_blank" rel="noopener">http://localhost/a.PNG</a> 则匹配规则E，而不会匹配规则D，因为规则E不区分大小写。</p>
+</li>
+<li><p>访问 <a href="http://localhost/a.xhtml" target="_blank" rel="noopener">http://localhost/a.xhtml</a> 不会匹配规则F和规则G，<a href="http://localhost/a.XHTML不会匹配规则G，因为不区分大小写。规则F，规则G属于排除法，符合匹配规则但是不会匹配到，所以想想看实际应用中哪里会用到。" target="_blank" rel="noopener">http://localhost/a.XHTML不会匹配规则G，因为不区分大小写。规则F，规则G属于排除法，符合匹配规则但是不会匹配到，所以想想看实际应用中哪里会用到。</a></p>
+</li>
+<li><p>访问 <a href="http://localhost/category/id/1111" target="_blank" rel="noopener">http://localhost/category/id/1111</a> 则最终匹配到规则H，因为以上规则都不匹配，这个时候应该是nginx转发请求给后端应用服务器，比如FastCGI（PHP），tomcat（jsp），nginx作为方向代理服务器存在。</p>
+<h3 id="Location实际常用规则"><a href="#Location实际常用规则" class="headerlink" title="Location实际常用规则"></a>Location实际常用规则</h3><p><strong>第一个必选规则</strong><br>直接匹配网站根，通过域名访问网站首页比较频繁，使用这个会加速处理。<br>这里是直接转发给后端应用服务器了，也可以是一个静态首页</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location &#x3D; &#x2F; &#123;</span><br><span class="line">   proxy_passhttp:&#x2F;&#x2F;tomcat:8080&#x2F;index</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二个必选规则</strong><br>处理静态文件请求，这是nginx作为http服务器的强项<br>有两种配置模式，目录匹配或后缀匹配,任选其一或搭配使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">location ^~ &#x2F;static&#x2F; &#123;</span><br><span class="line">   # 请求&#x2F;static&#x2F;a.txt 将被映射到实际目录文件:&#x2F;webroot&#x2F;res&#x2F;static&#x2F;a.txt</span><br><span class="line">   root &#x2F;webroot&#x2F;res&#x2F;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location ~* \.(gif|jpg|jpeg|png|css|js|ico)$&#123;</span><br><span class="line">   root &#x2F;webroot&#x2F;res&#x2F;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第三个规则就是通用规则，用来转发动态请求到后端应用服务器</p>
+<p>非静态文件请求就默认是动态请求，自己根据实际把握</p>
+<p>毕竟目前的一些框架的流行，带.php,.jsp后缀的情况很少了</p>
+<p>具体的匹配规则是：</p>
+<p><img src="http://img.bcoder.top/2018.02.10/13.png" alt="业余学习之Nginx篇"></p>
+<p><strong>总结：</strong></p>
+<p>1、先判断精准命中，如果命中，立即返回结果并结束解析过程。</p>
+<p>2、判断普通命中，如果有多个命中，“记录”下来“最长”的命中结果（记录但不结束，最长的为准）。</p>
+<p>3、继续判断正则表达式的解析结果，按配置里的正则表达式顺序为准，由上至下开始匹配，一旦匹配成功1个，立即返回结果，并结束解析过程。</p>
+<p>4、普通命中顺序无所谓，是因为按命中的长短来确定。正则命中，顺序有所谓，因为是从前入往后命中的。</p>
+<h3 id="ReWrite语法"><a href="#ReWrite语法" class="headerlink" title="ReWrite语法"></a>ReWrite语法</h3><p>Nginx提供的全局变量或自己设置的变量，结合正则表达式和标志位实现url重写以及重定向。<br><strong>rewrite只能放在server{},location{},if{}中，</strong>并且只能对域名后边的除去传递的参数外的字符串起作用。<br>Rewrite主要的功能就是实现URL的重写，Nginx的Rewrite规则采用Pcre，perl兼容正则表达式的语法规则匹配，如果需要Nginx的Rewrite功能，在编译Nginx之前，需要编译安装PCRE库。<br>通过Rewrite规则，可以实现规范的URL、根据变量来做URL转向及选择配置。</p>
+<p>下面我们来看一下ReWrite相关指令：</p>
+<p><strong>ReWrite指令：</strong></p>
+<p><img src="http://img.bcoder.top/2018.02.10/14.png" alt="业余学习之Nginx篇"></p>
+<p><strong>ReWrite全局变量：</strong></p>
+<p><img src="http://img.bcoder.top/2018.02.10/15.png" alt="业余学习之Nginx篇"></p>
+<p><img src="http://img.bcoder.top/2018.02.10/16.png" alt="业余学习之Nginx篇"></p>
+<p><strong>ReWrite语法规则：</strong></p>
+<p><img src="http://img.bcoder.top/2018.02.10/17.png" alt="业余学习之Nginx篇"></p>
+<h3 id="Location和ReWrite实例"><a href="#Location和ReWrite实例" class="headerlink" title="Location和ReWrite实例"></a>Location和ReWrite实例</h3><h4 id="判断浏览器"><a href="#判断浏览器" class="headerlink" title="判断浏览器"></a>判断浏览器</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if ($http_user_agent ~ Edge) &#123; </span><br><span class="line">        rewrite ^(.*)$ &#x2F;edge.html</span><br><span class="line">        break; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同时在zlnnjit.com文件夹下，创建edge.html，内容为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;h2&gt;this is a edge brower visitor&lt;&#x2F;h2&gt;</span><br></pre></td></tr></table></figure>
+
+<p>使用chrome访问<a href="http://zlnnjit.com:8888/，结果如下：" target="_blank" rel="noopener">http://zlnnjit.com:8888/，结果如下：</a></p>
+<p><img src="http://img.bcoder.top/2018.02.10/18.png" alt="业余学习之Nginx篇"></p>
+<p>而使用Edge访问<a href="http://zlnnjit.com:8888/，结果如下：" target="_blank" rel="noopener">http://zlnnjit.com:8888/，结果如下：</a></p>
+<p><img src="http://img.bcoder.top/2018.02.10/19.png" alt="业余学习之Nginx篇"></p>
+<p>此示例可以针对不同的浏览器（兼容性不同）而加载不同的页面。</p>
+<h4 id="限制IP"><a href="#限制IP" class="headerlink" title="限制IP"></a>限制IP</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if  ($remote_addr &#x3D; 192.168.1.105) &#123;</span><br><span class="line">   return 403;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时用ip地址为192.168.1.105的机器：</p>
+<p><img src="http://img.bcoder.top/2018.02.10/20.png" alt="业余学习之Nginx篇"></p>
+<h4 id="判断目录是否存在"><a href="#判断目录是否存在" class="headerlink" title="判断目录是否存在"></a>判断目录是否存在</h4><p>服务器内部的rewrite和302跳转不一样.跳转的话URL都变了,变成重新http请求index.html,而内部rewrite,上下文没变。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if (!-e $document_root$fastcgi_script_name) &#123;</span><br><span class="line">    rewrite ^.*$ &#x2F;index.html break;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="判断IE并重写-且不用break"><a href="#判断IE并重写-且不用break" class="headerlink" title="判断IE并重写,且不用break"></a>判断IE并重写,且不用break</h4><p>set指令是设置变量用的,可以用来达到多条件判断时作标志<br>用判断IE并重写,且不用break;我们用set变量来达到目的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">if ($http_user_agent ~* msie) &#123;</span><br><span class="line">    set $isie 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if ($fastcgi_script_name &#x3D; ie.html) &#123;</span><br><span class="line">    set $isie 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if ($isie 1) &#123;</span><br><span class="line">    rewrite ^.*$ ie.html;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="将一类url跳转到指定页面"><a href="#将一类url跳转到指定页面" class="headerlink" title="将一类url跳转到指定页面"></a>将一类url跳转到指定页面</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location &#x2F;goods &#123;</span><br><span class="line">	rewrite &quot;goods-(\d&#123;1,5&#125;)\.html&quot; &#x2F;goods-ctrl.html;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Nginx反向代理"><a href="#Nginx反向代理" class="headerlink" title="Nginx反向代理"></a>Nginx反向代理</h2><h3 id="反向代理介绍"><a href="#反向代理介绍" class="headerlink" title="反向代理介绍"></a>反向代理介绍</h3><p>初次接触方向代理的感觉是，客户端是无感知代理的存在的，反向代理对外都是透明的，访问者者并不知道自己访问的是一个代理。因为客户端不需要任何配置就可以访问。</p>
+<p>反向代理（Reverse Proxy）实际运行方式是指以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端，此时代理服务器对外就表现为一个服务器。</p>
+<p><strong>反向代理的作用：</strong></p>
+<p>（1）保证内网的安全，可以使用反向代理提供WAF功能，阻止web攻击大型网站，通常将反向代理作为公网访问地址，Web服务器是内网。</p>
+<p><img src="http://img.bcoder.top/2018.02.10/21.png" alt="业余学习之Nginx篇"></p>
+<p>（2）负载均衡，通过反向代理服务器来优化网站的负载。</p>
+<p><img src="http://img.bcoder.top/2018.02.10/22.png" alt="业余学习之Nginx篇"></p>
+<h3 id="Nginx反向代理配置"><a href="#Nginx反向代理配置" class="headerlink" title="Nginx反向代理配置"></a>Nginx反向代理配置</h3><p>首先，先安装tomcat服务器（目录为tomcat-8.5），然后在/usr/local/tomcat-8.5/webapps/ROOT添加test.jsp,内容为：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page language=<span class="string">"java"</span> contentType=<span class="string">"text/html; charset=UTF-8"</span> pageEncoding=<span class="string">"UTF-8"</span>%&gt;</span><br><span class="line">&lt;!DOCTYPE html PUBLIC <span class="string">"-//W3C//DTD HTML 4.01 Transitional//EN"</span> <span class="string">"http://www.w3.org/TR/html4/loose.dtd"</span>&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;meta http-equiv=<span class="string">"Content-Type"</span> content=<span class="string">"text/html; charset=UTF-8"</span>&gt;</span><br><span class="line">&lt;title&gt;Test Page&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">Test1 Page!&lt;br/&gt;</span><br><span class="line">remote ip :  &lt;%=request.getHeader(<span class="string">"X-real-ip"</span>) %&gt;  &lt;br/&gt;</span><br><span class="line">nginx server ip : &lt;%=request.getRemoteAddr()%&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>开启tomcat:/usr/local/tomcat-8.5/bin/startup.sh </p>
+<p>我们访问<a href="http://192.168.1.111:8080/test.jsp，如下图所示：" target="_blank" rel="noopener">http://192.168.1.111:8080/test.jsp，如下图所示：</a></p>
+<p><img src="http://img.bcoder.top/2018.02.10/23.png" alt="业余学习之Nginx篇"></p>
+<p>下面开始配置反向代理（/usr/local/nginx/conf/nginx.conf）：</p>
+<p><img src="http://img.bcoder.top/2018.02.10/24.png" alt="业余学习之Nginx篇"></p>
+<p>我们上面配置反向代理tomcat服务器用于将拦截.jsp结尾的请求转向到tomcat.</p>
+<p>我们重启nginx，然后访问nginx：<a href="http://192.168.1.111:81/test.jsp：" target="_blank" rel="noopener">http://192.168.1.111:81/test.jsp：</a></p>
+<p><img src="http://img.bcoder.top/2018.02.10/25.png" alt="业余学习之Nginx篇"></p>
+<p>我们知道反向代理是让nginx来访问tomcat，那么我们如何告诉tomcat客户端的ip呢？<br>很简单，我们需要在配置文件上加上即可proxy_set_header X-real-ip $remote_addr，然后可以通过request.getHeader(“X-real-ip”) 获得IP地址：    </p>
+<p><img src="http://img.bcoder.top/2018.02.10/26.png" alt="业余学习之Nginx篇"></p>
+<p>我们重启nginx，再次访问<a href="http://192.168.1.111:81/test.jsp" target="_blank" rel="noopener">http://192.168.1.111:81/test.jsp</a></p>
+<p><img src="http://img.bcoder.top/2018.02.10/27.png" alt="业余学习之Nginx篇"></p>
+<p>我们发现已经获得了客户端的IP地址。</p>
+<h2 id="Nginx负载均衡"><a href="#Nginx负载均衡" class="headerlink" title="Nginx负载均衡"></a>Nginx负载均衡</h2><p>Nginx负载均衡比较简单，下面我们来两个不同主机之间的tomcat进行负载均衡。</p>
+<p>首先我们将192.168.1.111的Tomcat拷贝到192.168.1.112：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r &#x2F;usr&#x2F;local&#x2F;tomcat-8.5 root@192.168.1.112:&#x2F;usr&#x2F;local</span><br></pre></td></tr></table></figure>
+
+<p>我们修改192.168.1.112的test.jsp:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page language=<span class="string">"java"</span> contentType=<span class="string">"text/html; charset=UTF-8"</span> pageEncoding=<span class="string">"UTF-8"</span>%&gt;</span><br><span class="line">&lt;!DOCTYPE html PUBLIC <span class="string">"-//W3C//DTD HTML 4.01 Transitional//EN"</span> <span class="string">"http://www.w3.org/TR/html4/loose.dtd"</span>&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;meta http-equiv=<span class="string">"Content-Type"</span> content=<span class="string">"text/html; charset=UTF-8"</span>&gt;</span><br><span class="line">&lt;title&gt;Test2 Page&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">Test1 Page!&lt;br/&gt;</span><br><span class="line">remote ip :  &lt;%=request.getHeader(<span class="string">"X-real-ip"</span>) %&gt;  &lt;br/&gt;</span><br><span class="line">nginx server ip : &lt;%=request.getRemoteAddr()%&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>分别启动两台电脑的tomcat.</p>
+<p>下面开始正式来配置Nginx负载均衡，编辑nginx.xml:</p>
+<p><img src="http://img.bcoder.top/2018.02.10/28.png" alt="业余学习之Nginx篇"></p>
+<p>重启Nginx，然后访问：<a href="http://192.168.1.111:81/test.jsp" target="_blank" rel="noopener">http://192.168.1.111:81/test.jsp</a></p>
+<p>我们连续访问了两次，结果如下：</p>
+<p><img src="http://img.bcoder.top/2018.02.10/29.png" alt="业余学习之Nginx篇"></p>
+<p><img src="http://img.bcoder.top/2018.02.10/30.png" alt="业余学习之Nginx篇"></p>
+<h2 id="Nginx-Keepalived实现高可用（HA）"><a href="#Nginx-Keepalived实现高可用（HA）" class="headerlink" title="Nginx+Keepalived实现高可用（HA）"></a>Nginx+Keepalived实现高可用（HA）</h2><h3 id="Keepalived介绍"><a href="#Keepalived介绍" class="headerlink" title="Keepalived介绍"></a>Keepalived介绍</h3><p><strong>keepalived是什么?</strong></p>
+<p>Keepalived软件起初是专为LVS负载均衡软件设计的，用来管理并监控LVS集群系统中各个服务节点的状态，后来又加入了可以实现高可用的VRRP功能。因此，Keepalived除了能够管理LVS软件外，还可以作为其他服务（例如：Nginx、Haproxy、MySQL等）的高可用解决方案软件。</p>
+<p>Keepalived软件主要是通过VRRP协议实现高可用功能的。VRRP是Virtual Router RedundancyProtocol(虚拟路由器冗余协议）的缩写，VRRP出现的目的就是为了解决静态路由单点故障问题的，它能够保证当个别节点宕机时，整个网络可以不间断地运行。</p>
+<p>所以，Keepalived 一方面具有配置管理LVS的功能，同时还具有对LVS下面节点进行健康检查的功能，另一方面也可实现系统网络服务的高可用功能。</p>
+<p><strong>keepalived有什么用?</strong><br>管理LVS负载均衡软件<br>实现LVS集群节点的健康检查中<br>作为系统网络服务的高可用性（failover）</p>
+<p> <strong>Keepalived高可用故障切换转移原理</strong><br>Keepalived高可用服务对之间的故障切换转移，是通过 VRRP (Virtual Router Redundancy Protocol ,虚拟路由器冗余协议）来实现的。<br>在 Keepalived服务正常工作时，主 Master节点会不断地向备节点发送（多播的方式）心跳消息，用以告诉备Backup节点自己还活看，当主 Master节点发生故障时，就无法发送心跳消息，备节点也就因此无法继续检测到来自主 Master节点的心跳了，于是调用自身的接管程序，接管主Master节点的 IP资源及服务。而当主 Master节点恢复时，备Backup节点又会释放主节点故障时自身接管的IP资源及服务，恢复到原来的备用角色。</p>
+<p>那么，什么是VRRP呢？<br>VRRP ,全 称 Virtual Router Redundancy Protocol ,中文名为虚拟路由冗余协议 ，VRRP的出现就是为了解决静态踣甶的单点故障问题，VRRP是通过一种竞选机制来将路由的任务交给某台VRRP路由器的。</p>
+<p>keepalived高可用架构示意图以及工作过程：</p>
+<p><img src="http://img.bcoder.top/2018.02.10/31.png" alt="业余学习之Nginx篇"></p>
+<p>Keepalived高可用对之间是通过VRRP通信的，因此，我们从 VRRP开始了解起：</p>
+<p>1) VRRP,全称 Virtual Router Redundancy Protocol,中文名为虚拟路由冗余协议，VRRP的出现是为了解决静态路由的单点故障。<br>2) VRRP是通过一种竟选协议机制来将路由任务交给某台VRRP路由器的。<br>3) VRRP用 IP多播的方式（默认多播地址（224.0_0.18))实现高可用对之间通信。<br>4) 工作时主节点发包，备节点接包，当备节点接收不到主节点发的数据包的时候，就启动接管程序接管主节点的开源。备节点可以有多个，通过优先级竞选，但一般 Keepalived系统运维工作中都是一对。<br>5) VRRP使用了加密协议加密数据，但Keepalived官方目前还是推荐用明文的方式配置认证类型和密码。</p>
+<p>介绍完 VRRP,接下来我再介绍一下 Keepalived服务的工作原理：<br>Keepalived高可用对之间是通过 VRRP进行通信的， VRRP是通过竞选机制来确定主备的，主的优先级高于备，因此，工作时主会优先获得所有的资源，备节点处于等待状态，当主挂了的时候，备节点就会接管主节点的资源，然后顶替主节点对外提供服务。<br>在 Keepalived服务对之间，只有作为主的服务器会一直发送 VRRP广播包,告诉备它还活着，此时备不会枪占主，当主不可用时，即备监听不到主发送的广播包时，就会启动相关服务接管资源，保证业务的连续性.接管速度最快可以小于1秒。</p>
+<h3 id="Keepalived安装"><a href="#Keepalived安装" class="headerlink" title="Keepalived安装"></a>Keepalived安装</h3><p>我们需要在192.168.1.111和192.168.1.112两台主机上安装keepalived。</p>
+<p><strong>第一步：</strong><br>下载keepalived地址：<a href="http://www.keepalived.org/download.html" target="_blank" rel="noopener">http://www.keepalived.org/download.html</a><br>解压安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf keepalived-1.2.18.tar.gz -C &#x2F;usr&#x2F;local&#x2F;</span><br><span class="line">yum install -y openssl openssl-devel ##需要安装一个软件包</span><br><span class="line">cd keepalived-1.2.18&#x2F; &amp;&amp; .&#x2F;configure --prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;keepalived</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二步：</strong><br>将keepalived安装成Linux系统服务，因为没有使用keepalived的默认安装路径（默认路径：/usr/local）,安装完成之后，需要做一些修改工作：<br>首先创建文件夹，将keepalived配置文件进行复制：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir &#x2F;etc&#x2F;keepalived</span><br><span class="line">cp &#x2F;usr&#x2F;local&#x2F;keepalived&#x2F;etc&#x2F;keepalived&#x2F;keepalived.conf &#x2F;etc&#x2F;keepalived&#x2F;</span><br></pre></td></tr></table></figure>
+<p>然后复制keepalived脚本文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cp &#x2F;usr&#x2F;local&#x2F;keepalived&#x2F;etc&#x2F;rc.d&#x2F;init.d&#x2F;keepalived &#x2F;etc&#x2F;init.d&#x2F;</span><br><span class="line">cp &#x2F;usr&#x2F;local&#x2F;keepalived&#x2F;etc&#x2F;sysconfig&#x2F;keepalived &#x2F;etc&#x2F;sysconfig&#x2F;</span><br><span class="line">ln -s &#x2F;usr&#x2F;local&#x2F;sbin&#x2F;keepalived &#x2F;usr&#x2F;sbin&#x2F;</span><br><span class="line">ln -s &#x2F;usr&#x2F;local&#x2F;keepalived&#x2F;sbin&#x2F;keepalived &#x2F;sbin&#x2F;</span><br></pre></td></tr></table></figure>
+<p>可以设置开机启动：chkconfig keepalived on，到此我们安装完毕!<br>如果不需要开机启动的话，我们可以service keepalived start和service keepalived stop进行开启和关闭。</p>
+<h3 id="nginx安装"><a href="#nginx安装" class="headerlink" title="nginx安装"></a>nginx安装</h3><p>我们根据之前的步骤重新对nginx进行安装，分别修改nginx目录下的html下的index.html文件：<br>192.168.1.111：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span>Welcome to nginx!<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span></span><br><span class="line">    body &#123;</span><br><span class="line">        width: 35em;</span><br><span class="line">        margin: 0 auto;</span><br><span class="line">        font-family: Tahoma, Verdana, Arial, sans-serif;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Welcome to nginx!<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>If you see this page, the nginx web server is successfully installed and</span><br><span class="line">working. Further configuration is required.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>For online documentation and support please refer to</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://nginx.org/"</span>&gt;</span>nginx.org<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">Commercial support is available at</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://nginx.com/"</span>&gt;</span>nginx.com<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="tag">&lt;<span class="name">em</span>&gt;</span>Thank you for using nginx111.<span class="tag">&lt;/<span class="name">em</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<p>192.168.1.112：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span>Welcome to nginx!<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span></span><br><span class="line">    body &#123;</span><br><span class="line">        width: 35em;</span><br><span class="line">        margin: 0 auto;</span><br><span class="line">        font-family: Tahoma, Verdana, Arial, sans-serif;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Welcome to nginx!<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>If you see this page, the nginx web server is successfully installed and</span><br><span class="line">working. Further configuration is required.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>For online documentation and support please refer to</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://nginx.org/"</span>&gt;</span>nginx.org<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">Commercial support is available at</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://nginx.com/"</span>&gt;</span>nginx.com<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="tag">&lt;<span class="name">em</span>&gt;</span>Thank you for using nginx112.<span class="tag">&lt;/<span class="name">em</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们进行启动nginx:/usr/local/nginx/sbin/nginx，然后访问相关的url:</p>
+<p><img src="http://img.bcoder.top/2018.02.10/32.png" alt="业余学习之Nginx篇"></p>
+<p><img src="http://img.bcoder.top/2018.02.10/33.png" alt="业余学习之Nginx篇"></p>
+<h3 id="Nginx-Keepalived高可用搭建"><a href="#Nginx-Keepalived高可用搭建" class="headerlink" title="Nginx+Keepalived高可用搭建"></a>Nginx+Keepalived高可用搭建</h3><p><img src="http://img.bcoder.top/2018.02.10/34.png" alt="业余学习之Nginx篇"></p>
+<p>上图中的tomcat负载均衡我们之前已经实现过了，为了防止nginx在真实环境宕机，我们需要使其具备高可用特性。</p>
+<p>我们将192.168.1.111的nginx作为Master，192.168.1.112的nginx作为backup</p>
+<p>具体配置如下：<br>192.168.1.111：<br>对配置文件进行修改：vim /etc/keepalived/keepalived.conf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">! Configuration File for keepalived</span><br><span class="line">global_defs &#123;</span><br><span class="line">    router_id 192.168.1.111</span><br><span class="line">&#125;</span><br><span class="line">vrrp_script chk_nginx &#123;</span><br><span class="line">    script &quot;&#x2F;etc&#x2F;keepalived&#x2F;nginx_check.sh&quot;</span><br><span class="line">    interval 2</span><br><span class="line">    weight -20</span><br><span class="line">    !weight为正数</span><br><span class="line">	!如果脚本执行结果为0,,Master:weight+priority&gt;Backup:weight+priority(不切换)</span><br><span class="line">    !如果脚本执行结果不为0,Master:priority&lt;Backup:priority+weight(切换)</span><br><span class="line">    !weight为负数</span><br><span class="line">    !如果脚本执行结果为0,,Master:priority&gt;Backup:priority(不切换)</span><br><span class="line">    !如果脚本执行结果不为0,Master:priority+weight&lt;Backup:priority(切换)</span><br><span class="line">    !一般来说,weight的绝对值要大于Master和Backup的priority之差</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## 定义虚拟路由 VI_1为自定义标识。</span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">	state MASTER   ## 主节点为MASTER，备份节点为BACKUP</span><br><span class="line">    ## 绑定虚拟IP的网络接口（网卡），与本机IP地址所在的网络接口相同（我这里是eth6）</span><br><span class="line">	interface eth3  </span><br><span class="line">	virtual_router_id 110  ## 虚拟路由ID号,主备必须一致</span><br><span class="line">    mcast_src_ip 192.168.1.111  ## 本机ip地址</span><br><span class="line">    priority 100  ##优先级配置（0-254的值）</span><br><span class="line">    Nopreempt  ## </span><br><span class="line">    advert_int 1 ## 组播信息发送间隔，俩个节点必须配置一致，默认1s</span><br><span class="line">    authentication &#123;  </span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass zln ## 真实生产环境下对密码进行匹配</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    track_script &#123;</span><br><span class="line">        chk_nginx</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.1.110 ## 虚拟ip(vip)，可以指定多个</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>192.168.1.112：<br>对配置文件进行修改：vim /etc/keepalived/keepalived.conf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">! Configuration File for keepalived</span><br><span class="line">global_defs &#123;</span><br><span class="line">    router_id 192.168.1.112</span><br><span class="line">&#125;</span><br><span class="line">vrrp_script chk_nginx &#123;</span><br><span class="line">    script &quot;&#x2F;etc&#x2F;keepalived&#x2F;nginx_check.sh&quot;</span><br><span class="line">    interval 2</span><br><span class="line">    weight -20</span><br><span class="line">    !weight为正数</span><br><span class="line">	!如果脚本执行结果为0,,Master:weight+priority&gt;Backup:weight+priority(不切换)</span><br><span class="line">    !如果脚本执行结果不为0,Master:priority&lt;Backup:priority+weight(切换)</span><br><span class="line">    !weight为负数</span><br><span class="line">    !如果脚本执行结果为0,,Master:priority&gt;Backup:priority(不切换)</span><br><span class="line">    !如果脚本执行结果不为0,Master:priority+weight&lt;Backup:priority(切换)</span><br><span class="line">    !一般来说,weight的绝对值要大于Master和Backup的priority之差</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## 定义虚拟路由 VI_1为自定义标识。</span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">	state BACKUP   ## 主节点为MASTER，备份节点为BACKUP</span><br><span class="line">    ## 绑定虚拟IP的网络接口（网卡），与本机IP地址所在的网络接口相同（我这里是eth6）</span><br><span class="line">	interface eth2  </span><br><span class="line">	virtual_router_id 110  ## 虚拟路由ID号</span><br><span class="line">    mcast_src_ip 192.168.1.112	  ## 本机ip地址</span><br><span class="line">    priority 90  ##优先级配置（0-254的值）</span><br><span class="line">    Nopreempt  ## 表示非抢占模式</span><br><span class="line">    advert_int 1 ## 组播信息发送间隔，俩个节点必须配置一致，默认1s</span><br><span class="line">    authentication &#123;  </span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass zln ## 真实生产环境下对密码进行匹配</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    track_script &#123;</span><br><span class="line">        chk_nginx</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.1.110 ## 虚拟ip(vip)，可以指定多个</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> keepalived 会定时执行脚本并且对脚本的执行结果进行分析，动态调整vrrp_instance的优先级。这里的权重weight 是与下面的优先级priority有关，如果执行了一次检查脚本成功，则权重会-20，也就是由100 - 20 变成了80，Master 的优先级为80 就低于了Backup的优先级90，那么会进行自动的主备切换。</p>
+<p>在两台主机的/etc/keepalived都添加nginx_check.sh 脚本：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line">A=`ps -C nginx --no-header |wc -l`</span><br><span class="line">if [ $A -eq 0 ];then</span><br><span class="line">    /usr/sbin/nginx</span><br><span class="line">    sleep 2</span><br><span class="line">    if [ `ps -C nginx --no-header |wc -l` -eq 0 ];then</span><br><span class="line">        killall keepalived</span><br><span class="line">    fi</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<p>nginx_check.sh脚本授权。赋予可执行权限：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 &#x2F;etc&#x2F;keepalived&#x2F;nginx_check.sh</span><br></pre></td></tr></table></figure>
+
+<p>启动2台机器的nginx之后。我们启动两台机器的keepalived</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;usr&#x2F;local&#x2F;nginx&#x2F;sbin&#x2F;nginx</span><br><span class="line">service keepalived start</span><br><span class="line">ps -ef | grep nginx </span><br><span class="line">ps -ef | grep keepalived</span><br></pre></td></tr></table></figure>
+
+<p>可以进行测试，首先看一下俩台机器的ip a 命令下 都会出现一个虚拟ip，我们可以停掉  一个机器的keepalived，然后测试，命令：service keepalived stop。结果发现当前停掉的机器已经不可用，keepalived会自动切换到另一台机器上。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2018/02/10/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BNginx%E7%AF%87/>https://www.bcoder.top/2018/02/10/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BNginx%E7%AF%87/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Nginx/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Nginx</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>反向代理</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>负载均衡</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>高可用</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/keepalived/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>keepalived</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2018/02/10/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BNginx%E7%AF%87/&title=业余学习之Nginx篇 - zln's blog&summary=
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2018/02/10/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BNginx%E7%AF%87/&title=业余学习之Nginx篇 - zln's blog&summary=
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2018/02/10/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BNginx%E7%AF%87/&title=业余学习之Nginx篇 - zln's blog&summary=
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2018/02/14/%E8%AE%B0%E4%B8%80%E4%B8%AAMySQL%E7%AC%94%E8%AF%95%E9%A2%98/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>记一个MySQL笔试题</p>
+                <p class='content'>
+引言寒假闲着没事，对MySQL有些淡忘，下面通过一个笔试题来巩固SQL语句的编写。
+
+
+
+
+题目设有一数据库，包括四个表：学生表（Student）、课程表（Course）、成绩表（Score）...</p>
+              </a>
+            
+            
+              <a class='next' href='/2018/02/08/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BStorm%E7%AF%87/'>
+                <p class='title'>业余学习之Storm篇<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+
+Storm简介Storm是Twitter开源的一个分布式实时计算系统，用于数据的实时分析，持续计算...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '业余学习之Nginx篇',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx介绍"><span class="toc-text">Nginx介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx-环境搭建"><span class="toc-text">Nginx 环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx虚拟机配置"><span class="toc-text">Nginx虚拟机配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx日志管理"><span class="toc-text">Nginx日志管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Nginx日志介绍"><span class="toc-text">Nginx日志介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nginx日志格式"><span class="toc-text">Nginx日志格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nginx自定义日志"><span class="toc-text">Nginx自定义日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nginx日志分隔"><span class="toc-text">Nginx日志分隔</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Location配置与ReWrite语法"><span class="toc-text">Location配置与ReWrite语法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Location语法规则"><span class="toc-text">Location语法规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Location实际常用规则"><span class="toc-text">Location实际常用规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReWrite语法"><span class="toc-text">ReWrite语法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Location和ReWrite实例"><span class="toc-text">Location和ReWrite实例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#判断浏览器"><span class="toc-text">判断浏览器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#限制IP"><span class="toc-text">限制IP</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#判断目录是否存在"><span class="toc-text">判断目录是否存在</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#判断IE并重写-且不用break"><span class="toc-text">判断IE并重写,且不用break</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#将一类url跳转到指定页面"><span class="toc-text">将一类url跳转到指定页面</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx反向代理"><span class="toc-text">Nginx反向代理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#反向代理介绍"><span class="toc-text">反向代理介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nginx反向代理配置"><span class="toc-text">Nginx反向代理配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx负载均衡"><span class="toc-text">Nginx负载均衡</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx-Keepalived实现高可用（HA）"><span class="toc-text">Nginx+Keepalived实现高可用（HA）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Keepalived介绍"><span class="toc-text">Keepalived介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Keepalived安装"><span class="toc-text">Keepalived安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nginx安装"><span class="toc-text">nginx安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nginx-Keepalived高可用搭建"><span class="toc-text">Nginx+Keepalived高可用搭建</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>业余学习之JVM组成及参数配置篇 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="栈,JVM,堆,JVM参数配置">
+  
+  
+    <meta name="description" content="
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/11/19/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BJVM%E7%BB%84%E6%88%90%E5%8F%8A%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E7%AF%87/">
+        业余学习之JVM组成及参数配置篇
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/deep/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>deep</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-11-19 19:48:57</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言</p>
+</blockquote>
+<p>本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。</p>
+<a id="more"></a>
+
+<h2 id="java虚拟机介绍"><a href="#java虚拟机介绍" class="headerlink" title="java虚拟机介绍"></a>java虚拟机介绍</h2><p>所谓虚拟机，就是一台虚拟的机器。它是一款软件，用来执行一系列虚拟计算机指令，大体上虚拟机可以分为<strong>系统虚拟机</strong>和<strong>程序虚拟机</strong>，Visual Box、Vmare就属于系统虚拟机。他们完全是对物理计算机的仿真，提供了一个可运行完成操作系统的软件平台。程序虚拟机典型代表就是java虚拟机，它专门为执行单个计算机程序而设计，在java虚拟机中执行的指令，我们称为java字节码指令。</p>
+<p>无论是系统虚拟机还是程序虚拟机，在上面运行的软件都被限制于虚拟机提供的资源中。java发展至今，出现过很多虚拟机，最初Sun使用的一款叫Classic的Java虚拟机，到现在引用最广泛的是HotSpot虚拟机（我们用的就是这种虚拟机），除了Sun以外，还有BEA的JRockit，目前JRockit和HotSpot都被Oracle收入旗下，有整合的趋势。</p>
+<p>Java程序的跨平台特性主要是指字节码文件可以在任何具有Java虚拟机的计算机或者电子设备上运行，Java虚拟机中的Java解释器负责将字节码文件解释成为特定的机器码进行运行。因此在运行时，Java源程序需要通过编译器编译成为.class文件。众所周知java.exe是java class文件的执行程序，但实际上java.exe程序只是一个执行的外壳，它会装载jvm.dll（windows下，下皆以windows平台为例，linux下和solaris下其实类似，为：libjvm.so），这个动态连接库才是java虚拟机的实际操作处理所在。</p>
+<p>JVM是JRE的一部分。它是一个虚构出来的计算机，是通过在实际的计算机上仿真模拟各种计算机功能来实现的。JVM有自己完善的硬件架构，如处理器、堆栈、寄存器等，还具有相应的指令系统。Java语言最重要的特点就是跨平台运行。使用JVM就是为了支持与操作系统无关，实现跨平台。所以，JAVA虚拟机JVM是属于JRE的，而现在我们安装JDK时也附带安装了JRE(当然也可以单独安装JRE)。</p>
+<h2 id="JVM组成"><a href="#JVM组成" class="headerlink" title="JVM组成"></a>JVM组成</h2><p>下面我们来看jvm的结构图：</p>
+<p><img src="http://img.bcoder.top/2017.11.19/1.png" alt="业余学习之JVM组成及参数配置篇"></p>
+<p>下面分别对这几部分做一个粗浅的介绍：</p>
+<p>1.类加载子系统：负责从文件系统或者网络中加载Clsaa信息，加载的信息存放在一块称之为方法区的内存空间。</p>
+<p>2.方法区：就是存放<strong>类信息、常量信息、常量池信息、包括字符串字面量和数字常量等。</strong></p>
+<p>3.java堆：在java虚拟机启动的时候建立java堆，他是java程序最主要的内存工作区域，<strong>几乎所有的对象实例</strong>都存放到java堆中，堆空间是所有线程共享的。</p>
+<p>4.直接内存：Java的NIO库允许java程序使用直接内存，从而提高性能，通常直接内存速度会优于java堆。读写频繁的场合可能会考虑使用。</p>
+<p>5.java栈：每个虚拟机线程都有一个私有的栈，一个线程的java栈在线程创建的时候被创建，java栈中保存着<strong>局部变量，方法参数、同时java的方法调用、返回值</strong>等。</p>
+<p>6.本地方法栈：本地方法栈和java栈非常类似，最大不同为本地方法栈用于本地方法调用。java虚拟机允许java直接调用本地方法(通常使用C编写)。</p>
+<p>7.垃圾收集系统是java的核心，也是必不可少的，java有一套自己进行垃圾清理的机制，具体的待会说明。</p>
+<p>8.PC(Program Counter)寄存器也是每个线程私有的空间，java虚拟机会为每个线程创建PC寄存器，在任意时刻，一个java线程总是在执行一个方法，这个方法被称为当前方法，如果当前方法不是本地方法，PC寄存器就会执行当前正在被执行的命令，如果是本地方法，则PC寄存器值为undefined，寄存器存放如当前执行环境指针，程序计数器，操作栈指针，计算的变量指针等信息。</p>
+<p>9.虚拟机最核心的组建就是执行引擎了，它负责执行虚拟机的字节码。一般用户先进行编译称机器码后执行。</p>
+<p>看完介绍，我们在来看一张更为直观的JVM组成图供大家欣赏：</p>
+<p><img src="http://img.bcoder.top/2017.11.19/2.png" alt="业余学习之JVM组成及参数配置篇"></p>
+<h3 id="栈、堆、方法区的概念与联系"><a href="#栈、堆、方法区的概念与联系" class="headerlink" title="栈、堆、方法区的概念与联系"></a>栈、堆、方法区的概念与联系</h3><p>堆解决的是数据存储的问题，即数据怎么放，放在哪儿。</p>
+<p>栈解决程序的运行问题，即程序如何执行，或者说如何处理数据。</p>
+<p>方法区则是辅助堆栈的快永久区(Perm)，解决堆栈细心的产生，是先决条件。</p>
+<p>下面我们来举一个例子来说明这三者的关系：</p>
+<p>我们创建一个新的对象，User：那么User类的一些信息(类信息，静态信息都存在于方法区中)<br>而User类被实例化出来之后，被存储到java堆中，一块内存空间<br>当我们去使用的时候，都是使用User对象的引用，形如User user = new User()；<br>这里的user就是存放在java栈中，即User真实对象的一个引用。</p>
+<p><img src="http://img.bcoder.top/2017.11.19/3.png" alt="业余学习之JVM组成及参数配置篇"></p>
+<p>比如，有一个User类，有2个实例对象u1和u2，那么存储结构信息就如上图所示。</p>
+<p>User类的2个实例对象（这里的实例对象指的是真实的数据）都存放在堆中。</p>
+<p>u1，u2这2个局部变量，对真实对象的引用（也就是我们写的u1,u2变量名字）就存放在栈中。</p>
+<h3 id="深入理解java堆"><a href="#深入理解java堆" class="headerlink" title="深入理解java堆"></a>深入理解java堆</h3><p>java堆是和java应用程序关系最密切的内存空间，几乎所有的对象都存放其中，并且java堆完全是自动化管理的，通过垃圾回收机制，垃圾对象会自动清理，不需要显示地释放。</p>
+<p>根据垃圾回收机制不同，Java堆有可能有不同的结构。最常见的就是将整个java堆分为新生代和老年代。其中新生代存放新生的对象或者年龄不大的对象，老年代则存放老年对象。</p>
+<p><strong>新生代</strong>分为<code>eden区</code>、<code>s0区</code>、<code>s1区</code>，s0和s1也被称为from和to区域，他们是<strong>两块大小相等并且可以互换角色</strong>的空间。</p>
+<p>绝大多数情况下，对象首先分配在eden区，在一次新生代回收后，如果对象还存活，则会进入s0和s1区，之后每经过一次新生代回收，如果对象存活则它的年龄就加1，当对象达到一定年龄后，则进入<strong>老年代</strong>。</p>
+<p><img src="http://img.bcoder.top/2017.11.19/4.png" alt="业余学习之JVM组成及参数配置篇"></p>
+<p>那么为啥会有两个大小相等的s区(s0区和s1区)呢？<br>这个是有java垃圾回收算法决定的，首先当对象创建时分配在eden区，当进行过一次垃圾回收后，对象年龄增加，对象由eden区进入到s0区或者s1区，加入对象在s1区，此时s1区中有对象，s0区为空，现在我们要对s区进行gc，会做出如下操作，首先先把s1区中的还有引用的对象放复制到s0区，最后将s1区清空，然后循环往复。</p>
+<h3 id="深入理解java栈"><a href="#深入理解java栈" class="headerlink" title="深入理解java栈"></a>深入理解java栈</h3><p>java栈是一块线程私有的内存空间，一个栈，一般又三部分组成：局部变量表、操作数栈、帧数据区。</p>
+<p><strong>局部变量表</strong>：用于保存函数的参数和局部变量，局部变量表中的变量只在当前函数调用中有效，当函数调用结束后，随着栈帧的销毁，局部变量表也会随之销毁。局部变量表位于栈帧中，如果函数的局部变量较多，会使局部变量表膨胀，从而每一次调用会占用更多的栈空间，最终导致函数的嵌套次数减少。局部变量表中的变量也是重要的垃圾回收根节点，只要被局部变量表中的变量直接或者间接引用都不会被回收</p>
+<p><strong>操作数栈</strong>：主要用来保存计算过程中的中间结果，同时作为计算过程中变量临时的存储空间</p>
+<p><strong>帧数据区</strong>：帧数据区保存着访问常量池的指针，方便程序访问常量池。此外，还有一个异常处理表用于恢复调用者函数的栈帧。</p>
+<p><img src="http://img.bcoder.top/2017.11.19/5.png" alt="业余学习之JVM组成及参数配置篇"></p>
+<h3 id="深入理解方法区"><a href="#深入理解方法区" class="headerlink" title="深入理解方法区"></a>深入理解方法区</h3><p>java方法区和堆一样，方法区是一块所有线程共享的内存区域，它保存系统的类信息，比如类的字段，方法，常量池等。方法区的大小决定了系统可以保存多少个类，如果系统定义太多的类，导致方法区溢出。虚拟机同样会抛出内存移除错误。方法区可以理解为永久区(Perm)。</p>
+<h2 id="虚拟机参数介绍及配置"><a href="#虚拟机参数介绍及配置" class="headerlink" title="虚拟机参数介绍及配置"></a>虚拟机参数介绍及配置</h2><h3 id="虚拟机参数介绍"><a href="#虚拟机参数介绍" class="headerlink" title="虚拟机参数介绍"></a>虚拟机参数介绍</h3><p>在虚拟机运行的过程中，如果可以跟踪系统的运行状态，那么对于问题的故障排查会有一定的帮助，为此，虚拟机提供了一些跟踪系统状态的参数，使用给定的参数执行java虚拟机，就可以在系统运行时打印相关日志，用于分析实际问题。我们进行虚拟机参数配置，其实主要就是围绕着堆，栈，方法区进行配置。</p>
+<h3 id="堆分配基本参数配置"><a href="#堆分配基本参数配置" class="headerlink" title="堆分配基本参数配置"></a>堆分配基本参数配置</h3><p>下面现在介绍一部分相关的配置：</p>
+<p>-XX:+PrintGC 使用这个参数，虚拟机启动后，只要遇到GC就会打印日志。</p>
+<p>-XX:+UseSerialGC 配置串行回收器</p>
+<p>-XX:+PrintGCDetails 可以查看详细信息，包括各个区的情况。</p>
+<p>-Xms: 设置java程序启动时初始堆大小</p>
+<p>-Xmx: 设置java程序能获得的最大堆大小</p>
+<p>-XX:+PrintCommandLineFlags把配置的参数打印到控制台</p>
+<p>在实际工作中，可以直接将初始的堆大小和最大堆大小设置相等，这样的好处是可以减少程序运行时的垃圾回收次数，从而提高性能。</p>
+<p>我们先来看代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test01</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//查看GC信息</span></span><br><span class="line">		System.out.println(<span class="string">"max memory:"</span> + Runtime.getRuntime().maxMemory());</span><br><span class="line">		System.out.println(<span class="string">"free memory:"</span> + Runtime.getRuntime().freeMemory());</span><br><span class="line">		System.out.println(<span class="string">"total memory:"</span> + Runtime.getRuntime().totalMemory());</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">byte</span>[] b1 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1</span>*<span class="number">1024</span>*<span class="number">1024</span>];</span><br><span class="line">		System.out.println(<span class="string">"分配了1M"</span>);</span><br><span class="line">		System.out.println(<span class="string">"max memory:"</span> + Runtime.getRuntime().maxMemory());</span><br><span class="line">		System.out.println(<span class="string">"free memory:"</span> + Runtime.getRuntime().freeMemory());</span><br><span class="line">		System.out.println(<span class="string">"total memory:"</span> + Runtime.getRuntime().totalMemory());</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">byte</span>[] b2 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">4</span>*<span class="number">1024</span>*<span class="number">1024</span>];</span><br><span class="line">		System.out.println(<span class="string">"分配了4M"</span>);</span><br><span class="line">		System.out.println(<span class="string">"max memory:"</span> + Runtime.getRuntime().maxMemory());</span><br><span class="line">		System.out.println(<span class="string">"free memory:"</span> + Runtime.getRuntime().freeMemory());</span><br><span class="line">		System.out.println(<span class="string">"total memory:"</span> + Runtime.getRuntime().totalMemory());</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们不加虚拟机参数配置时的运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">max memory:1886912512</span><br><span class="line">free memory:124201496</span><br><span class="line">total memory:128974848</span><br><span class="line">分配了1M</span><br><span class="line">max memory:1886912512</span><br><span class="line">free memory:123152904</span><br><span class="line">total memory:128974848</span><br><span class="line">分配了4M</span><br><span class="line">max memory:1886912512</span><br><span class="line">free memory:118958584</span><br><span class="line">total memory:128974848</span><br></pre></td></tr></table></figure>
+<p>我们着重看一下free memory这个结果，当我们申请1M的空间，free memory由124201496变为123152904，差不多1M的样子，后面申请4M的空间也是如此。</p>
+<p>下面我们来进行配置java虚拟机参数，比如配置-Xms5m -Xmx20m-XX:+PrintCommandLineFlags</p>
+<p>这个参数的意思是：设置初始堆为5M，最大堆为20M，将我们配置的参数打印到控制台</p>
+<p>下面我们来看看如何配置，这里以IDEA为例，配置过程如图所示：</p>
+<p><img src="http://img.bcoder.top/2017.11.19/6.png" alt="业余学习之JVM组成及参数配置篇"></p>
+<p><img src="http://img.bcoder.top/2017.11.19/7.png" alt="业余学习之JVM组成及参数配置篇"></p>
+<p>点击上图中的运用，然后重新运行代码，我们得到的结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">-XX:InitialHeapSize&#x3D;5242880 -XX:MaxHeapSize&#x3D;20971520 -XX:+PrintCommandLineFlags -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:-UseLargePagesIndividualAllocation -XX:+UseParallelGC </span><br><span class="line">max memory:18874368</span><br><span class="line">free memory:4616464</span><br><span class="line">total memory:5767168</span><br><span class="line">分配了1M</span><br><span class="line">max memory:18874368</span><br><span class="line">free memory:3547408</span><br><span class="line">total memory:5767168</span><br><span class="line">分配了4M</span><br><span class="line">max memory:18874368</span><br><span class="line">free memory:4060000</span><br><span class="line">total memory:10485760</span><br></pre></td></tr></table></figure>
+
+<p>与前一次结果不同的是，打印了配置的虚拟机参数，这里的参数除了我们配置的，还有就是虚拟机默认的参数配置。</p>
+<p>下面我们加上-XX:+PrintGC参数再来测试一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">-XX:InitialHeapSize&#x3D;5242880 -XX:MaxHeapSize&#x3D;20971520 -XX:+PrintCommandLineFlags -XX:+PrintGC -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:-UseLargePagesIndividualAllocation -XX:+UseParallelGC </span><br><span class="line">[GC (Allocation Failure)  1024K-&gt;584K(5632K), 0.0009960 secs]</span><br><span class="line">[GC (Allocation Failure)  1608K-&gt;891K(5632K), 0.0016907 secs]</span><br><span class="line">max memory:18874368</span><br><span class="line">free memory:4572376</span><br><span class="line">total memory:5767168</span><br><span class="line">分配了1M</span><br><span class="line">max memory:18874368</span><br><span class="line">free memory:3503512</span><br><span class="line">total memory:5767168</span><br><span class="line">分配了4M</span><br><span class="line">max memory:18874368</span><br><span class="line">free memory:3989480</span><br><span class="line">total memory:10485760</span><br></pre></td></tr></table></figure>
+
+<p>GC的消息就被打印到控制台了，由上面的例子看一看出我们使用的默认是<code>-XX:+UseParallelGC</code>,这是我们jdk默认的并行GC，为了方便起见，我们采用串行GC,也就是：-XX:+UseSerialGC</p>
+<p>下面我们来一个更复杂的参数配置：<br>-Xms5m -Xmx20m -XX:+PrintGCDetails -XX:+UseSerialGC -XX:+PrintCommandLineFlags</p>
+<p>我们把之前的-XX:+PrintGC改成-XX:+PrintGCDetails,这有助于我们打印更为详细的GC信息。</p>
+<p>运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">-XX:InitialHeapSize&#x3D;5242880 -XX:MaxHeapSize&#x3D;20971520 -XX:+PrintCommandLineFlags -XX:+PrintGCDetails -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:-UseLargePagesIndividualAllocation -XX:+UseSerialGC </span><br><span class="line">[GC (Allocation Failure) [DefNew: 1664K-&gt;192K(1856K), 0.0026129 secs] 1664K-&gt;792K(5952K), 0.0026626 secs] [Times: user&#x3D;0.02 sys&#x3D;0.00, real&#x3D;0.00 secs] </span><br><span class="line">max memory:20316160</span><br><span class="line">free memory:4517664</span><br><span class="line">total memory:6094848</span><br><span class="line">[GC (Allocation Failure) [DefNew: 939K-&gt;92K(1856K), 0.0030191 secs] 1540K-&gt;881K(5952K), 0.0030503 secs] [Times: user&#x3D;0.00 sys&#x3D;0.00, real&#x3D;0.00 secs] </span><br><span class="line">分配了1M</span><br><span class="line">max memory:20316160</span><br><span class="line">free memory:4093352</span><br><span class="line">total memory:6094848</span><br><span class="line">[GC (Allocation Failure) [DefNew: 1165K-&gt;78K(1856K), 0.0020417 secs][Tenured: 1812K-&gt;1890K(4096K), 0.0047059 secs] 1954K-&gt;1890K(5952K), [Metaspace: 3337K-&gt;3337K(1056768K)], 0.0068096 secs] [Times: user&#x3D;0.00 sys&#x3D;0.00, real&#x3D;0.01 secs] </span><br><span class="line">分配了4M</span><br><span class="line">max memory:20316160</span><br><span class="line">free memory:4157056</span><br><span class="line">total memory:10358784</span><br><span class="line">Heap</span><br><span class="line"> def new generation   total 1920K, used 87K [0x00000000fec00000, 0x00000000fee10000, 0x00000000ff2a0000)</span><br><span class="line">  eden space 1728K,   5% used [0x00000000fec00000, 0x00000000fec15c18, 0x00000000fedb0000)</span><br><span class="line">  from space 192K,   0% used [0x00000000fedb0000, 0x00000000fedb0000, 0x00000000fede0000)</span><br><span class="line">  to   space 192K,   0% used [0x00000000fede0000, 0x00000000fede0000, 0x00000000fee10000)</span><br><span class="line"> tenured generation   total 8196K, used 5986K [0x00000000ff2a0000, 0x00000000ffaa1000, 0x0000000100000000)</span><br><span class="line">   the space 8196K,  73% used [0x00000000ff2a0000, 0x00000000ff878bf8, 0x00000000ff878c00, 0x00000000ffaa1000)</span><br><span class="line"> Metaspace       used 3358K, capacity 4496K, committed 4864K, reserved 1056768K</span><br><span class="line">  class space    used 360K, capacity 388K, committed 512K, reserved 1048576K</span><br></pre></td></tr></table></figure>
+
+<p>我们可以来分析第三条GC信息，<code>[GC (Allocation Failure) [DefNew: 1165K-&gt;78K(1856K), 0.0020417 secs][Tenured: 1812K-&gt;1890K(4096K), 0.0047059 secs]</code><br>当我们分配完1M后想要再次分配4M时，我们可以看到，新生代进行垃圾回收，把我们之前申请的1M给释放掉了。</p>
+<h3 id="新生代的堆参数配置"><a href="#新生代的堆参数配置" class="headerlink" title="新生代的堆参数配置"></a>新生代的堆参数配置</h3><p>-Xmn：可以设置新生代的大小，设置一个比较大的新生代会减少老年代的大小，这个参数对系统性能以及GC行为由很大的影响，新生代大小一般会设置整个堆空间的1/3到1/4左右。</p>
+<p>-XX:SurvivorRatio：用来设置新生代中eden空间和from/to空间的比例。含义：-XX:SurvivorRatio=eden/from=eden/to </p>
+<p>不同的堆分布情况，对系统执行会产生一定的影响，在实际工作中，应该根据系统的特点做出合理的配置，基本策略：尽可能将对象预留在新生代，减少老年代的GC次数。</p>
+<p>除了可以设置新生代的绝对大小(-Xmn)，还可以使用(-XX:NewRatio)设置新生代和老年代的比例:-XX:NewRatio=老年代/新生代</p>
+<p>这个同样看一个demo，这个demo很简单：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Test02 &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		byte[] b &#x3D; null;</span><br><span class="line">		&#x2F;&#x2F;连续向系统申请10MB空间</span><br><span class="line">		for(int i &#x3D; 0 ; i &lt;10; i ++)&#123;</span><br><span class="line">			b &#x3D; new byte[1*1024*1024];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面进行参数配置：<br>-Xms20m -Xmx20m -Xmn1m -XX:SurvivorRatio=2 -XX:+PrintGCDetails -XX:+UseSerialGC</p>
+<p>运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[GC (Allocation Failure) [DefNew: 512K-&gt;256K(768K), 0.0013970 secs] 512K-&gt;428K(20224K), 0.0014444 secs] [Times: user&#x3D;0.00 sys&#x3D;0.00, real&#x3D;0.00 secs] </span><br><span class="line">[GC (Allocation Failure) [DefNew: 763K-&gt;110K(768K), 0.0017871 secs] 936K-&gt;539K(20224K), 0.0018198 secs] [Times: user&#x3D;0.00 sys&#x3D;0.00, real&#x3D;0.00 secs] </span><br><span class="line">[GC (Allocation Failure) [DefNew: 622K-&gt;256K(768K), 0.0011989 secs] 1050K-&gt;758K(20224K), 0.0012324 secs] [Times: user&#x3D;0.02 sys&#x3D;0.00, real&#x3D;0.00 secs] </span><br><span class="line">[GC (Allocation Failure) [DefNew: 757K-&gt;89K(768K), 0.0011294 secs] 1260K-&gt;838K(20224K), 0.0011645 secs] [Times: user&#x3D;0.00 sys&#x3D;0.00, real&#x3D;0.00 secs] </span><br><span class="line">Heap</span><br><span class="line"> def new generation   total 768K, used 450K [0x00000000fec00000, 0x00000000fed00000, 0x00000000fed00000)</span><br><span class="line">  eden space 512K,  70% used [0x00000000fec00000, 0x00000000fec5a598, 0x00000000fec80000)</span><br><span class="line">  from space 256K,  34% used [0x00000000fec80000, 0x00000000fec964a0, 0x00000000fecc0000)</span><br><span class="line">  to   space 256K,   0% used [0x00000000fecc0000, 0x00000000fecc0000, 0x00000000fed00000)</span><br><span class="line"> tenured generation   total 19456K, used 10989K [0x00000000fed00000, 0x0000000100000000, 0x0000000100000000)</span><br><span class="line">   the space 19456K,  56% used [0x00000000fed00000, 0x00000000ff7bb440, 0x00000000ff7bb600, 0x0000000100000000)</span><br><span class="line"> Metaspace       used 3344K, capacity 4496K, committed 4864K, reserved 1056768K</span><br><span class="line">  class space    used 359K, capacity 388K, committed 512K, reserved 1048576K</span><br></pre></td></tr></table></figure>
+
+<p>我们设置了1M的新生代，而SurvivorRatio=eden/form=eden/to=2，新生代=eden+form+to<br>所以可计算得eden=512k,form=to=256k，我们可以从下面看出我们的计算结果是对的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">eden space 512K,  70% used [0x00000000fec00000, 0x00000000fec5a598, 0x00000000fec80000)</span><br><span class="line">from space 256K,  34% used [0x00000000fec80000, 0x00000000fec964a0, 0x00000000fecc0000)</span><br><span class="line">to   space 256K,   0% used [0x00000000fecc0000, 0x00000000fecc0000, 0x00000000fed00000)</span><br></pre></td></tr></table></figure>
+<p>这里GC了四次，原因是每次都申请1M的空间，导致新生代的空间不够，需要GC来释放空间</p>
+<p>下面来看下面的参数配置，我们把新生代的空间设置为16M,运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[GC (Allocation Failure) [DefNew: 7793K-&gt;1894K(12288K), 0.0031032 secs] 7793K-&gt;1894K(16384K), 0.0031533 secs] [Times: user&#x3D;0.00 sys&#x3D;0.00, real&#x3D;0.00 secs] </span><br><span class="line">Heap</span><br><span class="line"> def new generation   total 12288K, used 7308K [0x00000000fec00000, 0x00000000ffc00000, 0x00000000ffc00000)</span><br><span class="line">  eden space 8192K,  66% used [0x00000000fec00000, 0x00000000ff149738, 0x00000000ff400000)</span><br><span class="line">  from space 4096K,  46% used [0x00000000ff800000, 0x00000000ff9d9a30, 0x00000000ffc00000)</span><br><span class="line">  to   space 4096K,   0% used [0x00000000ff400000, 0x00000000ff400000, 0x00000000ff800000)</span><br><span class="line"> tenured generation   total 4096K, used 0K [0x00000000ffc00000, 0x0000000100000000, 0x0000000100000000)</span><br><span class="line">   the space 4096K,   0% used [0x00000000ffc00000, 0x00000000ffc00000, 0x00000000ffc00200, 0x0000000100000000)</span><br><span class="line"> Metaspace       used 3245K, capacity 4496K, committed 4864K, reserved 1056768K</span><br><span class="line">  class space    used 352K, capacity 388K, committed 512K, reserved 1048576K</span><br></pre></td></tr></table></figure>
+
+<p>只GC了一次，计算可得eden=8M,所以当申请8M空间的时候eden不足，导致了一次GC.</p>
+<p>下面我们来看下面的参数配置：<br>-Xms20m -Xmx20m -XX:NewRatio=2 -XX:+PrintGCDetails -XX:+UseSerialGC</p>
+<p>其中-XX:NewRatio指的是：老年代/新生代</p>
+<p>运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[GC (Allocation Failure) [DefNew: 4763K-&gt;640K(6144K), 0.0033590 secs] 4763K-&gt;1903K(19840K), 0.0034123 secs] [Times: user&#x3D;0.00 sys&#x3D;0.00, real&#x3D;0.00 secs] </span><br><span class="line">[GC (Allocation Failure) [DefNew: 5919K-&gt;1K(6144K), 0.0023729 secs] 7183K-&gt;2929K(19840K), 0.0024088 secs] [Times: user&#x3D;0.00 sys&#x3D;0.00, real&#x3D;0.00 secs] </span><br><span class="line">Heap</span><br><span class="line"> def new generation   total 6144K, used 3263K [0x00000000fec00000, 0x00000000ff2a0000, 0x00000000ff2a0000)</span><br><span class="line">  eden space 5504K,  59% used [0x00000000fec00000, 0x00000000fef2f730, 0x00000000ff160000)</span><br><span class="line">  from space 640K,   0% used [0x00000000ff160000, 0x00000000ff160748, 0x00000000ff200000)</span><br><span class="line">  to   space 640K,   0% used [0x00000000ff200000, 0x00000000ff200000, 0x00000000ff2a0000)</span><br><span class="line"> tenured generation   total 13696K, used 2927K [0x00000000ff2a0000, 0x0000000100000000, 0x0000000100000000)</span><br><span class="line">   the space 13696K,  21% used [0x00000000ff2a0000, 0x00000000ff57be98, 0x00000000ff57c000, 0x0000000100000000)</span><br><span class="line"> Metaspace       used 3353K, capacity 4496K, committed 4864K, reserved 1056768K</span><br><span class="line">  class space    used 360K, capacity 388K, committed 512K, reserved 1048576K</span><br></pre></td></tr></table></figure>
+<p>我们可以分析一下，老年代/新生代=2，老年代+新生代=2M<br>那么def（新生代）大约0.6M多一点，tenured（老年代）大约1.3M，根据控制台这两句信息可以验证我们的结果：<br>def new generation   total 6144K<br>tenured generation   total 13696K</p>
+<h3 id="堆溢出处理"><a href="#堆溢出处理" class="headerlink" title="堆溢出处理"></a>堆溢出处理</h3><p>在java程序的运行过程中，如果堆空间不足，则会抛出内存溢出的错误(Out Of Menory) OOM,一旦这类问题发生在生产环境，可能引起严重的业务中断，java虚拟机提供了-XX:+HeapDumpOnOutOfMemoryError,使用该参数可以在内存溢出时导出整个堆消息，与之配合使用的还有参数，-XX:HeapDumpPath，可以设置导出堆的存放路径。</p>
+<p>内存分析工具：Memory Analyzer 1.5.0</p>
+<p>我们接下来看一个小例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test03</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		Vector v = <span class="keyword">new</span> Vector();</span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i &lt; <span class="number">5</span>; i ++)&#123;</span><br><span class="line">			v.add(<span class="keyword">new</span> Byte[<span class="number">100</span>*<span class="number">1024</span>*<span class="number">1024</span>]);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面在不加参数的情况下来运行这个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread <span class="string">"main"</span> java.lang.OutOfMemoryError: Java heap space</span><br><span class="line">	at jvm.base001.Test03.main(Test03.java:<span class="number">13</span>)</span><br></pre></td></tr></table></figure>
+<p>抛出了一个错误：OutOfMemoryError,这个就是注明的OOM，典型的堆内存超出的错误，我们需要做的是打印出内存溢出时的整个堆的信息，那么我们可以配置参数：</p>
+<p>我们再来重新运行一遍程序：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java.lang.OutOfMemoryError: Java heap space</span><br><span class="line">Dumping heap to D:/Test03.dump ...</span><br><span class="line">Heap dump file created [<span class="number">1175088</span> bytes in <span class="number">0.008</span> secs]</span><br><span class="line">Exception in thread <span class="string">"main"</span> java.lang.OutOfMemoryError: Java heap space</span><br><span class="line">	at unit1.finaltest.Test1.main(Test1.java:<span class="number">14</span>)</span><br></pre></td></tr></table></figure>
+<p>控制台已经提示，堆信息已经被输出到我的本地硬盘目录了</p>
+<p>我们可以使用相应的内存工具打开，打开.dump文件如图所示：</p>
+<p><img src="http://img.bcoder.top/2017.11.19/8.png" alt="业余学习之JVM组成及参数配置篇"></p>
+<h3 id="栈配置"><a href="#栈配置" class="headerlink" title="栈配置"></a>栈配置</h3><p>Java虚拟机提供了参数-Xss来指定线程的最大栈空间，整个参数也直接决定了函数可调用的最大深度。</p>
+<p>我们来看代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test04</span> </span>&#123;</span><br><span class="line">	<span class="comment">//栈调用深度</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> count;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">recursion</span><span class="params">()</span></span>&#123;</span><br><span class="line">		count++;</span><br><span class="line">		recursion();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			recursion();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">			System.out.println(<span class="string">"调用最大深度："</span> + count);</span><br><span class="line">			t.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果我们不加参数指定最大栈空间，可以输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">调用最大深度：15982</span><br><span class="line">java.lang.StackOverflowError</span><br><span class="line">	at jvm.base001.Test04.recursion(Test04.java:13)</span><br><span class="line">	at jvm.base001.Test04.recursion(Test04.java:13)</span><br><span class="line">	at jvm.base001.Test04.recursion(Test04.java:13)</span><br></pre></td></tr></table></figure>
+
+<p>如果指定为：-Xss1m</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">调用最大深度：17741</span><br><span class="line">java.lang.StackOverflowError</span><br><span class="line">	at jvm.base001.Test04.recursion(Test04.java:13)</span><br><span class="line">	at jvm.base001.Test04.recursion(Test04.java:13)</span><br><span class="line">	at jvm.base001.Test04.recursion(Test04.java:13)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h3><p>和Java堆一样，方法区是一块所有线程共享的内存区域，它用于保存系统的类信息，方案区(永久区)可以保存多少信息可以对其进行配置，在默认情况下，-XX:MaxPermSize为64MB，如果系统运行时生产大量的类，就需要设置一个相对合适的方法区，以免出现永久区内存溢出的问题。</p>
+<p>配置方法区的参数如下：<br>-XX:PermSize=64M -XX:MaxPermSize=64M</p>
+<h3 id="直接内存配置"><a href="#直接内存配置" class="headerlink" title="直接内存配置"></a>直接内存配置</h3><p>直接内存也是java程序中非常重要的组成部分，特别是广泛用在NIO中，直接内存跳过了java堆，是java程序可以直接访问原生堆空间，因此在一定程度上加快了内存空间的访问速度。但是说直接内存一定就可以提高内存访问速度也不见得，具体情况具体分析。</p>
+<p>相关配置参数：-XX:MaxDirectMemorySize,如果不设置默认值为最大堆空间，即-Xmx。直接内存使用达到上限时，就会触发垃圾回收，如果不能有效的释放空间，也会引起系统的OOM；</p>
+<p>在JKD1.7之后，不用考虑这个。</p>
+<h3 id="JVM-Client模式和Server工作模式"><a href="#JVM-Client模式和Server工作模式" class="headerlink" title="JVM Client模式和Server工作模式"></a>JVM Client模式和Server工作模式</h3><p>我们把jdk安装完成后，在命名行输入java -version</p>
+<p>不仅可以看到jdk版本相关信息，还会看到类似与 Java HotSpot(TM) 64-Bit Server VM (build 25.31-b07, mixed mode) 这样的信息。</p>
+<p>其中有个Server VM (build 25.31-b07, mixed mode)其实代表了JVM的Server模式了。</p>
+<p>当然JVM还有一个Client模式。</p>
+<p><strong>JVM Server模式与client模式启动的差别？</strong></p>
+<p>最主要的差别在于：-Server模式启动时，速度较慢，但是一旦运行起来后，性能将会有很大的提升.原因是:</p>
+<p>当虚拟机运行在-client模式的时候,使用的是一个代号为C1的轻量级编译器, 而-server模式启动的虚拟机采用相对重量级,代号为C2的编译器. C2比C1编译器编译的相对彻底,,服务起来之后,性能更高.</p>
+<p>所以通常用于做服务器的时候我们用服务端模式，如果你的电脑只是运行一下java程序，就客户端模式就可以了。当然这些都是我们做程序优化程序才需要这些东西的，普通人并不关注这些专业的东西了。其实服务器模式即使编译更彻底，然后垃圾回收优化更好，这当然吃的内存要多点相对于客户端模式。</p>
+<p><strong>怎么修改JVM的启动模式呢？</strong></p>
+<p>64位系统默认在 JAVA_HOME/jre/lib/amd64/jvm.cfg</p>
+<p>32在目录JAVA_HOME/jre/lib/i386/jvm.cfg</p>
+<p>我的配置是这样的，所以是已服务器模式启动的，当然，你想换成client模式的话，把两个对调一下就可以了。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/11/19/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BJVM%E7%BB%84%E6%88%90%E5%8F%8A%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E7%AF%87/>https://www.bcoder.top/2017/11/19/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BJVM%E7%BB%84%E6%88%90%E5%8F%8A%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E7%AF%87/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E6%A0%88/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>栈</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/JVM/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>JVM</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/%E5%A0%86/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>堆</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/JVM%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>JVM参数配置</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/11/19/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BJVM%E7%BB%84%E6%88%90%E5%8F%8A%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E7%AF%87/&title=业余学习之JVM组成及参数配置篇 - zln's blog&summary=
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/11/19/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BJVM%E7%BB%84%E6%88%90%E5%8F%8A%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E7%AF%87/&title=业余学习之JVM组成及参数配置篇 - zln's blog&summary=
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/11/19/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BJVM%E7%BB%84%E6%88%90%E5%8F%8A%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E7%AF%87/&title=业余学习之JVM组成及参数配置篇 - zln's blog&summary=
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/11/20/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BJVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>业余学习之JVM垃圾回收篇</p>
+                <p class='content'>
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+垃圾回收简介谈到垃圾回收（Garbage Collection，简称GC）,需要先澄清什么是垃圾...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/11/18/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8BNetty%E6%A1%86%E6%9E%B6%E5%BA%94%E7%94%A8%E7%AF%87/'>
+                <p class='title'>业余学习之网络编程Netty框架应用篇<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+Netty应用场景之数据通信数据通信场景下的基本解决方案我们需要了解在真正项目中如何使用Nett...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '业余学习之JVM组成及参数配置篇',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#java虚拟机介绍"><span class="toc-text">java虚拟机介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JVM组成"><span class="toc-text">JVM组成</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#栈、堆、方法区的概念与联系"><span class="toc-text">栈、堆、方法区的概念与联系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#深入理解java堆"><span class="toc-text">深入理解java堆</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#深入理解java栈"><span class="toc-text">深入理解java栈</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#深入理解方法区"><span class="toc-text">深入理解方法区</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#虚拟机参数介绍及配置"><span class="toc-text">虚拟机参数介绍及配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#虚拟机参数介绍"><span class="toc-text">虚拟机参数介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#堆分配基本参数配置"><span class="toc-text">堆分配基本参数配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#新生代的堆参数配置"><span class="toc-text">新生代的堆参数配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#堆溢出处理"><span class="toc-text">堆溢出处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#栈配置"><span class="toc-text">栈配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法区"><span class="toc-text">方法区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#直接内存配置"><span class="toc-text">直接内存配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JVM-Client模式和Server工作模式"><span class="toc-text">JVM Client模式和Server工作模式</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

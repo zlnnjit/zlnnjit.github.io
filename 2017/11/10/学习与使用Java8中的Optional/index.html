@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>学习与使用Java8中的Optional - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="java8,Optional">
+  
+  
+    <meta name="description" content="前言从Java 8引入的一个很有趣的特性是Optional类。Optional类主要解决的问题是臭名昭著的空指针异常（NullPointerException）——每个Java程序员都非常了解的异常。
+本质上，这是一个包含有可选值的包装类，这意味着Optional类既可以含有对象也可以为空。
+Optional是J...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/11/10/%E5%AD%A6%E4%B9%A0%E4%B8%8E%E4%BD%BF%E7%94%A8Java8%E4%B8%AD%E7%9A%84Optional/">
+        学习与使用Java8中的Optional
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/java/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>java</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-11-10 19:43:28</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>从Java 8引入的一个很有趣的特性是Optional类。Optional类主要解决的问题是臭名昭著的空指针异常（NullPointerException）——每个Java程序员都非常了解的异常。</p>
+<p>本质上，这是一个包含有可选值的包装类，这意味着Optional类既可以含有对象也可以为空。</p>
+<p>Optional是Java实现函数式编程的强劲一步，并且帮助在范式中实现。但是Optional 的意义显然不止于此。</p>
+<a id="more"></a>
+
+<p>下面通过例子来看看Optional如何进行使用：</p>
+<p>首先构建Customer实体类:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Customer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Customer&#123;"</span> +</span><br><span class="line">                <span class="string">"name='"</span> + name + <span class="string">'\''</span> +</span><br><span class="line">                <span class="string">", age="</span> + age +</span><br><span class="line">                <span class="string">'&#125;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Customer</span><span class="params">(String name, <span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>假设我们有一个Customer实例化的对象customer，比如我们要得到customer的年龄，我们很可能写如下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Customer customer  = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">int</span> age = customer.getAge();</span><br><span class="line">    System.out.println(age);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样的结果就是很容易会产生空指针异常；</p>
+<p>传统的方式我们可以采用if判空的方式进行避免空指针</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Customer customer  = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">int</span> age = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (customer!=<span class="keyword">null</span>)&#123;</span><br><span class="line">        age = customer.getAge();</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(age);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>这很容易就变得冗长，难以维护。</p>
+<p>为了简化这个过程，我们来看看用Optional类是怎么做的。从创建和验证实例，到使用其不同的方法，并与其它返回相同类型的方法相结合，下面是见证Optional奇迹的时刻。</p>
+<h2 id="创建Optional实例"><a href="#创建Optional实例" class="headerlink" title="创建Optional实例"></a>创建Optional实例</h2><p>这个类型的对象可能包含值，也可能为空。你可以使用同名方法创建一个空的Optional。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Optional&lt;Object&gt; optional = Optional.empty();</span><br><span class="line">    System.out.println(optional.get());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>毫不奇怪，尝试访问optional变量的值会导致NoSuchElementException。</p>
+<p>你可以使用of()和ofNullable()方法创建包含值的Optional。两个方法的不同之处在于如果你把null值作为参数传递进去，of()方法会抛出NullPointerException：</p>
+<p>下面我们来测试一下使用一个空的Customer测试一下of()方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Customer customer = <span class="keyword">null</span>;</span><br><span class="line">    Optional&lt;Customer&gt; optional = Optional.of(customer);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread &quot;main&quot; java.lang.NullPointerException</span><br><span class="line">	at java.util.Objects.requireNonNull(Objects.java:203)</span><br><span class="line">	at java.util.Optional.&lt;init&gt;(Optional.java:96)</span><br><span class="line">	at java.util.Optional.of(Optional.java:108)</span><br><span class="line">	at blog.optional.Main.test3(Main.java:14)</span><br><span class="line">	at blog.optional.Main.main(Main.java:9)</span><br></pre></td></tr></table></figure>
+
+<p>你看，我们并没有完全摆脱NullPointerException。因此，你应该明确对象不为null  的时候使用of()。</p>
+<p>如果对象即可能是null也可能是非null，你就应该使用ofNullable()方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test4</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Customer customer = <span class="keyword">null</span>;</span><br><span class="line">    Optional&lt;Customer&gt; optional = Optional.ofNullable(customer);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="访问Optional对象的值"><a href="#访问Optional对象的值" class="headerlink" title="访问Optional对象的值"></a>访问Optional对象的值</h3><p>从Optional实例中取回实际值对象的方法之一是使用 get() 方法：<br>如果我们不加判定的话，还是会出现异常，例如下面代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test5</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Customer customer = <span class="keyword">null</span>;</span><br><span class="line">    Optional&lt;Customer&gt; optional = Optional.ofNullable(customer);</span><br><span class="line">    System.out.println(optional.get());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码还是会出现空指针。</p>
+<p>因此，我们在使用之前要对其进行验证：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test6</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Customer customer1 = <span class="keyword">null</span>;</span><br><span class="line">    Optional&lt;Customer&gt; opt1 = Optional.ofNullable(customer1);</span><br><span class="line">    <span class="keyword">if</span> (opt1.isPresent())&#123;</span><br><span class="line">        System.out.println(<span class="string">"customer1:"</span>+opt1.get());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Customer customer2 = <span class="keyword">new</span> Customer(<span class="string">"a"</span>,<span class="number">11</span>);</span><br><span class="line">    Optional&lt;Customer&gt; opt2 = Optional.ofNullable(customer2);</span><br><span class="line">    <span class="keyword">if</span> (opt2.isPresent())&#123;</span><br><span class="line">        System.out.println(<span class="string">"customer2:"</span>+opt2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">customer2:Optional[Customer&#123;name=<span class="string">'a'</span>, age=<span class="number">11</span>&#125;]</span><br></pre></td></tr></table></figure>
+
+<p>检查是否有值的另一个选择是ifPresent()方法。该方法除了执行检查，还接受一个Consumer(消费者) 参数，如果对象不是空的，就对执行传入的 Lambda 表达式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test7</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Customer customer = <span class="keyword">new</span> Customer(<span class="string">"a"</span>,<span class="number">11</span>);</span><br><span class="line">    Optional&lt;Customer&gt; opt = Optional.ofNullable(customer);</span><br><span class="line">    opt.ifPresent(u-&gt; System.out.println(u));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>打印结果和上面的结果一致</p>
+<h3 id="返回默认值"><a href="#返回默认值" class="headerlink" title="返回默认值"></a>返回默认值</h3><p>Optional类提供了API用以返回对象值，或者在对象为空的时候返回默认值。</p>
+<p>这里你可以使用的第一个方法是orElse()，它的工作方式非常直接，如果有值则返回该值，否则返回传递给它的参数值：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test8</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Customer cust = <span class="keyword">null</span>;</span><br><span class="line">    Customer cust1 = <span class="keyword">new</span> Customer(<span class="string">"a"</span>,<span class="number">11</span>);</span><br><span class="line">    Customer result = Optional.ofNullable(cust).orElse(cust1);</span><br><span class="line">    System.out.println(result);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Customer&#123;name=<span class="string">'a'</span>, age=<span class="number">11</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里cust对象是空的，所以返回了作为默认值的cust1。</p>
+<p>如果对象的初始值不是null，那么默认值会被忽略：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test9</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Customer cust = <span class="keyword">new</span> Customer(<span class="string">"b"</span>,<span class="number">50</span>);</span><br><span class="line">    Customer cust1 = <span class="keyword">new</span> Customer(<span class="string">"a"</span>,<span class="number">11</span>);</span><br><span class="line">    Customer result = Optional.ofNullable(cust).orElse(cust1);</span><br><span class="line">    System.out.println(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果即为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Customer&#123;name&#x3D;&#39;b&#39;, age&#x3D;50&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>第二个同类型的API是orElseGet()——其行为略有不同。这个方法会在有值的时候返回值，如果没有值，它会执行作为参数传入的Supplier(供应者)函数式接口，并将返回其执行结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test10</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Customer cust = <span class="keyword">new</span> Customer(<span class="string">"b"</span>,<span class="number">50</span>);</span><br><span class="line">    Customer cust1 = <span class="keyword">new</span> Customer(<span class="string">"a"</span>,<span class="number">11</span>);</span><br><span class="line">    Customer result = Optional.ofNullable(cust).orElseGet(()-&gt;cust1);</span><br><span class="line">    System.out.println(result);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Customer&#123;name=<span class="string">'b'</span>, age=<span class="number">50</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>orElse()和orElseGet()的不同之处</strong></p>
+<p>乍一看，这两种方法似乎起着同样的作用。然而事实并非如此。我们创建一些示例来突出二者行为上的异同。</p>
+<p>我们先来看看对象为空时他们的行为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test11</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Customer cust = <span class="keyword">null</span>;</span><br><span class="line">    Customer result = Optional.ofNullable(cust).orElseGet(()-&gt;setCustomer());</span><br><span class="line">    System.out.println(result);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Customer <span class="title">setCustomer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"执行setCustomer()方法"</span>);</span><br><span class="line">    Customer customer = <span class="keyword">new</span> Customer(<span class="string">"a"</span>,<span class="number">11</span>);</span><br><span class="line">    <span class="keyword">return</span> customer;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">执行setCustomer()方法</span><br><span class="line">Customer&#123;name&#x3D;&#39;a&#39;, age&#x3D;11&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="返回异常"><a href="#返回异常" class="headerlink" title="返回异常"></a>返回异常</h3><p>除了orElse()和orElseGet()方法，Optional还定义了orElseThrow() API—— 它会在对象为空的时候抛出异常，而不是返回备选的值：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test12</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Customer cust = <span class="keyword">null</span>;</span><br><span class="line">    Customer result = Optional.ofNullable(cust).orElseThrow(()-&gt;<span class="keyword">new</span> RuntimeException(<span class="string">"customer为空"</span>));</span><br><span class="line">    System.out.println(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread &quot;main&quot; java.lang.RuntimeException: customer为空</span><br><span class="line">	at blog.optional.Main.lambda$test12$0(Main.java:14)</span><br><span class="line">	at blog.optional.Main$$Lambda$1&#x2F;603742814.get(Unknown Source)</span><br><span class="line">	at java.util.Optional.orElseThrow(Optional.java:290)</span><br><span class="line">	at blog.optional.Main.test12(Main.java:14)</span><br><span class="line">	at blog.optional.Main.main(Main.java:9)</span><br></pre></td></tr></table></figure>
+
+<p>这里，如果customer值为null，会抛出RuntimeException。</p>
+<p>这个方法让我们有更丰富的语义，可以决定抛出什么样的异常，而不总是抛出NullPointerException。</p>
+<p>现在我们已经很好地理解了如何使用Optional，我们来看看其它可以对Optional值进行转换和过滤的方法。</p>
+<h2 id="转换值"><a href="#转换值" class="headerlink" title="转换值"></a>转换值</h2><p>有很多种方法可以转换Optional的值。我们从map()和flatMap()方法开始。</p>
+<p>先来看一个使用map() API的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test13</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Customer customer = <span class="keyword">new</span> Customer(<span class="string">"a"</span>, <span class="number">11</span>);</span><br><span class="line">    String name = Optional.ofNullable(customer).map(c -&gt; c.getName()).orElse(<span class="string">"default"</span>);</span><br><span class="line">    System.out.println(name);</span><br><span class="line"></span><br><span class="line">    Customer customer2 = <span class="keyword">new</span> Customer(<span class="keyword">null</span>,<span class="number">11</span>);</span><br><span class="line">    String name2 = Optional.ofNullable(customer2).map(c -&gt; c.getName()).orElse(<span class="string">"default"</span>);</span><br><span class="line">    System.out.println(name2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a</span><br><span class="line">default</span><br></pre></td></tr></table></figure>
+
+<p>map()对值应用(调用)作为参数的函数，然后将返回的值包装在Optional中。这就使对返回值进行链试调用的操作成为可能 —— 这里的下一环就是orElse()。</p>
+<p>相比这下，flatMap()也需要函数作为参数，并对值调用这个函数，然后直接返回结果。</p>
+<p>下面的操作中，我们给Customer类添加了一个方法，用来返回Optional：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Optional&lt;String&gt; <span class="title">getOptionalName</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Optional.ofNullable(name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>既然getter方法返回String值的Optional，你可以在对Customer的Optional对象调用 flatMap()时，用它作为参数。其返回的值是解除包装的String值：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test14</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Customer customer = <span class="keyword">new</span> Customer(<span class="string">"a"</span>, <span class="number">11</span>);</span><br><span class="line">    String name = Optional.ofNullable(customer).flatMap(cust -&gt; cust.getOptionalName()).orElse(<span class="string">"default"</span>);</span><br><span class="line">    System.out.println(name);</span><br><span class="line"></span><br><span class="line">    Customer customer2 = <span class="keyword">new</span> Customer(<span class="keyword">null</span>, <span class="number">11</span>);</span><br><span class="line">    String name2 = Optional.ofNullable(customer2).flatMap(cust -&gt; cust.getOptionalName()).orElse(<span class="string">"default"</span>);</span><br><span class="line">    System.out.println(name2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a</span><br><span class="line">default</span><br></pre></td></tr></table></figure>
+
+
+<p>除了转换值之外，Optional类也提供了按条件“过滤”值的方法。</p>
+<p>filter()接受一个Predicate参数，返回测试结果为true的值。如果测试结果为false，会返回一个空的Optional。</p>
+<h2 id="Optional应该怎样用？"><a href="#Optional应该怎样用？" class="headerlink" title="Optional应该怎样用？"></a>Optional应该怎样用？</h2><p>在使用Optional的时候需要考虑一些事情，以决定什么时候怎样使用它。</p>
+<p>重要的一点是Optional不是Serializable。因此，它不应该用作类的字段。</p>
+<p>如果你需要序列化的对象包含Optional值，Jackson库支持把Optional当作普通对象。也就是说，Jackson会把空对象看作null，而有值的对象则把其值看作对应域的值。这个功能在jackson-modules-java8 项目中。</p>
+<p>Optional 主要用作返回类型。在获取到这个类型的实例后，如果它有值，你可以取得这个值，否则可以进行一些替代行为。</p>
+<p>Optional类有一个非常有用的用例，就是将其与流或其它返回Optional的方法结合，以构建流畅的API。</p>
+<p>我们来看一个示例，使用Stream返回Optional对象的findFirst()方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test15</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    List&lt;Customer&gt; customers = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    Customer customer = customers.stream().findFirst().orElse(<span class="keyword">new</span> Customer(<span class="string">"a"</span>, <span class="number">11</span>));</span><br><span class="line">    System.out.println(customer);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Customer&#123;name&#x3D;&#39;a&#39;, age&#x3D;11&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Optional是Java语言的有益补充——它旨在减少代码中的NullPointerExceptions，虽然还不能完全消除这些异常。</p>
+<p>它也是精心设计，自然融入Java 8函数式支持的功能。</p>
+<p>总的来说，这个简单而强大的类有助于创建简单、可读性更强、比对应程序错误更少的程序。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/11/10/%E5%AD%A6%E4%B9%A0%E4%B8%8E%E4%BD%BF%E7%94%A8Java8%E4%B8%AD%E7%9A%84Optional/>https://www.bcoder.top/2017/11/10/%E5%AD%A6%E4%B9%A0%E4%B8%8E%E4%BD%BF%E7%94%A8Java8%E4%B8%AD%E7%9A%84Optional/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/java8/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>java8</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Optional/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Optional</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/11/10/%E5%AD%A6%E4%B9%A0%E4%B8%8E%E4%BD%BF%E7%94%A8Java8%E4%B8%AD%E7%9A%84Optional/&title=学习与使用Java8中的Optional - zln's blog&summary=前言从Java 8引入的一个很有趣的特性是Optional类。Optional类主要解决的问题是臭名昭著的空指针异常（NullPointerException）——每个Java程序员都非常了解的异常。
+本质上，这是一个包含有可选值的包装类，这意味着Optional类既可以含有对象也可以为空。
+Optional是Java实现函数式编程的强劲一步，并且帮助在范式中实现。但是Optional 的意义显然不止于此。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/11/10/%E5%AD%A6%E4%B9%A0%E4%B8%8E%E4%BD%BF%E7%94%A8Java8%E4%B8%AD%E7%9A%84Optional/&title=学习与使用Java8中的Optional - zln's blog&summary=前言从Java 8引入的一个很有趣的特性是Optional类。Optional类主要解决的问题是臭名昭著的空指针异常（NullPointerException）——每个Java程序员都非常了解的异常。
+本质上，这是一个包含有可选值的包装类，这意味着Optional类既可以含有对象也可以为空。
+Optional是Java实现函数式编程的强劲一步，并且帮助在范式中实现。但是Optional 的意义显然不止于此。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/11/10/%E5%AD%A6%E4%B9%A0%E4%B8%8E%E4%BD%BF%E7%94%A8Java8%E4%B8%AD%E7%9A%84Optional/&title=学习与使用Java8中的Optional - zln's blog&summary=前言从Java 8引入的一个很有趣的特性是Optional类。Optional类主要解决的问题是臭名昭著的空指针异常（NullPointerException）——每个Java程序员都非常了解的异常。
+本质上，这是一个包含有可选值的包装类，这意味着Optional类既可以含有对象也可以为空。
+Optional是Java实现函数式编程的强劲一步，并且帮助在范式中实现。但是Optional 的意义显然不止于此。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/11/11/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8BDisruptor%E6%A1%86%E6%9E%B6%E7%AF%87/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>业余学习之并发编程Disruptor框架篇</p>
+                <p class='content'>
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+Disruptor并发框架简介Martin Fowler在自己网站上写了一篇LMAX架构的文章，...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/11/07/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8B%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E9%AB%98%E7%BA%A7%E7%AF%87/'>
+                <p class='title'>业余学习之并发编程高级篇<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+
+线程池线程池，顾名思义是线程的池子。当任务提交给线程池的时候，线程池会安排一个空闲的线程去执行...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '学习与使用Java8中的Optional',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#创建Optional实例"><span class="toc-text">创建Optional实例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#访问Optional对象的值"><span class="toc-text">访问Optional对象的值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#返回默认值"><span class="toc-text">返回默认值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#返回异常"><span class="toc-text">返回异常</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#转换值"><span class="toc-text">转换值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Optional应该怎样用？"><span class="toc-text">Optional应该怎样用？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>业余学习之Redis初级篇 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="Redis,NoSQL">
+  
+  
+    <meta name="description" content="
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/11/24/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRedis%E5%88%9D%E7%BA%A7%E7%AF%87/">
+        业余学习之Redis初级篇
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/deep/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>deep</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-11-24 19:42:23</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言</p>
+</blockquote>
+<p>本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。</p>
+<a id="more"></a>
+
+<p>本文主要讲解Redis的介绍、安装以及基本的数据结构，相关Redis博客可参阅：<a href="https://www.bcoder.top/2017/06/10/Redis-%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" target="_blank" rel="noopener">Redis 学习总结</a></p>
+<h2 id="NoSQL简介"><a href="#NoSQL简介" class="headerlink" title="NoSQL简介"></a>NoSQL简介</h2><h3 id="NoSQL分类"><a href="#NoSQL分类" class="headerlink" title="NoSQL分类"></a>NoSQL分类</h3><p>NoSQL，泛指非关系型的数据库，NoSQL数据库的四大分类：</p>
+<p><strong>键值(Key-Value)存储数据库</strong>：这一类数据库主要会使用到一个哈希表，这个表中有一个特定的键和一个指针指向特定的数据<br>相关产品： <code>Redis</code>，<code>Voldemort</code>，<code>Oracle BDB</code>、<code>Tokyo Cabinet/Tyrant</code>、<code>Berkeley DB</code><br><strong>典型应用</strong>： 内容缓存，主要用于处理大量数据的高访问负载。<br><strong>数据模型</strong>： 一系列键值对<br><strong>优势</strong>： 快速查询<br><strong>劣势</strong>： 存储的数据缺少结构化</p>
+<p><strong>列存储数据库</strong>：这部分数据库通常是用来应对分布式存储的海量数据。键仍然存在，但是，它们的特点是指向了多个列。<br><strong>相关产品</strong>：<code>Cassandra</code>, <code>HBase</code>, <code>Riak</code><br><strong>典型应用</strong>：分布式的文件系统<br><strong>数据模型</strong>：以列簇式存储，将同一列数据存在一起<br><strong>优势</strong>：查找速度快，可扩展性强，更容易进行分布式扩展<br><strong>劣势</strong>：功能相对局限</p>
+<p><strong>文档型数据库</strong>:该类型的数据模型是版本化的文档，半结构化的文档以特定的格式存储，比如JSON。文档型数据库可以看作是键值数据库的升级版，允许之间嵌套键而且文档型数据库比键值数据库的查询效率更高。<br><strong>相关产品</strong>：<code>CouchDB</code>、<code>MongoDB</code><br><strong>典型应用</strong>：Web应用（与Key-Value类似，Value是结构化的）<br><strong>数据模型</strong>： 一系列键值对<br><strong>优势</strong>：数据结构要求不严格<br><strong>劣势</strong>： 查询性能不高，而且缺乏统一的查询语法</p>
+<p><strong>图形(Graph)数据库</strong>：图形结构的数据库同其他行列以及刚性结构的SQL数据库不同，它是使用灵活的图形模型，并且能够扩展到多个服务器上。NoSQL数据库没有标准的查询语言(SQL)，因此进行数据库查询需要制定数据模型。许多NoSQL数据库都由REST式的数据接口或者查询API。<br><strong>相关产品</strong>：<code>Neo4J</code>、<code>InfoGrid</code>、<code>Infinite Graph</code><br><strong>典型应用</strong>：社交网络<br><strong>数据模型</strong>：图结构<br><strong>优势</strong>：利用图结构相关算法。<br><strong>劣势</strong>：需要对整个图做计算才能得出结果，不容易做分布式的集群方案</p>
+<h3 id="非关系型数据库特点"><a href="#非关系型数据库特点" class="headerlink" title="非关系型数据库特点"></a>非关系型数据库特点</h3><p>1、数据模型比较简单。</p>
+<p>2、需要灵活性更强的IT系统。</p>
+<p>3、对数据库性能要求较高。</p>
+<p>4、不需要高度的数据一致性。</p>
+<p>5、对于给定key，比较容易映射复杂值的环境。</p>
+<h2 id="Redis简介"><a href="#Redis简介" class="headerlink" title="Redis简介"></a>Redis简介</h2><p>是以<strong>key-value</strong>形式存储，和传统的关系型数据库不一样，不一定遵循传统数据库的一些基本要求(非关系型的，分布式的，开源的，水平可扩展的)</p>
+<h3 id="Redis优缺点"><a href="#Redis优缺点" class="headerlink" title="Redis优缺点"></a>Redis优缺点</h3><p>优点：<br>对数据高并发读写<br>对海量数据的高效率存储和访问<br>对数据的可扩展性和高可用性<br>Redis具备一定的可靠性</p>
+<p>缺点：<br>redis(ACID处理非常简单)<br>无法做到太复杂的关系数据库模型</p>
+<p>Redis是以key-value store存储，data structure service 数据结构服务器。键可以包含：<strong>(string)字符串，哈希，(list)链表，(set)集合，(zset)有序集合</strong>。这些数据集合都支持push/pop、add/remove及取交集和并集以及更丰富的操作，redis支持各种不同的方式排序，为了保证效率，数据都是缓存在内存中，它也可以周期性的把更新的数据写入磁盘或者把修改操作写入追加到文件里。</p>
+<p>下面我们对有点进行简略的分析：</p>
+<h3 id="高并发读写"><a href="#高并发读写" class="headerlink" title="高并发读写"></a>高并发读写</h3><p>我们来看下面一个图：</p>
+<p><img src="http://img.bcoder.top/2017.11.24/1.png" alt="业余学习之Redis初级篇"></p>
+<p>通常，我们会将Redis服务器进行集群，并且采用主从模式（多个主节点和多个从节点），主节点主要负责数据的写（也可以进行读数据操作），从节点只负责读取数据，主节点会将数据定时或者实时（根据业务需要进行设计）的同步到从节点。从而实现数据的一致性，保证了并发访问。</p>
+<h3 id="可扩展性"><a href="#可扩展性" class="headerlink" title="可扩展性"></a>可扩展性</h3><p>我们来看下面这张图：</p>
+<p><img src="http://img.bcoder.top/2017.11.24/2.png" alt="业余学习之Redis初级篇"></p>
+<p>在我们的生产环境中，有时候我们的Redis服务器的硬盘会存在数据满载的情况，如果继续进行写入，主节点将会出现意想不到的故障，那么我们就要对服务器进行拓展，一般有两种方式，水平拓展和垂直拓展，</p>
+<p>我们先来看一下水平拓展，水平拓展简单来说，就是加机器，添加若干台主节点和从节点，新写入的数据放入新的主从节点中。</p>
+<p><img src="http://img.bcoder.top/2017.11.24/3.png" alt="业余学习之Redis初级篇"></p>
+<p>垂直拓展的意思就是直接往相关的机器中添加硬盘。</p>
+<p><img src="http://img.bcoder.top/2017.11.24/4.png" alt="业余学习之Redis初级篇"></p>
+<h3 id="高可用性"><a href="#高可用性" class="headerlink" title="高可用性"></a>高可用性</h3><p>主从模式的好处显而易见，但是坏处也是显而易见的，也就是会出现单点故障的问题（单台主节点故障，导致整个主从网络无法正常工作）</p>
+<p><img src="http://img.bcoder.top/2017.11.24/5.png" alt="业余学习之Redis初级篇"></p>
+<p>而我们所说的高可用性，就是不止一个主节点（比如两个主节点，另一个主节点为备份主节点），当主节点宕机时，备份主节点会迅速接替主节点的工作，成为新的主节点，从而保证其正常运行。</p>
+<p><img src="http://img.bcoder.top/2017.11.24/6.png" alt="业余学习之Redis初级篇"></p>
+<h3 id="Redis可靠性"><a href="#Redis可靠性" class="headerlink" title="Redis可靠性"></a>Redis可靠性</h3><p><img src="http://img.bcoder.top/2017.11.24/7.png" alt="业余学习之Redis初级篇"></p>
+<p>Redis可靠性主要体现在对缓存数据的持久化。Redis支持两种持久化的方式：RDB和AOF,其中，RDB是定期将数据存到硬盘，AOF是实时存Redis的操作命令（相当于保存操作的脚本），一般来说，我们选用AOF这种方式来保证Redis可靠性。</p>
+<h3 id="Redis模式"><a href="#Redis模式" class="headerlink" title="Redis模式"></a>Redis模式</h3><p>Redis主要有三种模式，分别为主从模式，哨兵模式以及集群模式。</p>
+<p>之前我们就已经见过主从模式，主从模式是指由一个主节点，若干个从节点。优点之前也说过，能够保证高并发读写，缺点就是单点失效。</p>
+<p><img src="http://img.bcoder.top/2017.11.24/8.png" alt="业余学习之Redis初级篇"></p>
+<p>为了避免单点失效的问题，产生了一种新的模式，叫做哨兵模式，哨兵模式如下图所示：</p>
+<p><img src="http://img.bcoder.top/2017.11.24/9.png" alt="业余学习之Redis初级篇"></p>
+<p>如上图所示，我们有一台哨兵节点，用来监控三台机器，一旦主节点故障，哨兵会进行选举从节点转变成主节点，原先的主节点恢复后，变成从节点。<br>这种方式的优点是解决了单点失效的问题，缺点是在主节点故障时选举新的主节点需要一定时间，同时数据也可以会丢失。</p>
+<p>下面来介绍一下集群模式：</p>
+<p><img src="http://img.bcoder.top/2017.11.24/10.jpg" alt="业余学习之Redis初级篇"></p>
+<p>M1，M2，M3为redis三个主节点，S1，S2，S3为redis三个从节点，分别为M1，M2，M3备份数据以及故障切换使用。APP访问数据库可以通过连接任意一个Master节点实现。在三个Master节点的redis集群中，只容许有一个Master出故障，当多于一个Master宕机时，redis即不可用。当其中一个Master出现故障，其对应的Slave会接管故障Master的服务，保证redis 数据库的正常使用。</p>
+<h2 id="Redis安装"><a href="#Redis安装" class="headerlink" title="Redis安装"></a>Redis安装</h2><p>详细的安装步骤：</p>
+<p>1 首先需要安装gcc，把下载好的redis-3.0.0-rc2.tar.gz 放到linux /usr/local文件夹下（下载地址<a href="http://redis.io/download）" target="_blank" rel="noopener">http://redis.io/download）</a></p>
+<p>2 进行解压:<code>tar -zxvf redis-3.0.0-rc2.tar.gz</code></p>
+<p>3 进入到redis-3.0.0目录下，进行编译 make<br>编译完成后，如下图所示：</p>
+<p><img src="http://img.bcoder.top/2017.11.24/11.png" alt="业余学习之Redis初级篇"></p>
+<p>4 进入到src下进行安装<code>make install</code>验证(ll查看src下的目录，有redis-server 、redis-cil即可)</p>
+<p>5 建立2个文件夹存放redis命令和配置文件<br><code>mkdir -p /usr/local/redis/etc</code><br><code>mkdir -p /usr/local/redis/bin</code></p>
+<p>6 把redis-3.0.0下的redis.conf 移动到/usr/local/redis/etc下，<br><code>cp redis.conf /usr/local/redis/etc/</code></p>
+<p>7 把redis-3.0.0/src里的mkreleasehdr.sh、redis-benchmark、redis-check-aof、redis-check-dump、redis-cli、redis-server<br>文件移动到bin下，命令：<br><code>mv mkreleasehdr.sh redis-benchmark redis-check-aof redis-check-dump redis-cli redis-server /usr/local/redis/bin</code></p>
+<p>最后redis目录如下图:</p>
+<p><img src="http://img.bcoder.top/2017.11.24/12.png" alt="业余学习之Redis初级篇"></p>
+<p>8 启动时并指定配置文件：<code>./redis-server /usr/local/redis/etc/redis.conf</code><br>（注意要使用后台启动，所以修改redis.conf里的 daemonize 改为yes)</p>
+<p>9 验证启动是否成功：<br><code>ps -ef | grep redis</code>查看是否有redis服务<br>或者查看端口：<code>netstat -tunpl | grep 6379</code></p>
+<p><img src="http://img.bcoder.top/2017.11.24/13.png" alt="业余学习之Redis初级篇"></p>
+<p>进入redis客户端 ./redis-cli 退出客户端quit<br>退出redis服务：<br>（1）pkill redis-server<br>（2）kill 进程号<br>（3）/usr/local/redis/bin/redis-cli shutdown</p>
+<h2 id="Redis-数据类型"><a href="#Redis-数据类型" class="headerlink" title="Redis 数据类型"></a>Redis 数据类型</h2><p>redis一共分为5种基本数据类型：<strong>String、Hash、List、Set、Zset</strong></p>
+<h3 id="String类型"><a href="#String类型" class="headerlink" title="String类型"></a>String类型</h3><p>String类型是包含很多种类型的特殊类型，并且是二进制安全的。比如序列化的对象进行存储，比如一张图片进行二进制存储，比如一个简单的字符串、数值等等.</p>
+<p>设置值<strong>set</strong>：<code>set name zln</code><br>取值<strong>get</strong>: <code>get name</code> (说明 设置name多次会覆盖)<br>删除值<strong>del</strong>：<code>del name</code></p>
+<p>使用<strong>setnx</strong> (not exist)<br><code>setnx name</code> 如果不存在进行设置，存在就不需要进行设置，返回0</p>
+<p>使用<strong>setex</strong> (expired)<br><code>setex color 10 red</code> 设置color的有效期为10秒，10秒后返回nil (在redis里nil表示空)</p>
+<p>使用<strong>setrange</strong> 替换字符串:<br><code>set email aaabbbccc@qq.com</code><br><code>setrange email 10 ww</code> (10表示从第几位开始替换，后面跟上替换的字符串)</p>
+<p>操作如下：</p>
+<p><img src="http://img.bcoder.top/2017.11.24/14.png" alt="业余学习之Redis初级篇"></p>
+<p>使用一次性设置多个和获取多个值的<strong>mset</strong>，<strong>mget</strong>方法：<br><code>mset name zln address nanjing sex man</code><br>对应的<code>mget name address sex</code></p>
+<p>对应的也有<strong>msetnx</strong>和<strong>mget</strong>方法。</p>
+<p>一次性设置和取值的<strong>getset</strong>方法；<br><code>set key cc</code><br><code>getset key changchun</code> 返回旧值并设置新值的方法。</p>
+<p><strong>incr和decr</strong>方法：对某一个值进行递增和递减</p>
+<p><strong>incrby和decrby</strong>方法：对某个值进行指定长度的递增和递减 <code>incrby key 【步长】</code></p>
+<p><strong>append</strong> [name]方法：字符串追加方法</p>
+<p><strong>strlen</strong> [name]方法：获取字符串的长度</p>
+<p>操作如下：</p>
+<p><img src="http://img.bcoder.top/2017.11.24/15.png" alt="业余学习之Redis初级篇"></p>
+<h3 id="Hash类型"><a href="#Hash类型" class="headerlink" title="Hash类型"></a>Hash类型</h3><p>Hash类型是String类型的filed和value的映射表，或者说一个String集合。它特别适合存储对象，相比较而言，将一个对象类型存储在Hash类型里要比存储在String类型里占用更少的内存空间，并方便存取整个对象。</p>
+<p>形如：<code>hset myhash field hello</code>（含义是<strong>hset</strong>是hash集合，myhash是集合的名字 filed1是字段名 hello是其值）</p>
+<p>使用<code>hget myhash field</code>获取内容，也可以存储多个值。</p>
+<p><strong>hmset</strong>可以进行批量存储多个键值对:<code>hmset myhash sex man addr beijing</code></p>
+<p>也可以使用<strong>hmget</strong>进行批量获取多个键值对：<code>hmget myhash sex addr</code></p>
+<p>同样也有<strong>hsetnx</strong>,和<strong>setnx</strong>类似；</p>
+<p><strong>hincrby</strong>集合递增和递减</p>
+<p><strong>hexists</strong> 是否存在key，如果存在返回，不存在返回0</p>
+<p><strong>hlen</strong> 返回hash几个里的所有的键数值</p>
+<p><strong>hdel</strong> 删除指定hash的field</p>
+<p><strong>hkeys</strong> 返回hash里所有的字段</p>
+<p><strong>hvals</strong> 返回hash的所有value</p>
+<p><strong>hgetall</strong> 返回hash里所有的key和value</p>
+<p>操作如下：</p>
+<p><img src="http://img.bcoder.top/2017.11.24/16.png" alt="业余学习之Redis初级篇"></p>
+<p><img src="http://img.bcoder.top/2017.11.24/17.png" alt="业余学习之Redis初级篇"></p>
+<h3 id="List类型"><a href="#List类型" class="headerlink" title="List类型"></a>List类型</h3><p>List类型是一个链表结构的集合，其主要功能有push、pop、获取元素等。更详细地说，List类型是一个双端链表结构。我们可以通过相关操作进行集合的头部或尾部添加删除元素，List的设计非常简单巧妙，既可以作为栈，又可以作为队列，满足绝大多数需求。</p>
+<p>注：list中元素可重复</p>
+<p>常用命令</p>
+<p>1）<strong>lpush</strong>:从头部加入元素（栈） 先进后出<br><code>lpush list1 &quot;hello&quot;</code><br><code>lpush  list1 &quot;world&quot;</code></p>
+<p>2）<strong>rpush</strong>:从尾部加入元素（队列） 先进先出<br><code>rpush list2 1</code><br><code>rpush list2 &quot;2&quot;</code></p>
+<p>3）<strong>linsert</strong>:插入元素<br><code>linsert list3 before [集合的元素] [插入的元素]</code></p>
+<p>4）<strong>lrange</strong>取值<br><code>lrange list1 0 -1</code> (表示从头取到末尾)</p>
+<p>5）<strong>lset</strong>:替换元素<br><code>lset list1 0 10</code> ， 把第0个元素替换为10</p>
+<p>6）删除元素<br><strong>lrem</strong>方法：删除多个重复元素：<code>lrem list2 2 1</code> ，删除2个1元素<br><strong>lpop</strong>方法：从list的头部删除元素，并返回删除元素<br><strong>rpop</strong>方法：从list的尾部删除元素，并返回删除元素<br><strong>ltrim</strong>方法： 保留指定key的值范围内的数据</p>
+<p>7）其他命令<br><strong>rpoplpush</strong>方法： 第一步从尾部删除元素，然后第二步并从头部加入元素<br><strong>lindex</strong>方法： 返回名称为key的list中 index位置的元素<br><strong>llen</strong>方法：返回元素的个数</p>
+<p>操作如下：</p>
+<p><img src="http://img.bcoder.top/2017.11.24/18.png" alt="业余学习之Redis初级篇"></p>
+<p><img src="http://img.bcoder.top/2017.11.24/19.png" alt="业余学习之Redis初级篇"></p>
+<h3 id="Set类型"><a href="#Set类型" class="headerlink" title="Set类型"></a>Set类型</h3><p>集合类型常用操作是像集合中加入或删除元素、判断元素是否存在等，内部使用值为空的散列表实现，所以这些操作的复杂度都为O(1)，多个集合类型的键之间还可以进行并集、交集、差集的运算。</p>
+<p>常用命令</p>
+<p>1）添加、查看元素：<strong>sadd</strong> ，<strong>smembers</strong></p>
+<p>2）删除元素<br><strong>srem</strong>删除方法：srem set1 aaa  //删除aaa元素<br><strong>spop</strong>随机删除方法：spop set1//随机删除某个元素，返回删除的key</p>
+<p>3）集合之间的比较操作<br><strong>sdiff</strong>方法：返回俩个集合的不同元素(哪个集合在前面就以哪个集合为标准)<br><strong>sdiffstore</strong>方法： 将返回的不同元素存储到另外一个集合里<br><strong>sinter</strong>方法：返回集合的交集<br><strong>sinterstroe</strong>方法： 返回交集结果，存入set3中<br><strong>sunion</strong>方法： 取并集<br><strong>sunionstore</strong>方法：取得并集，存入set3中<br><strong>smove</strong>方法： 从一个set集合移动到另一个set集合里<br><code>smove set1 set2 1</code>  //将set1中的元素aaa移动到set2中（相当于剪切复制）<br><strong>scard</strong>方法： 查看集合里元素个数<br><strong>sismember</strong>方法： 判断某元素是否为集合中的元素:返回1代表是集合中的元素，0代表不是<br><strong>srandmember</strong>方法： 随机返回一个元素</p>
+<p>操作如下：</p>
+<p><img src="http://img.bcoder.top/2017.11.24/20.png" alt="业余学习之Redis初级篇"></p>
+<p><img src="http://img.bcoder.top/2017.11.24/21.png" alt="业余学习之Redis初级篇"></p>
+<h3 id="Zset类型"><a href="#Zset类型" class="headerlink" title="Zset类型"></a>Zset类型</h3><p>它与集合类型区别在于“有序”二字，有序集合在某些方面与列表类型也比较<strong>类似</strong>：<br>1）二者都是有序的；<br>2）二者都可以获得某一范围内的元素；</p>
+<p>当然也有明显的<strong>区别</strong>：<br>1）List通过链表实现，获取两端数据极快，而取中间的数据较慢；<br>2）Zset是使用散列表和跳跃表实现，即使位于中间的数据读取也很快，复杂度为： O(log(N))；<br>3）List不能简单的调整元素的位置，但是Zset可以；<br>4）Zset比List更耗费内存。</p>
+<p>常用命令：</p>
+<p>1）<strong>zadd</strong>添加方法<br><code>zadd zset1 1 one</code><br>向有序集合中添加一个元素，该元素如果存在，则更新顺序，在重复插入的时候 会根据顺序属性更新，其中的“1”为插入时指定的下标。</p>
+<p>2）删除方法<br><strong>zrem</strong> 删除名称为key的zset中的元素member<br><strong>zremrangebyrank</strong> 删除 1到1（只删除索引1）<br><strong>zremrangebyscore</strong> 删除指定序号</p>
+<p>3）<strong>zincrby</strong> 以指定值去自动递增或者减少，用法和之前的incrby类似</p>
+<p>4）<strong>zrangebyscore</strong>  找到指定区间范围的数据进行返回</p>
+<p>5）排序索引<br><strong>zrank</strong> 返回排序索引 从小到大排序（升序排序之后再找索引） 注意 一个是顺序号 一个是索引 zrank返回的是索引<br><strong>zrevrank</strong> 返回排序索引 从大到小排序（降序排序之后再找索引）</p>
+<p>6）<strong>zcard</strong> 返回集合里所有元素的个数</p>
+<p>7）<strong>zcount</strong>  返回集合中score在给定区间中的数量</p>
+<p>8）<strong>zremrangebyrank</strong> zset [from] [to]（删除索引）</p>
+<p>9）<strong>zremrangebyscore</strong> zset [from] [to] (删除指定序号)</p>
+<p><img src="http://img.bcoder.top/2017.11.24/22.png" alt="业余学习之Redis初级篇"></p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/11/24/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRedis%E5%88%9D%E7%BA%A7%E7%AF%87/>https://www.bcoder.top/2017/11/24/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRedis%E5%88%9D%E7%BA%A7%E7%AF%87/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Redis/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Redis</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/NoSQL/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>NoSQL</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/11/24/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRedis%E5%88%9D%E7%BA%A7%E7%AF%87/&title=业余学习之Redis初级篇 - zln's blog&summary=
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/11/24/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRedis%E5%88%9D%E7%BA%A7%E7%AF%87/&title=业余学习之Redis初级篇 - zln's blog&summary=
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/11/24/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRedis%E5%88%9D%E7%BA%A7%E7%AF%87/&title=业余学习之Redis初级篇 - zln's blog&summary=
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/11/28/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BRedis%E4%B8%AD%E7%BA%A7%E7%AF%87/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>业余学习之Redis中级篇</p>
+                <p class='content'>
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识） 的学习笔记，便于以后查看和复习。
+
+
+Redis高级命令1、测试是否连接到redis
+1）ping，返回pong，说明连接成功；
+2...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/11/20/%E4%B8%9A%E4%BD%99%E5%AD%A6%E4%B9%A0%E4%B9%8BJVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AF%87/'>
+                <p class='title'>业余学习之JVM垃圾回收篇<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言
+
+本系列主要是业余知识拓展（java相关方面的知识）的学习笔记，便于以后查看和复习。
+
+
+垃圾回收简介谈到垃圾回收（Garbage Collection，简称GC）,需要先澄清什么是垃圾...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '业余学习之Redis初级篇',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#NoSQL简介"><span class="toc-text">NoSQL简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#NoSQL分类"><span class="toc-text">NoSQL分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#非关系型数据库特点"><span class="toc-text">非关系型数据库特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis简介"><span class="toc-text">Redis简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis优缺点"><span class="toc-text">Redis优缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#高并发读写"><span class="toc-text">高并发读写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可扩展性"><span class="toc-text">可扩展性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#高可用性"><span class="toc-text">高可用性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis可靠性"><span class="toc-text">Redis可靠性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis模式"><span class="toc-text">Redis模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis安装"><span class="toc-text">Redis安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis-数据类型"><span class="toc-text">Redis 数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#String类型"><span class="toc-text">String类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hash类型"><span class="toc-text">Hash类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#List类型"><span class="toc-text">List类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Set类型"><span class="toc-text">Set类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zset类型"><span class="toc-text">Zset类型</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

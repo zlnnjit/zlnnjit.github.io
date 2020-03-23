@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>ODL开发笔记：OpenDaylight开发实例 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="SDN,Controller,OpenDaylight">
+  
+  
+    <meta name="description" content="
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+
+ODL开发环境准备所需基本环...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2018/02/26/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E5%BC%80%E5%8F%91%E5%AE%9E%E4%BE%8B/">
+        ODL开发笔记：OpenDaylight开发实例
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/SDN/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>SDN</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2018-02-26 12:09:25</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言<br>SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。</p>
+</blockquote>
+<h2 id="ODL开发环境准备"><a href="#ODL开发环境准备" class="headerlink" title="ODL开发环境准备"></a>ODL开发环境准备</h2><p>所需基本环境:</p>
+<ul>
+<li>jdk 1.8</li>
+<li>maven 3.3.5+</li>
+<li>OpenDaylight Carbon</li>
+<li>IntelliJ IDEA</li>
+</ul>
+<a id="more"></a>
+
+<p>需要注意的是需要更改maven配置（主要是maven settings.xml文件的配置）</p>
+<p>修改maven默认配置~/.m2/settings.xml文件，使用OpenDaylight自己的仓库，<br>命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp -n ~&#x2F;.m2&#x2F;settings.xml&#123;,.orig&#125; ; \wget -q -O - https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;opendaylight&#x2F;odlparent&#x2F;stable&#x2F;carbon&#x2F;settings.xml &gt; ~&#x2F;.m2&#x2F;settings.xml</span><br></pre></td></tr></table></figure>
+
+<p>具体也可以直接将下面内容拷贝至你的settings.xml文件中：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- vi: set et smarttab sw=2 tabstop=2: --&gt;</span></span><br><span class="line"><span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment"> Copyright (c) 2014, 2015 Cisco Systems, Inc. and others.  All rights reserved.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"> This program and the accompanying materials are made available under the</span></span><br><span class="line"><span class="comment"> terms of the Eclipse Public License v1.0 which accompanies this distribution,</span></span><br><span class="line"><span class="comment"> and is available at http://www.eclipse.org/legal/epl-v10.html</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">settings</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/SETTINGS/1.0.0"</span> <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">profiles</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>opendaylight-release<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">id</span>&gt;</span>opendaylight-mirror<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">name</span>&gt;</span>opendaylight-mirror<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://nexus.opendaylight.org/content/repositories/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>never<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">pluginRepositories</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">id</span>&gt;</span>opendaylight-mirror<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">name</span>&gt;</span>opendaylight-mirror<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://nexus.opendaylight.org/content/repositories/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>never<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">pluginRepositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>opendaylight-snapshots<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">id</span>&gt;</span>opendaylight-snapshot<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">name</span>&gt;</span>opendaylight-snapshot<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">pluginRepositories</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">id</span>&gt;</span>opendaylight-snapshot<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">name</span>&gt;</span>opendaylight-snapshot<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">pluginRepositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">profiles</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">activeProfiles</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">activeProfile</span>&gt;</span>opendaylight-release<span class="tag">&lt;/<span class="name">activeProfile</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">activeProfile</span>&gt;</span>opendaylight-snapshots<span class="tag">&lt;/<span class="name">activeProfile</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">activeProfiles</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="ODL生成骨架"><a href="#ODL生成骨架" class="headerlink" title="ODL生成骨架"></a>ODL生成骨架</h2><p>打开终端，输入指令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn org.apache.maven.plugins:maven-archetype-plugin:2.4:generate -DarchetypeGroupId&#x3D;org.opendaylight.controller -DarchetypeArtifactId&#x3D;opendaylight-startup-archetype -DarchetypeRepository&#x3D;https:&#x2F;&#x2F;nexus.opendaylight.org&#x2F;content&#x2F;repositories&#x2F;public -DarchetypeVersion&#x3D;1.3.2-Carbon</span><br></pre></td></tr></table></figure>
+
+<p>注：1.3.2-Carbon 表示项目的版本号</p>
+<p>在运行过程中需要填写部分信息（下面加黑的部分）：</p>
+<p>[INFO] Scanning for projects…<br>[INFO]<br>[INFO] ————————————————————————<br>[INFO] Building Maven Stub Project (No POM) 1<br>[INFO] ————————————————————————<br>[INFO]<br>[INFO] &gt;&gt;&gt; maven-archetype-plugin:2.4:generate (default-cli) &gt; generate-sources @ standalone-pom &gt;&gt;&gt;<br>[INFO]<br>[INFO] &lt;&lt;&lt; maven-archetype-plugin:2.4:generate (default-cli) &lt; generate-sources @ standalone-pom &lt;&lt;&lt;<br>[INFO]<br>[INFO] — maven-archetype-plugin:2.4:generate (default-cli) @ standalone-pom —<br>[INFO] Generating project in Interactive mode<br>[INFO] Archetype defined by properties<br>Define value for property ‘groupId’: : <strong>top.bcoder.odl</strong><br>Define value for property ‘artifactId’: : <strong>traffic</strong><br>[INFO] Using property: version = 0.1.0-SNAPSHOT<br>Define value for property ‘package’:  top.bcoder.odl: :<br>二月 24, 2018 8:03:26 下午 org.apache.velocity.runtime.log.JdkLogChute log<br>信息: FileResourceLoader : adding path ‘.’<br>Define value for property ‘classPrefix’:  Traffic: :<br>Define value for property ‘copyright’: : <strong>zlnnjit</strong><br>[INFO] Using property: copyrightYear = 2017<br>Confirm properties configuration:<br>groupId: top.bcoder.odl<br>artifactId: traffic<br>version: 0.1.0-SNAPSHOT<br>package: top.bcoder.odl<br>classPrefix: Traffic<br>copyright: zlnnjit<br>copyrightYear: 2017<br> Y: : <strong>Y</strong><br>[INFO] —————————————————————————-<br>[INFO] Using following parameters for creating project from Archetype: opendaylight-startup-archetype:1.3.2-Carbon<br>[INFO] —————————————————————————-<br>[INFO] Parameter: groupId, Value: top.bcoder.odl<br>[INFO] Parameter: artifactId, Value: traffic<br>[INFO] Parameter: version, Value: 0.1.0-SNAPSHOT<br>[INFO] Parameter: package, Value: top.bcoder.odl<br>[INFO] Parameter: packageInPathFormat, Value: top/bcoder/odl<br>[INFO] Parameter: classPrefix, Value: Traffic<br>[INFO] Parameter: package, Value: top.bcoder.odl<br>[INFO] Parameter: version, Value: 0.1.0-SNAPSHOT<br>[INFO] Parameter: copyright, Value: zlnnjit<br>[INFO] Parameter: groupId, Value: top.bcoder.odl<br>[INFO] Parameter: artifactId, Value: traffic<br>[INFO] Parameter: copyrightYear, Value: 2017<br>[WARNING] Don’t override file /home/zln/桌面/project/Graduation Project/traffic/pom.xml<br>[INFO] project created from Archetype in dir: /home/zln/桌面/project/Graduation Project/traffic<br>[INFO] ————————————————————————<br>[INFO] BUILD SUCCESS<br>[INFO] ————————————————————————<br>[INFO] Total time: 01:54 min<br>[INFO] Finished at: 2018-02-24T20:03:52+08:00<br>[INFO] Final Memory: 14M/212M<br>[INFO] ————————————————————————</p>
+<p>输入完建立项目的基本信息，生成如下项目骨架：</p>
+<p><img src="http://img.bcoder.top/2018.02.26/1.png" alt="OpenDaylight开发实例"></p>
+<p>主要组成介绍：<br>api/YANG文件目录<br>artifacts/ 管理项目组件的坐标<br>cli/ 命令行工具的实现目录,它用于方便快捷地开发Karaf cli命令<br>features/ feature组织<br>impl/ 业务逻辑的实现<br>it/ 集成测试<br>karaf/ 打包karaf版本<br>pom.xml 根pom</p>
+<p>至此，骨架生成完毕。</p>
+<p>下面进入到traffic文件夹下对构建好的工程进行编译，具体的编译命令为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -DskipTests</span><br></pre></td></tr></table></figure>
+
+<p>编译完成后如图所示：</p>
+<p><img src="http://img.bcoder.top/2018.02.26/2.png" alt="OpenDaylight开发实例"></p>
+<p>我们可以用过在traffic目录下执行以下命令来启动控制器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;karaf&#x2F;target&#x2F;assembly&#x2F;bin&#x2F;karaf</span><br></pre></td></tr></table></figure>
+
+<p>启动结果如图：</p>
+<p><img src="http://img.bcoder.top/2018.02.26/3.png" alt="OpenDaylight开发实例"></p>
+<h2 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello World"></a>Hello World</h2><p>我们将项目导入到idea中，首先在traffic目录下执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn idea:idea</span><br></pre></td></tr></table></figure>
+
+<p>然后双击打开*.ipr文件即可，如果打不开的话需要进行修改默认的打开方式为idea,也可以直接启动idea后导入ipr文件。</p>
+<p>1.编写yang文件<br>修改api/src/main/yang/traffic.yang文件，具体如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">module traffic &#123;</span><br><span class="line">    yang-version 1;</span><br><span class="line">    namespace &quot;urn:opendaylight:params:xml:ns:yang:traffic&quot;;</span><br><span class="line">    prefix &quot;traffic&quot;;</span><br><span class="line"></span><br><span class="line">    revision &quot;2018-02-26&quot; &#123;</span><br><span class="line">        description &quot;Initial revision of traffic model&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    rpc hello-world&#123;</span><br><span class="line">        input&#123;</span><br><span class="line">            leaf name&#123;</span><br><span class="line">                type string;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        output&#123;</span><br><span class="line"></span><br><span class="line">            leaf greeting&#123;</span><br><span class="line">                type string;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2.实现RPC：<br>编辑impl/src/main/java/top/bcoder/odl/impl/TrafficProvider.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Copyright © 2017 zlnnjit and others.  All rights reserved.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * This program and the accompanying materials are made available under the</span></span><br><span class="line"><span class="comment"> * terms of the Eclipse Public License v1.0 which accompanies this distribution,</span></span><br><span class="line"><span class="comment"> * and is available at http://www.eclipse.org/legal/epl-v10.html</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">package</span> top.bcoder.odl.impl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.opendaylight.controller.md.sal.binding.api.DataBroker;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.md.sal.common.rev131028.rpc.state.RpcRouterBuilder;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.traffic.rev180226.HelloWorldInput;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.traffic.rev180226.HelloWorldOutput;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.traffic.rev180226.HelloWorldOutputBuilder;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.traffic.rev180226.TrafficService;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yangtools.yang.common.RpcResult;</span><br><span class="line"><span class="keyword">import</span> org.opendaylight.yangtools.yang.common.RpcResultBuilder;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Future;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TrafficProvider</span> <span class="keyword">implements</span> <span class="title">TrafficService</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger LOG = LoggerFactory.getLogger(TrafficProvider<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> DataBroker dataBroker;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TrafficProvider</span><span class="params">(<span class="keyword">final</span> DataBroker dataBroker)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.dataBroker = dataBroker;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Method called when the blueprint container is created.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        LOG.info(<span class="string">"TrafficProvider Session Initiated"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Method called when the blueprint container is destroyed.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        LOG.info(<span class="string">"TrafficProvider Closed"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> Future&lt;RpcResult&lt;HelloWorldOutput&gt;&gt; helloWorld(HelloWorldInput input) &#123;</span><br><span class="line">		HelloWorldOutputBuilder outputBuilder = <span class="keyword">new</span> HelloWorldOutputBuilder();</span><br><span class="line">		outputBuilder.setGreeting(<span class="string">"hello,"</span> + input.getName());</span><br><span class="line">		<span class="keyword">return</span> RpcResultBuilder.success(outputBuilder.build()).buildFuture();</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3.将RPC注册到blueprint中：<br>编辑impl/src/main/resources/org/opendaylight/blueprint/impl-blueprint.xml：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- vi: set et smarttab sw=4 tabstop=4: --&gt;</span></span><br><span class="line"><span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">Copyright © 2017 zlnnjit and others. All rights reserved.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">This program and the accompanying materials are made available under the</span></span><br><span class="line"><span class="comment">terms of the Eclipse Public License v1.0 which accompanies this distribution,</span></span><br><span class="line"><span class="comment">and is available at http://www.eclipse.org/legal/epl-v10.html</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">blueprint</span> <span class="attr">xmlns</span>=<span class="string">"http://www.osgi.org/xmlns/blueprint/v1.0.0"</span></span></span><br><span class="line"><span class="tag">           <span class="attr">xmlns:odl</span>=<span class="string">"http://opendaylight.org/xmlns/blueprint/v1.0.0"</span></span></span><br><span class="line"><span class="tag">           <span class="attr">odl:use-default-for-reference-types</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">reference</span> <span class="attr">id</span>=<span class="string">"dataBroker"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">interface</span>=<span class="string">"org.opendaylight.controller.md.sal.binding.api.DataBroker"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">odl:type</span>=<span class="string">"default"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"provider"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">class</span>=<span class="string">"top.bcoder.odl.impl.TrafficProvider"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">init-method</span>=<span class="string">"init"</span> <span class="attr">destroy-method</span>=<span class="string">"close"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">argument</span> <span class="attr">ref</span>=<span class="string">"dataBroker"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">odl:rpc-implementation</span> <span class="attr">ref</span>=<span class="string">"provider"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">blueprint</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>4.重新编译：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -DskipTests</span><br></pre></td></tr></table></figure>
+
+<p>编译成功并进行启动，如下图所示：</p>
+<p><img src="http://img.bcoder.top/2018.02.26/4.png" alt="OpenDaylight开发实例"></p>
+<p>5.使用yangman进行测试RPC：<br>通过浏览器访问：<a href="http://127.0.0.1:8181/index.html#/yangman/index" target="_blank" rel="noopener">http://127.0.0.1:8181/index.html#/yangman/index</a></p>
+<p>在搜索栏中搜索：traffic</p>
+<p><img src="http://img.bcoder.top/2018.02.26/5.png" alt="OpenDaylight开发实例"></p>
+<p>点击上图的operations—-&gt;hello-world,在Sent data中添加如下json:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;hello-world&quot;: &#123;</span><br><span class="line">        &quot;input&quot;: &#123;</span><br><span class="line">            &quot;name&quot;: &quot;opendaylight&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>点击send发送请求：</p>
+<p><img src="http://img.bcoder.top/2018.02.26/6.png" alt="OpenDaylight开发实例"></p>
+<p>我们发现Received data中已经获得数据。</p>
+<p>至此，Hello world演示完毕。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2018/02/26/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E5%BC%80%E5%8F%91%E5%AE%9E%E4%BE%8B/>https://www.bcoder.top/2018/02/26/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E5%BC%80%E5%8F%91%E5%AE%9E%E4%BE%8B/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/SDN/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>SDN</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Controller/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Controller</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/OpenDaylight/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>OpenDaylight</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2018/02/26/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E5%BC%80%E5%8F%91%E5%AE%9E%E4%BE%8B/&title=ODL开发笔记：OpenDaylight开发实例 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+
+ODL开发环境准备所需基本环境:
+
+jdk 1.8
+maven 3.3.5+
+OpenDaylight Carbon
+IntelliJ IDEA
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2018/02/26/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E5%BC%80%E5%8F%91%E5%AE%9E%E4%BE%8B/&title=ODL开发笔记：OpenDaylight开发实例 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+
+ODL开发环境准备所需基本环境:
+
+jdk 1.8
+maven 3.3.5+
+OpenDaylight Carbon
+IntelliJ IDEA
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2018/02/26/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E5%BC%80%E5%8F%91%E5%AE%9E%E4%BE%8B/&title=ODL开发笔记：OpenDaylight开发实例 - zln's blog&summary=
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关的开发已经有一段时间了，中间踩过不少的坑。在此将相关基础的知识总结一下，以备查看和巩固。
+
+ODL开发环境准备所需基本环境:
+
+jdk 1.8
+maven 3.3.5+
+OpenDaylight Carbon
+IntelliJ IDEA
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2018/02/28/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight-Toaster%E5%AE%9E%E4%BE%8B%E8%A7%A3%E6%9E%90/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>OpenDaylight开发笔记：OpenDaylight Toaster实例解析</p>
+                <p class='content'>
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关...</p>
+              </a>
+            
+            
+              <a class='next' href='/2018/02/24/OpenDaylight%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%9AOpenDaylight%E4%BB%8B%E7%BB%8D/'>
+                <p class='title'>OpenDaylight开发笔记：OpenDaylight介绍<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言SDN作为近些年比较新型的网络技术，已经被各大设备厂商运用到自己的产品中，其中OpenDaylight作为SDN主流的控制器，也受到了广泛的关注。本人从事OpenDaylight控制器相关...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'ODL开发笔记：OpenDaylight开发实例',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ODL开发环境准备"><span class="toc-text">ODL开发环境准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ODL生成骨架"><span class="toc-text">ODL生成骨架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hello-World"><span class="toc-text">Hello World</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

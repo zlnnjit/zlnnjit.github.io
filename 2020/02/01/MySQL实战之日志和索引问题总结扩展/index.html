@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>MySQL实战之日志和索引问题总结扩展 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="MySQL">
+  
+  
+    <meta name="description" content="日志相关问题之前文章讲到binlog（归档日志）和redo log（重做日志）配合崩溃恢复的时候，用的是反证法，说明了如果没有两阶段提交，会导致MySQL出现主备数据不一致等问题。
+很多同学在问，在两阶段提交的不同瞬间，MySQL如果发生异常重启，是怎么保证数据完整性的？
+现在，我们就从这个问题开始吧。
+我再放一...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2020/02/01/MySQL%E5%AE%9E%E6%88%98%E4%B9%8B%E6%97%A5%E5%BF%97%E5%92%8C%E7%B4%A2%E5%BC%95%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93%E6%89%A9%E5%B1%95/">
+        MySQL实战之日志和索引问题总结扩展
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/cs-inter/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>cs-inter</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2020-02-01 15:19:33</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <h2 id="日志相关问题"><a href="#日志相关问题" class="headerlink" title="日志相关问题"></a>日志相关问题</h2><p>之前文章讲到binlog（归档日志）和redo log（重做日志）配合崩溃恢复的时候，用的是反证法，说明了如果没有两阶段提交，会导致MySQL出现主备数据不一致等问题。</p>
+<p>很多同学在问，在两阶段提交的不同瞬间，MySQL如果发生异常重启，是怎么保证数据完整性的？</p>
+<p>现在，我们就从这个问题开始吧。</p>
+<p>我再放一次两阶段提交的图，方便你学习下面的内容。</p>
+<a id="more"></a>
+
+<p><img src="http://img.bcoder.top/2020.02.01.3/1.png" alt=""></p>
+<p>这里，我要先和你解释一个误会式的问题。有同学在评论区问到，这个图不是一个update语句的执行流程吗，怎么还会调用commit语句？</p>
+<p>他产生这个疑问的原因，是把<strong>两个“commit”的概念</strong>混淆了：</p>
+<ul>
+<li>他说的“commit语句”，是指MySQL语法中，用于提交一个事务的命令。一般跟begin/start transaction 配对使用。</li>
+<li>而我们图中用到的这个“commit步骤”，指的是事务提交过程中的一个小步骤，也是最后一步。当这个步骤执行完成后，这个事务就提交完成了。</li>
+<li>“commit语句”执行的时候，会包含“commit 步骤”。</li>
+</ul>
+<p>而我们这个例子里面，没有显式地开启事务，因此这个update语句自己就是一个事务，在执行完成后提交事务时，就会用到这个“commit步骤“。</p>
+<p>接下来，我们就一起分析一下<strong>在两阶段提交的不同时刻，MySQL异常重启会出现什么现象。</strong></p>
+<p>如果在图中时刻A的地方，也就是写入redo log 处于prepare阶段之后、写binlog之前，发生了崩溃（crash），由于此时binlog还没写，redo log也还没提交，所以崩溃恢复的时候，这个事务会回滚。这时候，binlog还没写，所以也不会传到备库。到这里，大家都可以理解。</p>
+<p>大家出现问题的地方，主要集中在时刻B，也就是binlog写完，redo log还没commit前发生crash，那崩溃恢复的时候MySQL会怎么处理？</p>
+<p>我们先来看一下崩溃恢复时的判断规则。</p>
+<ol>
+<li>如果redo log里面的事务是完整的，也就是已经有了commit标识，则直接提交；</li>
+<li>如果redo log里面的事务只有完整的prepare，则判断对应的事务binlog是否存在并完整：<br>a. 如果是，则提交事务；<br>b. 否则，回滚事务。</li>
+</ol>
+<p>这里，时刻B发生crash对应的就是2(a)的情况，崩溃恢复过程中事务会被提交。</p>
+<p>现在，我们继续延展一下这个问题。</p>
+<h3 id="追问1：MySQL怎么知道binlog是完整的"><a href="#追问1：MySQL怎么知道binlog是完整的" class="headerlink" title="追问1：MySQL怎么知道binlog是完整的?"></a>追问1：MySQL怎么知道binlog是完整的?</h3><p>回答：一个事务的binlog是有完整格式的：</p>
+<ul>
+<li>statement格式的binlog，最后会有COMMIT；</li>
+<li>row格式的binlog，最后会有一个XID event。</li>
+</ul>
+<p>另外，在MySQL 5.6.2版本以后，还引入了binlog-checksum参数，用来验证binlog内容的正确性。对于binlog日志由于磁盘原因，可能会在日志中间出错的情况，MySQL可以通过校验checksum的结果来发现。所以，MySQL还是有办法验证事务binlog的完整性的。</p>
+<h3 id="追问2：redo-log-和-binlog是怎么关联起来的"><a href="#追问2：redo-log-和-binlog是怎么关联起来的" class="headerlink" title="追问2：redo log 和 binlog是怎么关联起来的?"></a>追问2：redo log 和 binlog是怎么关联起来的?</h3><p>回答：它们有一个共同的数据字段，叫XID。崩溃恢复的时候，会按顺序扫描redo log：</p>
+<ul>
+<li>如果碰到既有prepare、又有commit的redo log，就直接提交；</li>
+<li>如果碰到只有parepare、而没有commit的redo log，就拿着XID去binlog找对应的事务。</li>
+</ul>
+<h3 id="追问3：处于prepare阶段的redo-log加上完整binlog，重启就能恢复，MySQL为什么要这么设计"><a href="#追问3：处于prepare阶段的redo-log加上完整binlog，重启就能恢复，MySQL为什么要这么设计" class="headerlink" title="追问3：处于prepare阶段的redo log加上完整binlog，重启就能恢复，MySQL为什么要这么设计?"></a>追问3：处于prepare阶段的redo log加上完整binlog，重启就能恢复，MySQL为什么要这么设计?</h3><p>回答：其实，这个问题还是跟我们在反证法中说到的数据与备份的一致性有关。在时刻B，也就是binlog写完以后MySQL发生崩溃，这时候binlog已经写入了，之后就会被从库（或者用这个binlog恢复出来的库）使用。</p>
+<p>所以，在主库上也要提交这个事务。采用这个策略，主库和备库的数据就保证了一致性。</p>
+<h3 id="追问4：如果这样的话，为什么还要两阶段提交呢？干脆先redo-log写完，再写binlog。崩溃恢复的时候，必须得两个日志都完整才可以。是不是一样的逻辑？"><a href="#追问4：如果这样的话，为什么还要两阶段提交呢？干脆先redo-log写完，再写binlog。崩溃恢复的时候，必须得两个日志都完整才可以。是不是一样的逻辑？" class="headerlink" title="追问4：如果这样的话，为什么还要两阶段提交呢？干脆先redo log写完，再写binlog。崩溃恢复的时候，必须得两个日志都完整才可以。是不是一样的逻辑？"></a>追问4：如果这样的话，为什么还要两阶段提交呢？干脆先redo log写完，再写binlog。崩溃恢复的时候，必须得两个日志都完整才可以。是不是一样的逻辑？</h3><p>回答：其实，两阶段提交是经典的分布式系统问题，并不是MySQL独有的。</p>
+<p>如果必须要举一个场景，来说明这么做的必要性的话，那就是事务的持久性问题。</p>
+<p>对于InnoDB引擎来说，如果redo log提交完成了，事务就不能回滚（如果这还允许回滚，就可能覆盖掉别的事务的更新）。而如果redo log直接提交，然后binlog写入的时候失败，InnoDB又回滚不了，数据和binlog日志又不一致了。</p>
+<p>两阶段提交就是为了给所有人一个机会，当每个人都说“我ok”的时候，再一起提交。</p>
+<h3 id="追问5：不引入两个日志，也就没有两阶段提交的必要了。只用binlog来支持崩溃恢复，又能支持归档，不就可以了？"><a href="#追问5：不引入两个日志，也就没有两阶段提交的必要了。只用binlog来支持崩溃恢复，又能支持归档，不就可以了？" class="headerlink" title="追问5：不引入两个日志，也就没有两阶段提交的必要了。只用binlog来支持崩溃恢复，又能支持归档，不就可以了？"></a>追问5：不引入两个日志，也就没有两阶段提交的必要了。只用binlog来支持崩溃恢复，又能支持归档，不就可以了？</h3><p>回答：这位同学的意思是，只保留binlog，然后可以把提交流程改成这样：… -&gt; “数据更新到内存” -&gt; “写 binlog” -&gt; “提交事务”，是不是也可以提供崩溃恢复的能力？</p>
+<p>答案是不可以。</p>
+<p>如果说<strong>历史原因</strong>的话，那就是InnoDB并不是MySQL的原生存储引擎。MySQL的原生引擎是MyISAM，设计之初就有没有支持崩溃恢复。</p>
+<p>InnoDB在作为MySQL的插件加入MySQL引擎家族之前，就已经是一个提供了崩溃恢复和事务支持的引擎了。</p>
+<p>InnoDB接入了MySQL后，发现既然binlog没有崩溃恢复的能力，那就用InnoDB原有的redo log好了。</p>
+<p>而如果说<strong>实现上的原因</strong>的话，就有很多了。就按照问题中说的，只用binlog来实现崩溃恢复的流程，我画了一张示意图，这里就没有redo log了。</p>
+<p><img src="http://img.bcoder.top/2020.02.01.3/2.png" alt=""></p>
+<p>这样的流程下，binlog还是不能支持崩溃恢复的。我说一个不支持的点吧：binlog没有能力恢复“数据页”。</p>
+<p>如果在图中标的位置，也就是binlog2写完了，但是整个事务还没有commit的时候，MySQL发生了crash。</p>
+<p>重启后，引擎内部事务2会回滚，然后应用binlog2可以补回来；但是对于事务1来说，系统已经认为提交完成了，不会再应用一次binlog1。</p>
+<p>但是，InnoDB引擎使用的是WAL技术，执行事务的时候，写完内存和日志，事务就算完成了。如果之后崩溃，要依赖于日志来恢复数据页。</p>
+<p>也就是说在图中这个位置发生崩溃的话，事务1也是可能丢失了的，而且是数据页级的丢失。此时，binlog里面并没有记录数据页的更新细节，是补不回来的。</p>
+<p>你如果要说，那我优化一下binlog的内容，让它来记录数据页的更改可以吗？但，这其实就是又做了一个redo log出来。</p>
+<p>所以，至少现在的binlog能力，还不能支持崩溃恢复。</p>
+<h3 id="追问6：那能不能反过来，只用redo-log，不要binlog？"><a href="#追问6：那能不能反过来，只用redo-log，不要binlog？" class="headerlink" title="追问6：那能不能反过来，只用redo log，不要binlog？"></a>追问6：那能不能反过来，只用redo log，不要binlog？</h3><p>回答：如果只从崩溃恢复的角度来讲是可以的。你可以把binlog关掉，这样就没有两阶段提交了，但系统依然是crash-safe的。</p>
+<p>但是，如果你了解一下业界各个公司的使用场景的话，就会发现在正式的生产库上，binlog都是开着的。因为binlog有着redo log无法替代的功能。</p>
+<p>一个是归档。redo log是循环写，写到末尾是要回到开头继续写的。这样历史日志没法保留，redo log也就起不到归档的作用。</p>
+<p>一个就是MySQL系统依赖于binlog。binlog作为MySQL一开始就有的功能，被用在了很多地方。其中，MySQL系统高可用的基础，就是binlog复制。</p>
+<p>还有很多公司有异构系统（比如一些数据分析系统），这些系统就靠消费MySQL的binlog来更新自己的数据。关掉binlog的话，这些下游系统就没法输入了。</p>
+<p>总之，由于现在包括MySQL高可用在内的很多系统机制都依赖于binlog，所以“鸠占鹊巢”redo log还做不到。你看，发展生态是多么重要。</p>
+<h3 id="追问7：redo-log一般设置多大？"><a href="#追问7：redo-log一般设置多大？" class="headerlink" title="追问7：redo log一般设置多大？"></a>追问7：redo log一般设置多大？</h3><p>回答：redo log太小的话，会导致很快就被写满，然后不得不强行刷redo log，这样WAL机制的能力就发挥不出来了。</p>
+<p>所以，如果是现在常见的几个TB的磁盘的话，就不要太小气了，直接将redo log设置为4个文件、每个文件1GB吧。</p>
+<h3 id="追问8：正常运行中的实例，数据写入后的最终落盘，是从redo-log更新过来的还是从buffer-pool更新过来的呢？"><a href="#追问8：正常运行中的实例，数据写入后的最终落盘，是从redo-log更新过来的还是从buffer-pool更新过来的呢？" class="headerlink" title="追问8：正常运行中的实例，数据写入后的最终落盘，是从redo log更新过来的还是从buffer pool更新过来的呢？"></a>追问8：正常运行中的实例，数据写入后的最终落盘，是从redo log更新过来的还是从buffer pool更新过来的呢？</h3><p>回答：这个问题其实问得非常好。这里涉及到了，“redo log里面到底是什么”的问题。</p>
+<p>实际上，redo log并没有记录数据页的完整数据，所以它并没有能力自己去更新磁盘数据页，也就不存在“数据最终落盘，是由redo log更新过去”的情况。</p>
+<ol>
+<li>如果是正常运行的实例的话，数据页被修改以后，跟磁盘的数据页不一致，称为脏页。最终数据落盘，就是把内存中的数据页写盘。这个过程，甚至与redo log毫无关系。</li>
+<li>在崩溃恢复场景中，InnoDB如果判断到一个数据页可能在崩溃恢复的时候丢失了更新，就会将它读到内存，然后让redo log更新内存内容。更新完成后，内存页变成脏页，就回到了第一种情况的状态。</li>
+</ol>
+<h3 id="追问9：redo-log-buffer是什么？是先修改内存，还是先写redo-log文件？"><a href="#追问9：redo-log-buffer是什么？是先修改内存，还是先写redo-log文件？" class="headerlink" title="追问9：redo log buffer是什么？是先修改内存，还是先写redo log文件？"></a>追问9：redo log buffer是什么？是先修改内存，还是先写redo log文件？</h3><p>回答：这两个问题可以一起回答。</p>
+<p>在一个事务的更新过程中，日志是要写多次的。比如下面这个事务：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">begin;</span><br><span class="line">insert into t1 ...</span><br><span class="line">insert into t2 ...</span><br><span class="line">commit;</span><br></pre></td></tr></table></figure>
+
+<p>这个事务要往两个表中插入记录，插入数据的过程中，生成的日志都得先保存起来，但又不能在还没commit的时候就直接写到redo log文件里。</p>
+<p>所以，redo log buffer就是一块内存，用来先存redo日志的。也就是说，在执行第一个insert的时候，数据的内存被修改了，redo log buffer也写入了日志。</p>
+<p>但是，真正把日志写到redo log文件（文件名是 ib_logfile+数字），是在执行commit语句的时候做的。</p>
+<p>单独执行一个更新语句的时候，InnoDB会自己启动一个事务，在语句执行完成的时候提交。过程跟上面是一样的，只不过是“压缩”到了一个语句里面完成。</p>
+<p>以上这些问题，就是把大家提过的关于redo log和binlog的问题串起来，做的一次集中回答。</p>
+<h2 id="业务设计问题"><a href="#业务设计问题" class="headerlink" title="业务设计问题"></a>业务设计问题</h2><p>题是这样的（我文字上稍微做了点修改，方便大家理解）：</p>
+<blockquote>
+<p>业务上有这样的需求，A、B两个用户，如果互相关注，则成为好友。设计上是有两张表，一个是like表，一个是friend表，like表有user_id、liker_id两个字段，我设置为复合唯一索引即uk_user_id_liker_id。语句执行逻辑是这样的：</p>
+</blockquote>
+<blockquote>
+<p>以A关注B为例：<br>第一步，先查询对方有没有关注自己（B有没有关注A）<br>select * from like where user_id = B and liker_id = A;</p>
+</blockquote>
+<blockquote>
+<p>如果有，则成为好友<br>insert into friend;</p>
+</blockquote>
+<blockquote>
+<p>没有，则只是单向关注关系<br>insert into like;</p>
+</blockquote>
+<blockquote>
+<p>但是如果A、B同时关注对方，会出现不会成为好友的情况。因为上面第1步，双方都没关注对方。第1步即使使用了排他锁也不行，因为记录不存在，行锁无法生效。请问这种情况，在MySQL锁层面有没有办法处理？</p>
+</blockquote>
+<p>首先，把表模拟出来，方便我们讨论。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`like`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`user_id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`liker_id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> <span class="string">`uk_user_id_liker_id`</span> (<span class="string">`user_id`</span>,<span class="string">`liker_id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`friend`</span> (</span><br><span class="line">  <span class="keyword">id</span><span class="string">` int(11) NOT NULL AUTO_INCREMENT,</span></span><br><span class="line"><span class="string">  `</span>friend_1_id<span class="string">` int(11) NOT NULL,</span></span><br><span class="line"><span class="string">  `</span>firned_2_id<span class="string">` int(11) NOT NULL,</span></span><br><span class="line"><span class="string">  UNIQUE KEY `</span>uk_friend<span class="string">` (`</span>friend_1_id<span class="string">`,`</span>firned_2_id<span class="string">`)</span></span><br><span class="line"><span class="string">  PRIMARY KEY (`</span><span class="keyword">id</span><span class="string">`)</span></span><br><span class="line"><span class="string">) ENGINE=InnoDB;</span></span><br></pre></td></tr></table></figure>
+
+<p>虽然这个题干中，并没有说到friend表的索引结构。但我猜测friend_1_id和friend_2_id也有索引，为便于描述，我给加上唯一索引。</p>
+<p>顺便说明一下，“like”是关键字，我一般不建议使用关键字作为库名、表名、字段名或索引名。</p>
+<p>我把他的疑问翻译一下，在并发场景下，同时有两个人，设置为关注对方，就可能导致无法成功加为朋友关系。</p>
+<p>现在，我用你已经熟悉的时刻顺序表的形式，把这两个事务的执行语句列出来：</p>
+<p><img src="http://img.bcoder.top/2020.02.01.3/3.png" alt=""></p>
+<p>由于一开始A和B之间没有关注关系，所以两个事务里面的select语句查出来的结果都是空。</p>
+<p>因此，session 1的逻辑就是“既然B没有关注A，那就只插入一个单向关注关系”。session 2也同样是这个逻辑。</p>
+<p>这个结果对业务来说就是bug了。因为在业务设定里面，这两个逻辑都执行完成以后，是应该在friend表里面插入一行记录的。</p>
+<p>首先，要给“like”表增加一个字段，比如叫作 relation_ship，并设为整型，取值1、2、3。</p>
+<blockquote>
+<p>值是1的时候，表示user_id 关注 liker_id;<br>值是2的时候，表示liker_id 关注 user_id;<br>值是3的时候，表示互相关注。</p>
+</blockquote>
+<p>然后，当 A关注B的时候，逻辑改成如下所示的样子：</p>
+<p>应用代码里面，比较A和B的大小，如果A&lt;B，就执行下面的逻辑。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; begin; /*启动事务*/</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="string">`like`</span>(user_id, liker_id, relation_ship) <span class="keyword">values</span>(A, B, <span class="number">1</span>) <span class="keyword">on</span> <span class="keyword">duplicate</span> <span class="keyword">key</span> <span class="keyword">update</span> relation_ship=relation_ship | <span class="number">1</span>;</span><br><span class="line"><span class="keyword">select</span> relation_ship <span class="keyword">from</span> <span class="string">`like`</span> <span class="keyword">where</span> user_id=A <span class="keyword">and</span> liker_id=B;</span><br><span class="line"><span class="comment">/*代码中判断返回的 relation_ship，</span></span><br><span class="line"><span class="comment">  如果是1，事务结束，执行 commit</span></span><br><span class="line"><span class="comment">  如果是3，则执行下面这两个语句：</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">ignore</span> <span class="keyword">into</span> friend(friend_1_id, friend_2_id) <span class="keyword">values</span>(A,B);</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
+
+<p>如果A&gt;B，则执行下面的逻辑</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; begin; /*启动事务*/</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="string">`like`</span>(user_id, liker_id, relation_ship) <span class="keyword">values</span>(B, A, <span class="number">2</span>) <span class="keyword">on</span> <span class="keyword">duplicate</span> <span class="keyword">key</span> <span class="keyword">update</span> relation_ship=relation_ship | <span class="number">2</span>;</span><br><span class="line"><span class="keyword">select</span> relation_ship <span class="keyword">from</span> <span class="string">`like`</span> <span class="keyword">where</span> user_id=B <span class="keyword">and</span> liker_id=A;</span><br><span class="line"><span class="comment">/*代码中判断返回的 relation_ship，</span></span><br><span class="line"><span class="comment">  如果是2，事务结束，执行 commit</span></span><br><span class="line"><span class="comment">  如果是3，则执行下面这两个语句：</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">ignore</span> <span class="keyword">into</span> friend(friend_1_id, friend_2_id) <span class="keyword">values</span>(B,A);</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这个设计里，让“like”表里的数据保证user_id &lt; liker_id，这样不论是A关注B，还是B关注A，在操作“like”表的时候，如果反向的关系已经存在，就会出现行锁冲突。</p>
+<p>然后，insert … on duplicate语句，确保了在事务内部，执行了这个SQL语句后，就强行占住了这个行锁，之后的select 判断relation_ship这个逻辑时就确保了是在行锁保护下的读操作。</p>
+<p>操作符 “|” 是按位或，连同最后一句insert语句里的ignore，是为了保证重复调用时的幂等性。</p>
+<p>这样，即使在双方“同时”执行关注操作，最终数据库里的结果，也是like表里面有一条关于A和B的记录，而且relation_ship的值是3， 并且friend表里面也有了A和B的这条记录。</p>
+<p>不知道你会不会吐槽：之前明明还说尽量不要使用唯一索引，结果这个例子一上来我就创建了两个。这里我要再和你说明一下，之前文章我们讨论的，是在“业务开发保证不会插入重复记录”的情况下，着重要解决性能问题的时候，才建议尽量使用普通索引。</p>
+<p>而像这个例子里，按照这个设计，业务根本就是保证“我一定会插入重复数据，数据库一定要要有唯一性约束”，这时就没啥好说的了，唯一索引建起来吧。</p>
+<h2 id="课后思考"><a href="#课后思考" class="headerlink" title="课后思考"></a>课后思考</h2><p>我们创建了一个简单的表t，并插入一行，然后对这一行做修改。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CREATE TABLE `t` (</span><br><span class="line">`id` int(11) NOT NULL primary key auto_increment,</span><br><span class="line">`a` int(11) DEFAULT NULL</span><br><span class="line">) ENGINE=InnoDB;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t <span class="keyword">values</span>(<span class="number">1</span>,<span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这时候，表t里有唯一的一行数据(1,2)。假设，我现在要执行：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; update t set a=2 where id=1;</span><br></pre></td></tr></table></figure>
+
+<p>你会看到这样的结果：</p>
+<p><img src="http://img.bcoder.top/2020.02.01.3/4.png" alt=""></p>
+<p>结果显示，匹配(rows matched)了一行，修改(Changed)了0行。</p>
+<p>仅从现象上看，MySQL内部在处理这个命令的时候，可以有以下三种选择：</p>
+<ol>
+<li>更新都是先读后写的，MySQL读出数据，发现a的值本来就是2，不更新，直接返回，执行结束；</li>
+<li>MySQL调用了InnoDB引擎提供的“修改为(1,2)”这个接口，但是引擎发现值与原来相同，不更新，直接返回；</li>
+<li>InnoDB认真执行了“把这个值修改成(1,2)”这个操作，该加锁的加锁，该更新的更新。</li>
+</ol>
+<p><strong>你觉得实际情况会是以上哪种呢？你可否用构造实验的方式，来证明你的结论？进一步地，可以思考一下，MySQL为什么要选择这种策略呢？</strong></p>
+<p>第一个选项是，MySQL读出数据，发现值与原来相同，不更新，直接返回，执行结束。这里我们可以用一个锁实验来确认。</p>
+<p>假设，当前表t里的值是(1,2)。</p>
+<p><img src="http://img.bcoder.top/2020.02.01.3/5.png" alt=""></p>
+<p>session B的update 语句被blocked了，加锁这个动作是InnoDB才能做的，所以排除选项1。</p>
+<p>第二个选项是，MySQL调用了InnoDB引擎提供的接口，但是引擎发现值与原来相同，不更新，直接返回。有没有这种可能呢？这里我用一个可见性实验来确认。</p>
+<p><img src="http://img.bcoder.top/2020.02.01.3/6.png" alt=""></p>
+<p>假设当前表里的值是(1,2)。</p>
+<p>session A的第二个select 语句是一致性读（快照读)，它是不能看见session B的更新的。</p>
+<p>现在它返回的是(1,3)，表示它看见了某个新的版本，这个版本只能是session A自己的update语句做更新的时候生成。</p>
+<p>所以，我们思考题的答案应该是选项3，即：InnoDB认真执行了“把这个值修改成(1,2)”这个操作，该加锁的加锁，该更新的更新。</p>
+<p>然后你会说，MySQL怎么这么笨，就不会更新前判断一下值是不是相同吗？如果判断一下，不就不用浪费InnoDB操作，多去更新一次了？</p>
+<p>其实MySQL是确认了的。只是在这个语句里面，MySQL认为读出来的值，只有一个确定的 (id=1), 而要写的是(a=3)，只从这两个信息是看不出来“不需要修改”的。</p>
+<p>作为验证，你可以看一下下面这个例子。</p>
+<p><img src="http://img.bcoder.top/2020.02.01.3/7.png" alt=""></p>
+<p><strong>补充说明：</strong></p>
+<p>上面我们的验证结果都是在binlog_format=statement格式下进行的。</p>
+<p>补充了一个case， 如果是binlog_format=row 并且binlog_row_image=FULL的时候，由于MySQL需要在binlog里面记录所有的字段，所以在读数据的时候就会把所有数据都读出来了。</p>
+<p>根据上面说的规则，“既然读了数据，就会判断”， 因此在这时候，select * from t where id=1，结果就是“返回 (1,2)”。</p>
+<p>同理，如果是binlog_row_image=NOBLOB, 会读出除blob 外的所有字段，在我们这个例子里，结果还是“返回 (1,2)”。</p>
+<p>对应的代码如图15所示。这是MySQL 5.6版本引入的，在此之前我没有看过。所以，特此说明。</p>
+<p><img src="http://img.bcoder.top/2020.02.01.3/8.png" alt=""></p>
+<p>类似的timestamp字段的问题。结论是：如果表中有timestamp字段而且设置了自动更新的话，那么更新“别的字段”的时候，MySQL会读入所有涉及的字段，这样通过判断，就会发现不需要修改。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2020/02/01/MySQL%E5%AE%9E%E6%88%98%E4%B9%8B%E6%97%A5%E5%BF%97%E5%92%8C%E7%B4%A2%E5%BC%95%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93%E6%89%A9%E5%B1%95/>https://www.bcoder.top/2020/02/01/MySQL%E5%AE%9E%E6%88%98%E4%B9%8B%E6%97%A5%E5%BF%97%E5%92%8C%E7%B4%A2%E5%BC%95%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93%E6%89%A9%E5%B1%95/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-02-01T15:20:06+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-02-01 15:20:06</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/MySQL/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>MySQL</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2020/02/01/MySQL%E5%AE%9E%E6%88%98%E4%B9%8B%E6%97%A5%E5%BF%97%E5%92%8C%E7%B4%A2%E5%BC%95%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93%E6%89%A9%E5%B1%95/&title=MySQL实战之日志和索引问题总结扩展 - zln's blog&summary=日志相关问题之前文章讲到binlog（归档日志）和redo log（重做日志）配合崩溃恢复的时候，用的是反证法，说明了如果没有两阶段提交，会导致MySQL出现主备数据不一致等问题。
+很多同学在问，在两阶段提交的不同瞬间，MySQL如果发生异常重启，是怎么保证数据完整性的？
+现在，我们就从这个问题开始吧。
+我再放一次两阶段提交的图，方便你学习下面的内容。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2020/02/01/MySQL%E5%AE%9E%E6%88%98%E4%B9%8B%E6%97%A5%E5%BF%97%E5%92%8C%E7%B4%A2%E5%BC%95%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93%E6%89%A9%E5%B1%95/&title=MySQL实战之日志和索引问题总结扩展 - zln's blog&summary=日志相关问题之前文章讲到binlog（归档日志）和redo log（重做日志）配合崩溃恢复的时候，用的是反证法，说明了如果没有两阶段提交，会导致MySQL出现主备数据不一致等问题。
+很多同学在问，在两阶段提交的不同瞬间，MySQL如果发生异常重启，是怎么保证数据完整性的？
+现在，我们就从这个问题开始吧。
+我再放一次两阶段提交的图，方便你学习下面的内容。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2020/02/01/MySQL%E5%AE%9E%E6%88%98%E4%B9%8B%E6%97%A5%E5%BF%97%E5%92%8C%E7%B4%A2%E5%BC%95%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93%E6%89%A9%E5%B1%95/&title=MySQL实战之日志和索引问题总结扩展 - zln's blog&summary=日志相关问题之前文章讲到binlog（归档日志）和redo log（重做日志）配合崩溃恢复的时候，用的是反证法，说明了如果没有两阶段提交，会导致MySQL出现主备数据不一致等问题。
+很多同学在问，在两阶段提交的不同瞬间，MySQL如果发生异常重启，是怎么保证数据完整性的？
+现在，我们就从这个问题开始吧。
+我再放一次两阶段提交的图，方便你学习下面的内容。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2020/02/01/MySQL%E5%AE%9E%E6%88%98%E4%B9%8Border-by/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>MySQL实战之order by</p>
+                <p class='content'>在你开发应用的时候，一定会经常碰到需要根据指定的字段排序来显示结果的需求。还是以我们前面举例用过的市民表为例，假设你要查询城市是“杭州”的所有人名字，并且按照姓名排序返回前1000个人的姓名、年...</p>
+              </a>
+            
+            
+              <a class='next' href='/2020/02/01/MySQL%E5%AE%9E%E6%88%98%E4%B9%8Bcount-x/'>
+                <p class='title'>MySQL实战之count(*)<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>在开发系统的时候，你可能经常需要计算一个表的行数，比如一个交易系统的所有变更记录总数。这时候你可能会想，一条select count(*) from t 语句不就解决了吗？
+但是，你会发现随着系...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'MySQL实战之日志和索引问题总结扩展',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#日志相关问题"><span class="toc-text">日志相关问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#追问1：MySQL怎么知道binlog是完整的"><span class="toc-text">追问1：MySQL怎么知道binlog是完整的?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#追问2：redo-log-和-binlog是怎么关联起来的"><span class="toc-text">追问2：redo log 和 binlog是怎么关联起来的?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#追问3：处于prepare阶段的redo-log加上完整binlog，重启就能恢复，MySQL为什么要这么设计"><span class="toc-text">追问3：处于prepare阶段的redo log加上完整binlog，重启就能恢复，MySQL为什么要这么设计?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#追问4：如果这样的话，为什么还要两阶段提交呢？干脆先redo-log写完，再写binlog。崩溃恢复的时候，必须得两个日志都完整才可以。是不是一样的逻辑？"><span class="toc-text">追问4：如果这样的话，为什么还要两阶段提交呢？干脆先redo log写完，再写binlog。崩溃恢复的时候，必须得两个日志都完整才可以。是不是一样的逻辑？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#追问5：不引入两个日志，也就没有两阶段提交的必要了。只用binlog来支持崩溃恢复，又能支持归档，不就可以了？"><span class="toc-text">追问5：不引入两个日志，也就没有两阶段提交的必要了。只用binlog来支持崩溃恢复，又能支持归档，不就可以了？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#追问6：那能不能反过来，只用redo-log，不要binlog？"><span class="toc-text">追问6：那能不能反过来，只用redo log，不要binlog？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#追问7：redo-log一般设置多大？"><span class="toc-text">追问7：redo log一般设置多大？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#追问8：正常运行中的实例，数据写入后的最终落盘，是从redo-log更新过来的还是从buffer-pool更新过来的呢？"><span class="toc-text">追问8：正常运行中的实例，数据写入后的最终落盘，是从redo log更新过来的还是从buffer pool更新过来的呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#追问9：redo-log-buffer是什么？是先修改内存，还是先写redo-log文件？"><span class="toc-text">追问9：redo log buffer是什么？是先修改内存，还是先写redo log文件？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#业务设计问题"><span class="toc-text">业务设计问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#课后思考"><span class="toc-text">课后思考</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

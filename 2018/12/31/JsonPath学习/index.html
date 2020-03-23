@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>JsonPath学习 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="Json,JsonPath">
+  
+  
+    <meta name="description" content="
+引用
+
+最近项目中需要进行单元测试，主要是对Controller类的方法进行单元测试，测试的结果是返回json体，因此需要对返回的json进行解析（而非反序列化）。这时发现了JsonPath，能够满足单元测试对json进行检查的需求。">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2018/12/31/JsonPath%E5%AD%A6%E4%B9%A0/">
+        JsonPath学习
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/Json/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>Json</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2018-12-31 23:08:09</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引用</p>
+</blockquote>
+<p>最近项目中需要进行单元测试，主要是对Controller类的方法进行单元测试，测试的结果是返回json体，因此需要对返回的json进行解析（而非反序列化）。这时发现了JsonPath，能够满足单元测试对json进行检查的需求。</p>
+<a id="more"></a>
+
+
+<p><strong>1.maven依赖</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.jayway.jsonpath<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>json-path<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2.基本知识</strong></p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>$</code></td>
+<td>The root element to query. This starts all path expressions.</td>
+</tr>
+<tr>
+<td><code>@</code></td>
+<td>The current node being processed by a filter predicate.</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>Wildcard. Available anywhere a name or numeric are required.</td>
+</tr>
+<tr>
+<td><code>..</code></td>
+<td>Deep scan. Available anywhere a name is required.</td>
+</tr>
+<tr>
+<td><code>.&lt;name&gt;</code></td>
+<td>Dot-notated child</td>
+</tr>
+<tr>
+<td><code>[&#39;&lt;name&gt;&#39; (, &#39;&lt;name&gt;&#39;)]</code></td>
+<td>Bracket-notated child or children</td>
+</tr>
+<tr>
+<td><code>[&lt;number&gt; (, &lt;number&gt;)]</code></td>
+<td>Array index or indexes</td>
+</tr>
+<tr>
+<td><code>[start:end]</code></td>
+<td>Array slice operator</td>
+</tr>
+<tr>
+<td><code>[?(&lt;expression&gt;)]</code></td>
+<td>Filter expression. Expression must evaluate to a boolean value.</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>min()</td>
+<td>Provides the min value of an array of numbers</td>
+<td>Double</td>
+</tr>
+<tr>
+<td>max()</td>
+<td>Provides the max value of an array of numbers</td>
+<td>Double</td>
+</tr>
+<tr>
+<td>avg()</td>
+<td>Provides the average value of an array of numbers</td>
+<td>Double</td>
+</tr>
+<tr>
+<td>stddev()</td>
+<td>Provides the standard deviation value of an array of numbers</td>
+<td>Double</td>
+</tr>
+<tr>
+<td>length()</td>
+<td>Provides the length of an array</td>
+<td>Integer</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>==</td>
+<td>left is equal to right (note that 1 is not equal to ‘1’)</td>
+</tr>
+<tr>
+<td>!=</td>
+<td>left is not equal to right</td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>left is less than right</td>
+</tr>
+<tr>
+<td>&lt;=</td>
+<td>left is less or equal to right</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>left is greater than right</td>
+</tr>
+<tr>
+<td>&gt;=</td>
+<td>left is greater than or equal to right</td>
+</tr>
+<tr>
+<td>=~</td>
+<td>left matches regular expression [?(@.name =~ /foo.*?/i)]</td>
+</tr>
+<tr>
+<td>in</td>
+<td>left exists in right [?(@.size in [‘S’, ‘M’])]</td>
+</tr>
+<tr>
+<td>nin</td>
+<td>left does not exists in right</td>
+</tr>
+<tr>
+<td>subsetof</td>
+<td>left is a subset of right [?(@.sizes subsetof [‘S’, ‘M’, ‘L’])]</td>
+</tr>
+<tr>
+<td>anyof</td>
+<td>left has an intersection with right [?(@.sizes anyof [‘M’, ‘L’])]</td>
+</tr>
+<tr>
+<td>noneof</td>
+<td>left has no intersection with right [?(@.sizes noneof [‘M’, ‘L’])]</td>
+</tr>
+<tr>
+<td>size</td>
+<td>size of left (array or string) should match right</td>
+</tr>
+<tr>
+<td>empty</td>
+<td>left (array or string) should be empty</td>
+</tr>
+</tbody></table>
+<p><strong>3.测试json串</strong></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"store"</span>: &#123;</span><br><span class="line">        <span class="attr">"book"</span>: [</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">"category"</span>: <span class="string">"reference"</span>,</span><br><span class="line">                <span class="attr">"author"</span>: <span class="string">"Nigel Rees"</span>,</span><br><span class="line">                <span class="attr">"title"</span>: <span class="string">"Sayings of the Century"</span>,</span><br><span class="line">                <span class="attr">"price"</span>: <span class="number">8.95</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">"category"</span>: <span class="string">"fiction"</span>,</span><br><span class="line">                <span class="attr">"author"</span>: <span class="string">"Evelyn Waugh"</span>,</span><br><span class="line">                <span class="attr">"title"</span>: <span class="string">"Sword of Honour"</span>,</span><br><span class="line">                <span class="attr">"price"</span>: <span class="number">12.99</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">"category"</span>: <span class="string">"fiction"</span>,</span><br><span class="line">                <span class="attr">"author"</span>: <span class="string">"Herman Melville"</span>,</span><br><span class="line">                <span class="attr">"title"</span>: <span class="string">"Moby Dick"</span>,</span><br><span class="line">                <span class="attr">"isbn"</span>: <span class="string">"0-553-21311-3"</span>,</span><br><span class="line">                <span class="attr">"price"</span>: <span class="number">8.99</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">"category"</span>: <span class="string">"fiction"</span>,</span><br><span class="line">                <span class="attr">"author"</span>: <span class="string">"J. R. R. Tolkien"</span>,</span><br><span class="line">                <span class="attr">"title"</span>: <span class="string">"The Lord of the Rings"</span>,</span><br><span class="line">                <span class="attr">"isbn"</span>: <span class="string">"0-395-19395-8"</span>,</span><br><span class="line">                <span class="attr">"price"</span>: <span class="number">22.99</span></span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        <span class="attr">"bicycle"</span>: &#123;</span><br><span class="line">            <span class="attr">"color"</span>: <span class="string">"red"</span>,</span><br><span class="line">            <span class="attr">"price"</span>: <span class="number">19.95</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"expensive"</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>controller方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping</span>(<span class="string">"json"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">jsonPathTest</span><span class="params">(@PathVariable(<span class="string">"path"</span>)</span> String path)</span>&#123;</span><br><span class="line">    String json = <span class="string">"&#123;\\\"store\\\":&#123;\\\"book\\\":[&#123;\\\"category\\\":\\\"reference\\\",\\\"author\\\":\\\"Nigel Rees\\\",\\\"title\\\":\\\"Sayings of the Century\\\",\\\"price\\\":8.95&#125;,&#123;\\\"category\\\":\\\"fiction\\\",\\\"author\\\":\\\"Evelyn Waugh\\\",\\\"title\\\":\\\"Sword of Honour\\\",\\\"price\\\":12.99&#125;,&#123;\\\"category\\\":\\\"fiction\\\",\\\"author\\\":\\\"Herman Melville\\\",\\\"title\\\":\\\"Moby Dick\\\",\\\"isbn\\\":\\\"0-553-21311-3\\\",\\\"price\\\":8.99&#125;,&#123;\\\"category\\\":\\\"fiction\\\",\\\"author\\\":\\\"J. R. R. Tolkien\\\",\\\"title\\\":\\\"The Lord of the Rings\\\",\\\"isbn\\\":\\\"0-395-19395-8\\\",\\\"price\\\":22.99&#125;],\\\"bicycle\\\":&#123;\\\"color\\\":\\\"red\\\",\\\"price\\\":19.95&#125;&#125;,\\\"expensive\\\":10&#125;"</span>;</span><br><span class="line">    <span class="keyword">return</span>  JsonPath.read(json, path);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>测试结果：</p>
+<p>所有书的作者：$.store.book[*].author</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   <span class="string">"Nigel Rees"</span>,</span><br><span class="line">   <span class="string">"Evelyn Waugh"</span>,</span><br><span class="line">   <span class="string">"Herman Melville"</span>,</span><br><span class="line">   <span class="string">"J. R. R. Tolkien"</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>所有作者（不仅仅是书的）：$..author</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   <span class="string">"Nigel Rees"</span>,</span><br><span class="line">   <span class="string">"Evelyn Waugh"</span>,</span><br><span class="line">   <span class="string">"Herman Melville"</span>,</span><br><span class="line">   <span class="string">"J. R. R. Tolkien"</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>store下的所有东西：$.store.*</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   [</span><br><span class="line">      &#123;</span><br><span class="line">         <span class="attr">"category"</span> : <span class="string">"reference"</span>,</span><br><span class="line">         <span class="attr">"author"</span> : <span class="string">"Nigel Rees"</span>,</span><br><span class="line">         <span class="attr">"title"</span> : <span class="string">"Sayings of the Century"</span>,</span><br><span class="line">         <span class="attr">"price"</span> : <span class="number">8.95</span></span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">         <span class="attr">"category"</span> : <span class="string">"fiction"</span>,</span><br><span class="line">         <span class="attr">"author"</span> : <span class="string">"Evelyn Waugh"</span>,</span><br><span class="line">         <span class="attr">"title"</span> : <span class="string">"Sword of Honour"</span>,</span><br><span class="line">         <span class="attr">"price"</span> : <span class="number">12.99</span></span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">         <span class="attr">"category"</span> : <span class="string">"fiction"</span>,</span><br><span class="line">         <span class="attr">"author"</span> : <span class="string">"Herman Melville"</span>,</span><br><span class="line">         <span class="attr">"title"</span> : <span class="string">"Moby Dick"</span>,</span><br><span class="line">         <span class="attr">"isbn"</span> : <span class="string">"0-553-21311-3"</span>,</span><br><span class="line">         <span class="attr">"price"</span> : <span class="number">8.99</span></span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">         <span class="attr">"category"</span> : <span class="string">"fiction"</span>,</span><br><span class="line">         <span class="attr">"author"</span> : <span class="string">"J. R. R. Tolkien"</span>,</span><br><span class="line">         <span class="attr">"title"</span> : <span class="string">"The Lord of the Rings"</span>,</span><br><span class="line">         <span class="attr">"isbn"</span> : <span class="string">"0-395-19395-8"</span>,</span><br><span class="line">         <span class="attr">"price"</span> : <span class="number">22.99</span></span><br><span class="line">      &#125;</span><br><span class="line">   ],</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"color"</span> : <span class="string">"red"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">19.95</span></span><br><span class="line">   &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>store节点下的所有价格：$.store..price</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   <span class="number">8.95</span>,</span><br><span class="line">   <span class="number">12.99</span>,</span><br><span class="line">   <span class="number">8.99</span>,</span><br><span class="line">   <span class="number">22.99</span>,</span><br><span class="line">   <span class="number">19.95</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>第三本书：$..book[2]或者$..book[2:3]</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"category"</span> : <span class="string">"fiction"</span>,</span><br><span class="line">      <span class="attr">"author"</span> : <span class="string">"Herman Melville"</span>,</span><br><span class="line">      <span class="attr">"title"</span> : <span class="string">"Moby Dick"</span>,</span><br><span class="line">      <span class="attr">"isbn"</span> : <span class="string">"0-553-21311-3"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">8.99</span></span><br><span class="line">   &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>倒数第二本书：$..book[-2]</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"category"</span> : <span class="string">"fiction"</span>,</span><br><span class="line">      <span class="attr">"author"</span> : <span class="string">"Herman Melville"</span>,</span><br><span class="line">      <span class="attr">"title"</span> : <span class="string">"Moby Dick"</span>,</span><br><span class="line">      <span class="attr">"isbn"</span> : <span class="string">"0-553-21311-3"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">8.99</span></span><br><span class="line">   &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>前两本书：$..book[0,1]或者$..book[:2]</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"category"</span> : <span class="string">"reference"</span>,</span><br><span class="line">      <span class="attr">"author"</span> : <span class="string">"Nigel Rees"</span>,</span><br><span class="line">      <span class="attr">"title"</span> : <span class="string">"Sayings of the Century"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">8.95</span></span><br><span class="line">   &#125;,</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"category"</span> : <span class="string">"fiction"</span>,</span><br><span class="line">      <span class="attr">"author"</span> : <span class="string">"Evelyn Waugh"</span>,</span><br><span class="line">      <span class="attr">"title"</span> : <span class="string">"Sword of Honour"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">12.99</span></span><br><span class="line">   &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>倒数二本书：$..book[-2:]</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"category"</span> : <span class="string">"fiction"</span>,</span><br><span class="line">      <span class="attr">"author"</span> : <span class="string">"Herman Melville"</span>,</span><br><span class="line">      <span class="attr">"title"</span> : <span class="string">"Moby Dick"</span>,</span><br><span class="line">      <span class="attr">"isbn"</span> : <span class="string">"0-553-21311-3"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">8.99</span></span><br><span class="line">   &#125;,</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"category"</span> : <span class="string">"fiction"</span>,</span><br><span class="line">      <span class="attr">"author"</span> : <span class="string">"J. R. R. Tolkien"</span>,</span><br><span class="line">      <span class="attr">"title"</span> : <span class="string">"The Lord of the Rings"</span>,</span><br><span class="line">      <span class="attr">"isbn"</span> : <span class="string">"0-395-19395-8"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">22.99</span></span><br><span class="line">   &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>第三本书到最后：$..book[2:]</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"category"</span> : <span class="string">"fiction"</span>,</span><br><span class="line">      <span class="attr">"author"</span> : <span class="string">"Herman Melville"</span>,</span><br><span class="line">      <span class="attr">"title"</span> : <span class="string">"Moby Dick"</span>,</span><br><span class="line">      <span class="attr">"isbn"</span> : <span class="string">"0-553-21311-3"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">8.99</span></span><br><span class="line">   &#125;,</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"category"</span> : <span class="string">"fiction"</span>,</span><br><span class="line">      <span class="attr">"author"</span> : <span class="string">"J. R. R. Tolkien"</span>,</span><br><span class="line">      <span class="attr">"title"</span> : <span class="string">"The Lord of the Rings"</span>,</span><br><span class="line">      <span class="attr">"isbn"</span> : <span class="string">"0-395-19395-8"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">22.99</span></span><br><span class="line">   &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>书中带isbn字段的：$..book[?(@.isbn)]</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"category"</span> : <span class="string">"fiction"</span>,</span><br><span class="line">      <span class="attr">"author"</span> : <span class="string">"Herman Melville"</span>,</span><br><span class="line">      <span class="attr">"title"</span> : <span class="string">"Moby Dick"</span>,</span><br><span class="line">      <span class="attr">"isbn"</span> : <span class="string">"0-553-21311-3"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">8.99</span></span><br><span class="line">   &#125;,</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"category"</span> : <span class="string">"fiction"</span>,</span><br><span class="line">      <span class="attr">"author"</span> : <span class="string">"J. R. R. Tolkien"</span>,</span><br><span class="line">      <span class="attr">"title"</span> : <span class="string">"The Lord of the Rings"</span>,</span><br><span class="line">      <span class="attr">"isbn"</span> : <span class="string">"0-395-19395-8"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">22.99</span></span><br><span class="line">   &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>书的价格小于10的：$.store.book[?(@.price &lt; 10)]或者$..book[?(@.price &lt;= $[‘expensive’])]</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"category"</span> : <span class="string">"reference"</span>,</span><br><span class="line">      <span class="attr">"author"</span> : <span class="string">"Nigel Rees"</span>,</span><br><span class="line">      <span class="attr">"title"</span> : <span class="string">"Sayings of the Century"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">8.95</span></span><br><span class="line">   &#125;,</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"category"</span> : <span class="string">"fiction"</span>,</span><br><span class="line">      <span class="attr">"author"</span> : <span class="string">"Herman Melville"</span>,</span><br><span class="line">      <span class="attr">"title"</span> : <span class="string">"Moby Dick"</span>,</span><br><span class="line">      <span class="attr">"isbn"</span> : <span class="string">"0-553-21311-3"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">8.99</span></span><br><span class="line">   &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>作者匹配正则：$..book[?(@.author =~ /.*REES/i)]</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   &#123;</span><br><span class="line">      <span class="attr">"category"</span> : <span class="string">"reference"</span>,</span><br><span class="line">      <span class="attr">"author"</span> : <span class="string">"Nigel Rees"</span>,</span><br><span class="line">      <span class="attr">"title"</span> : <span class="string">"Sayings of the Century"</span>,</span><br><span class="line">      <span class="attr">"price"</span> : <span class="number">8.95</span></span><br><span class="line">   &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>书本的数量：$..book.length()</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   <span class="number">4</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>4.JsonPath高级特性：</p>
+<p><strong>(1)JasonPath解析方式：</strong></p>
+<p>通过静态读取API</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String json =  “ ... ” ;</span><br><span class="line">List &lt; String &gt; authors =  JsonPath 。read（json，“ $ .store.book [*]。author ”）;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>多次调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String json = <span class="string">"..."</span>;</span><br><span class="line">Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);</span><br><span class="line"></span><br><span class="line">String author0 = JsonPath.read(document, <span class="string">"$.store.book[0].author"</span>);</span><br><span class="line">String author1 = JsonPath.read(document, <span class="string">"$.store.book[1].author"</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>链式获取：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">String json = "...";</span><br><span class="line"></span><br><span class="line">ReadContext ctx = JsonPath.parse(json);</span><br><span class="line"></span><br><span class="line">List&lt;String&gt; authorsOfBooksWithISBN = ctx.read("$.store.book[?(@.isbn)].author");</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">List&lt;Map&lt;String, Object&gt;&gt; expensiveBooks = JsonPath</span><br><span class="line">                            .using(configuration)</span><br><span class="line">                            .parse(json)</span><br><span class="line">                            .read("$.store.book[?(@.price &gt; 10)]", List.class);</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>(2)返回数据类型转换</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">String author = JsonPath.parse(json).read(<span class="string">"$.store.book[0].author"</span>)</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">String json = <span class="string">"&#123;\"date_as_long\" : 1411455611975&#125;"</span>;</span><br><span class="line">Date date = JsonPath.parse(json).read(<span class="string">"$['date_as_long']"</span>, Date<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Book book = JsonPath.parse(json).read(<span class="string">"$.store.book[0]"</span>, Book<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">TypeRef&lt;List&lt;String&gt;&gt; typeRef = <span class="keyword">new</span> TypeRef&lt;List&lt;String&gt;&gt;() &#123;&#125;;</span><br><span class="line">List&lt;String&gt; titles = JsonPath.parse(JSON_DOCUMENT).read(<span class="string">"$.store.book[*].title"</span>, typeRef);</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<p><strong>(3).过滤器</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> com.jayway.jsonpath.JsonPath.parse;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> com.jayway.jsonpath.Criteria.where;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> com.jayway.jsonpath.Filter.filter;</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">Filter cheapFictionFilter = filter(</span><br><span class="line">   where(<span class="string">"category"</span>).is(<span class="string">"fiction"</span>).and(<span class="string">"price"</span>).lte(<span class="number">10</span>D)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">List&lt;Map&lt;String, Object&gt;&gt; books =  </span><br><span class="line">   parse(json).read(<span class="string">"$.store.book[?]"</span>, cheapFictionFilter);</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[&#123;</span><br><span class="line">	<span class="attr">"category"</span>: <span class="string">"fiction"</span>,</span><br><span class="line">	<span class="attr">"author"</span>: <span class="string">"Herman Melville"</span>,</span><br><span class="line">	<span class="attr">"title"</span>: <span class="string">"Moby Dick"</span>,</span><br><span class="line">	<span class="attr">"isbn"</span>: <span class="string">"0-553-21311-3"</span>,</span><br><span class="line">	<span class="attr">"price"</span>: <span class="number">8.99</span></span><br><span class="line">&#125;]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>其他：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Filter fooOrBar = filter(</span><br><span class="line">   where("foo").exists(true)).or(where("bar").exists(true)</span><br><span class="line">);</span><br><span class="line">   </span><br><span class="line">Filter fooAndBar = filter(</span><br><span class="line">   where("foo").exists(true)).and(where("bar").exists(true)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>自定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Predicate booksWithISBN = <span class="keyword">new</span> Predicate() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(PredicateContext ctx)</span> </span>&#123;</span><br><span class="line">        return ctx.item(Map.class).containsKey("isbn");</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">List&lt;Map&lt;String, Object&gt;&gt; books = </span><br><span class="line">   reader.read(<span class="string">"$.store.book[?].isbn"</span>, List<span class="class">.<span class="keyword">class</span>, <span class="title">booksWithISBN</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2018/12/31/JsonPath%E5%AD%A6%E4%B9%A0/>https://www.bcoder.top/2018/12/31/JsonPath%E5%AD%A6%E4%B9%A0/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Json/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Json</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/JsonPath/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>JsonPath</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2018/12/31/JsonPath%E5%AD%A6%E4%B9%A0/&title=JsonPath学习 - zln's blog&summary=
+引用
+
+最近项目中需要进行单元测试，主要是对Controller类的方法进行单元测试，测试的结果是返回json体，因此需要对返回的json进行解析（而非反序列化）。这时发现了JsonPath，能够满足单元测试对json进行检查的需求。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2018/12/31/JsonPath%E5%AD%A6%E4%B9%A0/&title=JsonPath学习 - zln's blog&summary=
+引用
+
+最近项目中需要进行单元测试，主要是对Controller类的方法进行单元测试，测试的结果是返回json体，因此需要对返回的json进行解析（而非反序列化）。这时发现了JsonPath，能够满足单元测试对json进行检查的需求。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2018/12/31/JsonPath%E5%AD%A6%E4%B9%A0/&title=JsonPath学习 - zln's blog&summary=
+引用
+
+最近项目中需要进行单元测试，主要是对Controller类的方法进行单元测试，测试的结果是返回json体，因此需要对返回的json进行解析（而非反序列化）。这时发现了JsonPath，能够满足单元测试对json进行检查的需求。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2019/01/01/SpringBoot%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>Spring Boot高级特性</p>
+                <p class='content'>
+引言
+
+在我们进行开发应用时，除了要整合像MyBatis、Durid、logback等基础组件，还会去整合诸如缓存、消息队列、各种任务（异步任务、定时任务、邮件任务）等等。
+
+
+Spring ...</p>
+              </a>
+            
+            
+              <a class='next' href='/2018/12/30/Mybatis%E6%9D%82%E8%AE%B0/'>
+                <p class='title'>MyBatis杂记<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言
+
+最近项目中用到了MyBatis，但是相关知识已经忘得差不多了，找了个教程学习了下，并随便记录了一下。
+
+
+
+MyBatis简介
+MyBatis 是支持定制化 SQL、存储过程以及高级映...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'JsonPath学习',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

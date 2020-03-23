@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>Neutron学习 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="OpenStack,Neutron">
+  
+  
+    <meta name="description" content="
+引言本文主要讲解OpenStack的核心组件Neutron,本文的主要内容引子CloudMan的公众号系列文章，本文仅仅对Neutron做了一个简单的学习，后面会进行深入学习。
+">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2018/07/28/Neutron%E5%AD%A6%E4%B9%A0/">
+        Neutron学习
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/OpenStack/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>OpenStack</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2018-07-28 11:05:12</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言<br>本文主要讲解OpenStack的核心组件Neutron,本文的主要内容引子CloudMan的公众号系列文章，本文仅仅对Neutron做了一个简单的学习，后面会进行深入学习。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="Neutron介绍"><a href="#Neutron介绍" class="headerlink" title="Neutron介绍"></a>Neutron介绍</h2><h3 id="Neutron概述"><a href="#Neutron概述" class="headerlink" title="Neutron概述"></a>Neutron概述</h3><p>传统的网络管理方式很大程度上依赖于管理员手工配置和维护各种网络硬件设备；而云环境下的网络已经变得非常复杂，特别是在多租户场景里，用户随时都可能需要创建、修改和删除网络，网络的连通性和隔离不已经太可能通过手工配置来保证了。</p>
+<p>如何快速响应业务的需求对网络管理提出了更高的要求。传统的网络管理方式已经很难胜任这项工作，而“软件定义网络（software-defined networking,SDN）”所具有的灵活性和自动化优势使其成为云时代网络管理的主流。</p>
+<p>Neutron 的设计目标是实现“网络即服务（Networking as a Service）”。为了达到这一目标，在设计上遵循了基于 SDN 实现网络虚拟化的原则，在实现上充分利用了 Linux 系统上的各种网络相关的技术。</p>
+<h3 id="Neutron功能"><a href="#Neutron功能" class="headerlink" title="Neutron功能"></a>Neutron功能</h3><p>Neutron 为整个 OpenStack 环境提供网络支持，包括二层交换，三层路由，负载均衡，防火墙和 VPN 等。Neutron 提供了一个灵活的框架，通过配置，无论是开源还是商业软件都可以被用来实现这些功能。‘</p>
+<h4 id="二层交换Switching"><a href="#二层交换Switching" class="headerlink" title="二层交换Switching"></a>二层交换Switching</h4><p>Nova 的 Instance 是通过虚拟交换机连接到虚拟二层网络的。Neutron 支持多种虚拟交换机，包括 Linux 原生的 Linux Bridge 和 Open vSwitch。 Open vSwitch（OVS）是一个开源的虚拟交换机，它支持标准的管理接口和协议。</p>
+<p>利用 Linux Bridge 和 OVS，Neutron 除了可以创建传统的 VLAN 网络，还可以创建基于隧道技术的 Overlay 网络，比如 VxLAN 和 GRE（Linux Bridge 目前只支持 VxLAN）。在后面章节我们会学习如何使用和配置 Linux Bridge 和 Open vSwitch。</p>
+<h4 id="三层路由Routing"><a href="#三层路由Routing" class="headerlink" title="三层路由Routing"></a>三层路由Routing</h4><p>Instance 可以配置不同网段的 IP，Neutron 的 router（虚拟路由器）实现 instance 跨网段通信。router 通过 IP forwarding，iptables 等技术来实现路由和 NAT。</p>
+<h4 id="负载均衡Load-Balancing"><a href="#负载均衡Load-Balancing" class="headerlink" title="负载均衡Load Balancing"></a>负载均衡Load Balancing</h4><p>Openstack 在 Grizzly 版本第一次引入了 Load-Balancing-as-a-Service（LBaaS），提供了将负载分发到多个 instance 的能力。LBaaS 支持多种负载均衡产品和方案，不同的实现以 Plugin 的形式集成到 Neutron，目前默认的 Plugin 是 HAProxy。</p>
+<h4 id="防火墙Firewalling"><a href="#防火墙Firewalling" class="headerlink" title="防火墙Firewalling"></a>防火墙Firewalling</h4><p>Neutron 通过下面两种方式来保障 instance 和网络的安全性。</p>
+<p>1.Security Group<br>通过 iptables 限制进出 instance 的网络包。</p>
+<p>2.Firewall-as-a-Service<br>FWaaS，限制进出虚拟路由器的网络包，也是通过 iptables 实现。</p>
+<h3 id="Neutron网络基本概念"><a href="#Neutron网络基本概念" class="headerlink" title="Neutron网络基本概念"></a>Neutron网络基本概念</h3><p>network 是一个隔离的二层广播域。Neutron 支持多种类型的 network，包括 local, flat, VLAN, VxLAN 和 GRE。network 必须属于某个 Project（ Tenant 租户），Project 中可以创建多个 network。 network 与 Project 之间是 1对多 关系。</p>
+<p><strong>local</strong>：local 网络与其他网络和节点隔离。local 网络中的 instance 只能与位于同一节点上同一网络的 instance 通信，local 网络主要用于单机测试。</p>
+<p><strong>flat</strong>：flat 网络是无 vlan tagging 的网络。flat 网络中的 instance 能与位于同一网络的 instance 通信，并且可以跨多个节点。</p>
+<p><strong>vlan</strong>：vlan 网络是具有 802.1q tagging 的网络。vlan 是一个二层的广播域，同一 vlan 中的 instance 可以通信，不同 vlan 只能通过 router 通信。vlan 网络可跨节点，是应用最广泛的网络类型。network A 和 network B 会分配不同的 VLAN ID，这样就保证了 network A 中的广播包不会跑到 network B 中。当然，这里的隔离是指二层上的隔离，借助路由器不同 network 是可能在三层上通信的。</p>
+<p><strong>vxlan</strong>：vxlan 是基于隧道技术的 overlay 网络。vxlan 网络通过唯一的 segmentation ID（也叫 VNI）与其他 vxlan 网络区分。vxlan 中数据包会通过 VNI 封装成 UDP 包进行传输。因为二层的包通过封装在三层传输，能够克服 vlan 和物理网络基础设施的限制。</p>
+<p><strong>gre</strong>：gre 是与 vxlan 类似的一种 overlay 网络。主要区别在于使用 IP 包而非 UDP 进行封装。</p>
+<p><strong>port</strong>：port 可以看做虚拟交换机上的一个端口。port 上定义了 MAC 地址和 IP 地址，当 instance 的虚拟网卡 VIF（Virtual Interface） 绑定到 port 时，port 会将 MAC 和 IP 分配给 VIF。subnet 与 port 是 1对多 关系。一个 port 必须属于某个 subnet；一个 subnet 可以有多个 port。</p>
+<p>在OpenStack中包含多种网络流量，主要包括：Management、API、VM、External，下面分别介绍这几种网络：<br><strong>1.Management 网络</strong><br>用于节点之间 message queue 内部通信以及访问 database 服务，所有的节点都需要连接到 management 网络。</p>
+<p><strong>2.API 网络</strong><br>OpenStack 各组件通过该网络向用户暴露 API 服务。Keystone, Nova, Neutron, Glance, Cinder, Horizon 的 endpoints 均配置在 API 网络上。通常，<strong>管理员也通过 API 网络 SSH 管理各个节点。</strong>（有时候Management网路和API网络会合并成一种网络来使用）</p>
+<p><strong>3.VM 网络</strong><br>VM 网络也叫 tenant 网络，用于 instance 之间通信。<br>VM 网络可以选择的类型包括 local, flat, vlan, vxlan 和 gre。<br>VM 网络由 Neutron 配置和管理。</p>
+<p><strong>4.External 网络</strong><br>External 网络指的是 VM 网络之外的网络，该网络不由 Neutron 管理。 Neutron 可以将 router attach 到 External 网络，为 instance 提供访问外部网络的能力。 External 网络可能是企业的 intranet，也可能是 internet。</p>
+<h3 id="Neutron架构"><a href="#Neutron架构" class="headerlink" title="Neutron架构"></a>Neutron架构</h3><p>与 OpenStack 的其他服务的设计思路一样，Neutron 也是采用分布式架构，由多个组件（子服务）共同对外提供网络服务。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/1.jpg" alt="Neutron学习"></p>
+<p>Neutron 由如下组件构成：<br>1.<strong>Neutron Server</strong>:对外提供 OpenStack 网络 API，接收请求，并调用 Plugin 处理请求。</p>
+<p>2.<strong>Plugin</strong>:处理 Neutron Server 发来的请求，维护 OpenStack 逻辑网络状态， 并调用 Agent 处理请求。</p>
+<p>3.<strong>Agent</strong>:处理 Plugin 的请求，负责在 network provider 上真正实现各种网络功能。</p>
+<p>4.<strong>network provider</strong>:提供网络服务的虚拟或物理网络设备，例如 Linux Bridge，Open vSwitch 或者其他支持 Neutron 的物理交换机。</p>
+<p>5.<strong>Queue</strong>:Neutron Server，Plugin 和 Agent 之间通过 Messaging Queue 通信和调用。</p>
+<p>6.<strong>Database</strong>:存放 OpenStack 的网络状态信息，包括 Network, Subnet, Port, Router 等。</p>
+<p>我们需要注意以下几点：<br>1.plugin 解决的是 What 的问题，即网络要配置成什么样子？而至于如何配置 How 的工作则交由 agent 完成。</p>
+<p>2.plugin，agent 和 network provider 是配套使用的，比如上例中 network provider 是 linux bridge，那么就得使用 linux bridge 的 plungin 和 agent；如果 network provider 换成了 OVS 或者物理交换机，plugin 和 agent 也得替换。</p>
+<p>3.plugin 的一个主要的职责是在数据库中维护 Neutron 网络的状态信息，这就造成一个问题：所有 network provider 的 plugin 都要编写一套非常类似的数据库访问代码。为了解决这个问题，Neutron 在 Havana 版本实现了一个 ML2（Modular Layer 2）plugin，对 plgin 的功能进行抽象和封装。有了 ML2 plugin，各种 network provider 无需开发自己的 plugin，只需要针对 ML2 开发相应的 driver 就可以了，工作量和难度都大大减少。ML2 会在后面详细讨论。</p>
+<p>4.plugin 按照功能分为两类： core plugin 和 service plugin。core plugin 维护 Neutron 的 netowrk, subnet 和 port 相关资源的信息，与 core plugin 对应的 agent 包括 linux bridge, OVS 等； service plugin 提供 routing, firewall, load balance 等服务，也有相应的 agent。后面也会分别详细讨论。</p>
+<h3 id="Neutron物理部署方案"><a href="#Neutron物理部署方案" class="headerlink" title="Neutron物理部署方案"></a>Neutron物理部署方案</h3><p><strong>方案1：控制节点 + 计算节点</strong><br>在这个部署方案中，OpenStack 由控制节点和计算节点组成。</p>
+<p>控制节点：部署的服务包括：neutron server, core plugin 的 agent 和 service plugin 的 agent。<br>计算节点：部署 core plugin 的agent，负责提供二层网络功能。</p>
+<p>这里有两点需要说明： </p>
+<ol>
+<li><p>core plugin 和 service plugin 已经集成到 neutron server，不需要运行独立的 plugin 服务。 </p>
+</li>
+<li><p>控制节点和计算节点都需要部署 core plugin 的 agent，因为通过该 agent 控制节点与计算节点才能建立二层连接。 </p>
+</li>
+<li><p>可以部署多个控制节点和计算节点。</p>
+<p><img src="http://img.bcoder.top/2018.07.28/2.jpg" alt="Neutron学习"></p>
+</li>
+</ol>
+<p><strong>方案2：控制节点 + 网络节点 + 计算节点</strong></p>
+<p>在这个部署方案中，OpenStack 由控制节点，网络节点和计算节点组成。</p>
+<p>控制节点：部署 neutron server 服务。</p>
+<p>网络节点：部署的服务包括：core plugin 的 agent 和 service plugin 的 agent。</p>
+<p>计算节点 ：部署 core plugin 的agent，负责提供二层网络功能。</p>
+<p>这个方案的要点是将所有的 agent 从控制节点分离出来，部署到独立的网络节点上。<br>1.控制节点只负责通过 neutron server 响应 API 请求。<br>2.由独立的网络节点实现数据的交换，路由以及 load balance等高级网络服务。<br>3.可以通过增加网络节点承担更大的负载。<br>4.可以部署多个控制节点、网络节点和计算节点。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/3.jpg" alt="Neutron学习"></p>
+<p>该方案特别适合规模较大的 OpenStack 环境。</p>
+<h2 id="Neutron服务组件"><a href="#Neutron服务组件" class="headerlink" title="Neutron服务组件"></a>Neutron服务组件</h2><h3 id="Neutron-Server"><a href="#Neutron-Server" class="headerlink" title="Neutron Server"></a>Neutron Server</h3><p>上面已经说过，core plugin 和 service plugin 已经集成到 neutron server，这使得Neutron Server比较复杂，我们用一张图来看一下Neutron Server 的分层结构：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/4.jpg" alt="Neutron学习"></p>
+<p>1.<strong>Core API</strong>：对外提供管理 network, subnet 和 port 的 RESTful API。</p>
+<p>2.<strong>Extension API</strong>：对外提供管理 router, load balance, firewall 等资源 的 RESTful API。</p>
+<p>3.<strong>Commnon Service</strong>：认证和校验 API 请求。</p>
+<p>4.<strong>Neutron Core</strong>：Neutron server 的核心处理程序，通过调用相应的 Plugin 处理请求。</p>
+<p>5.<strong>Core Plugin API</strong>：定义了 Core Plgin 的抽象功能集合，Neutron Core 通过该 API 调用相应的 Core Plgin。</p>
+<p>6.Extension Plugin API：定义了 Service Plgin 的抽象功能集合，Neutron Core 通过该 API 调用相应的 Service Plgin。</p>
+<p>7.Core Plugin：实现了 Core Plugin API，在数据库中维护 network, subnet 和 port 的状态，并负责调用相应的 agent 在 network provider 上执行相关操作，比如创建 network。</p>
+<p>8.<strong>Service Plugin</strong>：实现了 Extension Plugin API，在数据库中维护 router, load balance, security group 等资源的状态，并负责调用相应的 agent 在 network provider 上执行相关操作，比如创建 router。</p>
+<p>归纳起来，Neutron Server 包括两部分：</p>
+<ol>
+<li><p>提供 API 服务。</p>
+</li>
+<li><p>运行 Plugin。<br>即 <strong>Neutron Server = API + Plugins</strong></p>
+<p><img src="http://img.bcoder.top/2018.07.28/5.jpg" alt="Neutron学习"></p>
+</li>
+</ol>
+<h3 id="network-provider"><a href="#network-provider" class="headerlink" title="network provider"></a>network provider</h3><p>Neutron 的架构是非常开放的，可以支持多种 network provider，只要遵循一定的设计原则和规范。本节我们将开始讨论这个主题。</p>
+<p>先讨论一个简单的场景：在 Neutorn 中使用 linux bridge 这一种 network provider。<br>根据我们上面的 Neutron Server 的分层模型，我们需要实现两个东西：linux bridge core plugin 和 linux bridge agent。</p>
+<p><strong>linux bridge core plugin</strong>：<br>1.与 neutron server 一起运行。<br>2.实现了 core plugin API。<br>3.负责维护数据库信息。<br>4.通知 linux bridge agent 实现具体的网络功能。</p>
+<p><strong>linux bridge agent</strong>：<br>1.在计算节点和网络节点（或控制节点）上运行。<br>2.接收来自 plugin 的请求。<br>3.通过配置本节点上的 linux bridge 实现 neutron 网络功能。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/6.jpg" alt="Neutron学习"></p>
+<p>同样的道理，如果要支持 open vswitch，只需要实现 open vswitch plugin 和 open vswitch agent。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/7.jpg" alt="Neutron学习"></p>
+<p>由此可见：Neutron 可以通过开发不同的 plugin 和 agent 支持不同的网络技术。这是一种相当开放的架构。</p>
+<p>不过随着支持的 network provider 数量的增加，开发人员发现了两个突出的问题：<br>1.只能在 OpenStack 中使用一种 core plugin，多种 network provider 无法共存。<br>2.不同 plugin 之间存在大量重复代码，开发新的 plugin 工作量大。</p>
+<h3 id="ML2-Core-Plugin"><a href="#ML2-Core-Plugin" class="headerlink" title="ML2 Core Plugin"></a>ML2 Core Plugin</h3><h4 id="Why-ML2-Core-Plugin"><a href="#Why-ML2-Core-Plugin" class="headerlink" title="Why ML2 Core Plugin"></a>Why ML2 Core Plugin</h4><p>Core Plugin，其功能是维护数据库中 network, subnet 和 port 的状态，并负责调用相应的 agent 在 network provider 上执行相关操作，比如创建 network。<br>Moduler Layer 2（ML2）是 Neutron 在 Havana 版本实现的一个新的 core plugin，用于替代原有的 linux bridge plugin 和 open vswitch plugin</p>
+<p><strong>传统 core plugin 的问题？</strong><br>之所以要开发 ML2，主要是因为传统 core plugin 存在两个突出的问题。<br><strong>问题1：无法同时使用多种 network provider</strong><br>Core plugin 负责管理和维护 Neutron 的 network, subnet 和 port 的状态信息，这些信息是全局的，只需要也只能由一个 core plugin 管理。<br>只使用一个 core plugin 本身没有问题。但问题在于传统的 core plugin 与 core plugin agent 是一一对应的。也就是说，如果选择了 linux bridge plugin，那么 linux bridge agent 将是唯一选择，就必须在 OpenStack 的所有节点上使用 linux bridge 作为虚拟交换机（即 network provider）。<br>同样的，如果选择 open vswitch plugin， 所有节点上只能使用 open vswitch，而不能使用其他的 network provider。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/8.jpg" alt="Neutron学习"></p>
+<p><strong>问题2：开发新的 core plugin 工作量大</strong><br>所有传统的 core plugin 都需要编写大量重复和类似的数据库访问的代码，大大增加了 plugin 开发和维护的工作量。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/9.jpg" alt="Neutron学习"></p>
+<p>ML2 作为新一代的 core plugin，提供了一个框架，允许在 OpenStack 网络中同时使用多种 Layer 2 网络技术，不同的节点可以使用不同的网络实现机制。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/10.jpg" alt="Neutron学习"></p>
+<p>如上图所示，采用 ML2 plugin 后，可以在不同节点上分别部署 linux bridge agent, open vswitch agent, hyper-v agent 以及其他第三方 agent。<br>ML2 不但支持异构部署方案，同时能够与现有的 agent 无缝集成：以前用的 agent 不需要变，只需要将 Neutron server 上的传统 core plugin 替换为 ML2。<br>有了 ML2，要支持新的 network provider 就变得简单多了：无需从头开发 core plugin，只需要开发相应的 mechanism driver，大大减少了要编写和维护的代码。</p>
+<h4 id="ML2-Core-Plugin架构"><a href="#ML2-Core-Plugin架构" class="headerlink" title="ML2 Core Plugin架构"></a>ML2 Core Plugin架构</h4><p>ML2 对二层网络进行抽象和建模，引入了 type driver 和 mechansim driver。这两类 driver 解耦了 Neutron 所支持的网络类型（type）与访问这些网络类型的机制（mechanism），其结果就是使得 ML2 具有非常好的弹性，易于扩展，能够灵活支持多种 type 和 mechanism。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/1.png" alt="Neutron学习"></p>
+<p><strong>1.Type Driver</strong><br>Neutron 支持的每一种网络类型都有一个对应的 ML2 type driver。<br>type driver 负责维护网络类型的状态，执行验证，创建网络等。<br>ML2 支持的网络类型包括 local, flat, vlan, vxlan 和 gre。 </p>
+<p><strong>2.Mechansim Driver</strong><br>Neutron 支持的每一种网络机制都有一个对应的 ML2 mechansim driver。<br>mechanism driver 负责获取由 type driver 维护的网络状态，并确保在相应的网络设备（物理或虚拟）上正确实现这些状态。</p>
+<p>type 和 mechanisim 都太抽象，现在我们举一个具体的例子：<br>type driver 为 vlan，mechansim driver 为 linux bridge，我们要完成的操作是创建 network vlan100，那么：<br>1.vlan type driver 会确保将 vlan100 的信息保存到 Neutron 数据库中，包括 network 的名称，vlan ID 等。<br>2.linux bridge mechanism driver 会确保各节点上的 linux brige agent 在物理网卡上创建 ID 为 100 的 vlan 设备 和 brige 设备，并将两者进行桥接。</p>
+<p><strong>mechanism driver 有三种类型：</strong><br>1.<strong>Agent-based</strong>：包括 linux bridge, open vswitch 等。</p>
+<p>2.<strong>Controller-based</strong>：包括 OpenDaylight, VMWare NSX 等。</p>
+<p>3.<strong>基于物理交换机</strong>：包括 Cisco Nexus, Arista, Mellanox 等。<br>比如前面那个例子如果换成 Cisco 的 mechanism driver，则会在 Cisco 物理交换机的指定 trunk 端口上添加 vlan100。</p>
+<p>我们来介绍几种常见的实现：<br>linux bridge driver 支持的 type 包括 local, flat, vlan, and vxlan。<br>open vswitch driver 除了这 4 种 type 还支持 gre。<br>L2 population driver 作用是优化和限制 overlay 网络中的广播流量。 </p>
+<p>linux bridge 和 open vswitch 的 ML2 mechanism driver其作用是配置各节点上的虚拟交换机。 vxlan 和 gre 都属于 overlay 网络。</p>
+<p>ML2 core plugin 已经成为 OpenStack Neutron 的首选 plugin。</p>
+<h3 id="Service-Plugin-Agent"><a href="#Service-Plugin-Agent" class="headerlink" title="Service Plugin/Agent"></a>Service Plugin/Agent</h3><p>Core Plugin/Agent 负责管理核心实体：net, subnet 和 port。而对于更高级的网络服务，则由 Service Plugin/Agent 管理。</p>
+<p>Neutorn core plugin 及其 agent 负责将 instance 连接到 OpenStack layer 2 虚拟网络，所提供的资源包括 network, subnet 和 port。</p>
+<p>Service Plugin 及其 Agent 提供更丰富的扩展功能，包括路由，load balance，firewall等，如图所示：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/11.jpg" alt="Neutron学习"></p>
+<p><strong>1.DHCP</strong><br>dhcp agent 通过 dnsmasq 为 instance 提供 dhcp 服务。</p>
+<p><strong>2.Routing</strong><br>l3 agent 可以为 project（租户）创建 router，提供 Neutron subnet 之间的路由服务。路由功能默认通过 IPtables 实现。</p>
+<p><strong>3.Firewall</strong><br>l3 agent 可以在 router 上配置防火墙策略，提供网络安全防护。<br>另一个与安全相关的功能是 Security Group，也是通过 IPtables 实现。<br>Firewall 与 Security Group 的区别在于：<br>1.Firewall 安全策略位于 router，保护的是某个 project 的所有 network。<br>2.Security Group 安全策略位于 instance，保护的是单个 instance。</p>
+<p><strong>4.Load Balance</strong><br>Neutron 默认通过 HAProxy 为 project 中的多个 instance 提供 load balance 服务。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>与 OpenStack 其他服务一样，Neutron 采用的是分布式架构，包括 Neutorn Server、各种 plugin/agent、database 和 message queue。<br>1.Neutron server 接收 api 请求。<br>2.plugin/agent 实现请求。<br>3.database 保存 neutron 网络状态。<br>4.message queue 实现组件之间通信。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/12.jpg" alt="Neutron学习"></p>
+<p>instance 在启动时需要访问 nova-metadata-api 服务获取 metadata 和 userdata，这些 data 是该 instance 的定制化信息，比如 hostname, ip， public key 等。<br>但 instance 启动时并没有 ip，如何能够通过网络访问到 nova-metadata-api 服务呢？<br>答案就是 neutron-metadata-agent,<strong>该 agent 让 instance 能够通过 dhcp-agent 或者 l3-agent 与 nova-metadata-api 通信</strong></p>
+<p>再来一张更为详细的图：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/13.jpg" alt="Neutron学习"></p>
+<p>1.Neutron 通过 plugin 和 agent 提供的网络服务。<br>2.plugin 位于 Neutron server，包括 core plugin 和 service plugin。<br>3.agent 位于各个节点，负责实现网络服务。<br>4.core plugin 提供 L2 功能，ML2 是推荐的 plugin。<br>5.使用最广泛的 L2 agent 是 linux bridage 和 open vswitch。<br>6.service plugin 和 agent 提供扩展功能，包括 dhcp, routing, load balance, firewall, vpn 等。</p>
+<h2 id="Neutron功能-1"><a href="#Neutron功能-1" class="headerlink" title="Neutron功能"></a>Neutron功能</h2><h3 id="DHCP服务"><a href="#DHCP服务" class="headerlink" title="DHCP服务"></a>DHCP服务</h3><p>Neutron 提供 DHCP 服务的组件是 DHCP agent。DHCP agent 在网络节点运行上，默认通过 dnsmasq 实现 DHCP 功能。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/16.jpg" alt="Neutron学习"></p>
+<p>DHCP Agent主要包括：<br>1.<strong>dhcp_driver</strong>：使用 dnsmasq 实现 DHCP。</p>
+<p>2.<strong>interface_driver</strong> ：使用 linux bridge 连接 DHCP namespace interface。</p>
+<p>当创建 network 并在 subnet 上 enable DHCP 时，网络节点上的 DHCP agent 会启动一个 dnsmasq 进程为该 network 提供 DHCP 服务。</p>
+<p>dnsmasq 是一个提供 DHCP 和 DNS 服务的开源软件。<br><strong>dnsmasq 与 network 是一对一关系，一个 dnsmasq 进程可以为同一 netowrk 中所有 enable 了 DHCP 的 subnet 提供服务。</strong></p>
+<p>dnsmasq 与 network 是如何做到一对一关系的？<br>答案是通过 Linux Network Namespace 隔离。</p>
+<p>在二层网络上，VLAN 可以将一个物理交换机分割成几个独立的虚拟交换机。类似地，在三层网络上，Linux network namespace 可以将一个物理三层网络分割成几个独立的虚拟三层网络。<br>每个 namespace 都有自己独立的网络栈，包括 route table，firewall rule，network interface device 等。<br>Neutron 通过 namespace为每个network提供独立的DHCP和路由服务，从而允许租户创建重叠的网络。如果没有namespace，网络就不能重叠，这样就失去了很多灵活性。</p>
+<p>每个 dnsmasq 进程都位于独立的 namespace, 命名为 qdhcp-<code>&lt;network id&gt;</code></p>
+<p>neutoron net-list:列出所有的网络<br>ip netns list：列出所有的 namespace，也就是qdhcp-xxx<br>ip netns exec <code>&lt;network namespace name&gt;</code>  <code>&lt;command&gt;</code>:管理 namespace。</p>
+<p>那么问题来了，instance是如何获取DHCP IP的？<br>在创建 instance 时，Neutron 会为其分配一个 port，里面包含了 MAC 和 IP 地址信息。这些信息会同步更新到 dnsmasq 的 host 文件，同时 nova-compute 会设置 instance的MAC地址,接下来就是获取IP地址（以flat network为例）：</p>
+<ol>
+<li><p>vm1 开机启动，发出 <strong>DHCPDISCOVER</strong> 广播，该广播消息在整个 flat_net 中都可以被收到。</p>
+</li>
+<li><p>广播到达 veth tap19a0ed3d-fe，然后传送给 veth pair 的另一端 ns-19a0ed3d-fe。dnsmasq 在它上面监听，dnsmasq 检查其 host 文件，发现有对应项，于是dnsmasq 以  <strong>DHCPOFFER 消息</strong>将 IP（172.16.1.103）、子网掩码（255.255.255.0）、地址租用期限等信息发送给 vm1。</p>
+</li>
+<li><p>vm1 发<strong>送 DHCPREQUEST消息</strong>确认接受此DHCPOFFER。</p>
+</li>
+<li><p>dnsmasq 发送确认消息 <strong>DHCPACK</strong>，整个过程结束。</p>
+</li>
+</ol>
+<h3 id="Routing服务"><a href="#Routing服务" class="headerlink" title="Routing服务"></a>Routing服务</h3><p>路由服务（Routing）提供跨 subnet 联通功能。例如有如下环境：<br>cirros-vm1      172.16.100.3        vlan100<br>cirros-vm3      172.16.101.3        vlan101</p>
+<p>这两个 instance 要通信必须借助 router。可以是物理 router 或者虚拟 router。</p>
+<p>使用物理 router，如下图所示：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/19.jpg" alt="Neutron学习"></p>
+<p>接入的物理 router 有两个 interface ip：<br>172.16.100.1 对应 vlan100 的网关。<br>172.16.101.1 对应 vlan101 的网关。</p>
+<p>当 cirros-vm1 要跟 cirros-vm3 通信时，数据包的流向是这样的： </p>
+<ol>
+<li>因为 cirros-vm1 的默认网关指向 172.16.100.1，cirros-vm1 发送到 cirros-vm3 的数据包首先通过 vlan100 的 interface 进入物理 router。 </li>
+<li>router 发现目的地址 172.16.101.3 与 172.16.101.1 为同一个 valn，则从 vlan101 的 interface 发出。 </li>
+<li>数据包经过 brq1d7040b8-01 最终到达 cirros-vm3。</li>
+</ol>
+<p>虚拟 router 的路由机制与物理 router 一样，只是由软件实现。Neutron 两种方案都支持。如果要使用虚拟 router，<strong>需要启用 L3 agent</strong>。L3 agent 会在控制节点或者网络节点上运行虚拟 router，为 subnet 提供路由服务。除此之外，l3 agent 通过 iptables 提供。</p>
+<p>虚拟路由添加后，vlan101 的 bridge 上多了一个 tape17162c5-00，vlan100 的 bridge 上多了一个 tapd568ba1a-74。具体如图所示：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/20.jpg" alt="Neutron学习"></p>
+<p>两个 TAP 设备上并没有配置相应的 Gateway IP。l3 agent 会为每个 router 创建了一个 namespace，通过 veth pair 与 TAP 相连，然后将 Gateway IP 配置在位于 namespace 里面的 veth interface 上，这样就能提供路由了。具体查看步骤：<br>1.通过 ip netns 查看 namespace：<br>2.router 对应的 namespace 命名为 qrouter-&lt; router id&gt;。<br>3.通过 ip netns exec &lt; namespace name&gt; ip a 命令查看 veth interface 配置。</p>
+<p>namespace 中有两个 interface：<br>qr-e17162c5-00 上设置了 Gateway IP 172.16.101.1，与 root namespace 中的 tape17162c5-00 组成 veth pair。<br>qr-d568ba1a-74 上设置了 Gateway IP 172.16.100.1，与 root namespace 中的 tapd568ba1a-74 组成 veth pair。</p>
+<p>网络结构如图所示：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/21.jpg" alt="Neutron学习"></p>
+<p>那么问题来了，<strong>为什么要用 namespace 封装 router？</strong></p>
+<p>其根本原因是：为了支持网络重叠。<br>云环境下，租户可以按照自己的规划创建网络，不同租户的网络是可能重叠的。将路由功能放到 namespace 中，就能隔离不同租户的网络，从而支持网络重叠。<br>namespace 使得每个 router 有自己的路由表，而且不会与其他 router 冲突，所以能很好地支持网络重叠。</p>
+<h3 id="Floating-IP"><a href="#Floating-IP" class="headerlink" title="Floating IP"></a>Floating IP</h3><p>在了解Floating IP之前，我们先来看一下instance 如何与外部网络通信。</p>
+<p>这里的外部网络是指的租户网络以外的网络。租户网络是由 Neutron 创建和维护的网络。外部网络不由 Neutron 创建。如果是私有云，外部网络通常指的是公司 intranet；如果是公有云，外部网络通常指的是 internet。</p>
+<p>当租户网络连接到 Neutron router，通常将 router 作为默认网关。当 router 接收到 instance 的数据包，并将其转发到外网时:</p>
+<ol>
+<li>router 会修改包的源地址为自己的外网地址，这样确保数据包转发到外网，并能够从外网返回。</li>
+<li>router 修改返回的数据包，并转发给真正的 instance。<br>这个行为被称作 Source NAT。</li>
+</ol>
+<p>如果需要从外网直接访问 instance，则可以利用 floating IP。下面是关于 floating IP 必须知道的事实：</p>
+<ol>
+<li>floating IP 提供静态 NAT 功能，建立外网 IP 与 instance 租户网络 IP 的一对一映射。</li>
+<li>floating IP 是<strong>配置在 router 提供网关的外网 interface 上的，而非 instance 中。</strong></li>
+<li>router 会根据通信的方向修改数据包的源或者目的地址。</li>
+</ol>
+<h3 id="local-network"><a href="#local-network" class="headerlink" title="local network"></a>local network</h3><p>local network 的特点是不会与宿主机的任何物理网卡相连，也不关联任何的 VLAN ID。对于每个 local netwrok，ML2 linux-bridge 会创建一个 bridge，instance 的 tap 设备会连接到 bridge。位于同一个 local network 的 instance 会连接到相同的 bridge，这样 instance 之间就可以通信了。</p>
+<p>因为 bridge 没有与物理网卡连接，所以 instance 无法与宿主机之外的网络通信。 同时因为每个 local network 有自己的 bridge，bridge 之间是没有连通的，所以两个 local network 之间也不能通信，即使它们位于同一宿主机上。</p>
+<p>下图是 local network 的示例：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/2.png" alt="Neutron学习"></p>
+<p>具体创建过程如下：<br>1.创建了两个 local network，分别对应两个网桥 brqXXXX 和 brqYYYY。<br>2.VM0 和 VM1 通过 tap0 和 tap1 连接到 brqXXXX。<br>3.VM2 通过 tap0 和 tap2 连接到 brqYYYY。<br>4.VM0 与 VM1 在同一个 local network中，它们之间可以通信。<br>5.VM2 位于另一个 local network，由于 brqXXXX 和 brqYYYY 没有联通，所以 VM2 无法与 VM0 和 VM1 通信。</p>
+<p>总结：</p>
+<ol>
+<li>位于同一 local network 的 instance 可以通信。</li>
+<li>位于不同 local network 的 instance 无法通信。</li>
+<li>一个 local network 只能位于一个物理节点，无法跨节点。</li>
+</ol>
+<h3 id="flat-network"><a href="#flat-network" class="headerlink" title="flat network"></a>flat network</h3><p>flat network 是不带 tag 的网络，要求宿主机的物理网卡直接与 linux bridge 连接，这意味着：<strong>每个 flat network 都会独占一个物理网卡。</strong></p>
+<p> <img src="http://img.bcoder.top/2018.07.28/14.jpg" alt="Neutron学习"></p>
+<p>上图中 eth1 桥接到 brqXXX，为 instance 提供 flat 网络。<br>如果需要创建多个 flat network，就得准备多个物理网卡，如下图所示。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/15.jpg" alt="Neutron学习"></p>
+<p>Neutron 使用 veth pair 解决flat network连接真实物理网卡的问题。veth pair 是一种成对出现的特殊网络设备，它们象一根虚拟的网线，可用于连接两个 namespace。向 veth pair 一端输入数据，在另一端就能读到此数据。</p>
+<h3 id="vlan-network"><a href="#vlan-network" class="headerlink" title="vlan network"></a>vlan network</h3><p>vlan network 是带 tag 的网络，是实际应用最广泛的网络类型。<br>下图是 vlan100 网络的示例。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/17.jpg" alt="Neutron学习"></p>
+<p>1.三个 instance 通过 TAP 设备连接到名为 “brqXXXX” linux bridge。<br>2.在物理网卡 eth1 上创建了 eth1.100 的 vlan interface，eth1.100 连接到 brqXXXX。<br>3.instance 通过 eth1.100 发送到 eth1 的数据包就会打上 vlan100 的 tag.</p>
+<p>如果再创建一个 network vlan101，eth1 上会相应的创建 vlan interface eth1.101，并且连接的新的 lingux bridge “brqYYYY”。<br>每个 vlan network 有自己的 bridge，从而也就实现了基于 vlan 的隔离。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/18.jpg" alt="Neutron学习"></p>
+<p>这里有一点要 特别提醒：<br>因为物理网卡 eth1 上面可以走多个 vlan 的数据，那么物理交换机上与 eth1 相连的的 port 要设置成 trunk 模式，而不是 access 模式。</p>
+<h3 id="vxlan-network"><a href="#vxlan-network" class="headerlink" title="vxlan network"></a>vxlan network</h3><h4 id="vxlan简介"><a href="#vxlan简介" class="headerlink" title="vxlan简介"></a>vxlan简介</h4><p>前面的文章已经介绍过vlxan网络，由于其重要性，这里再贴一下vxlan相关基础知识，以便回顾复习。</p>
+<p>除了local, flat, vlan 这几类网络，OpenStack 还支持 vxlan 和 gre 这两种 overlay network。</p>
+<p>overlay network 是指建立在其他网络上的网络。overlay network 中的节点可以看作通过虚拟（或逻辑）链路连接起来的。overlay network 在底层可能由若干物理链路组成，但对于节点，不需要关心这些底层实现。例如 P2P 网络就是 overlay network，隧道也是。vxlan 和 gre 都是基于隧道技术实现的，它们也都是 overlay network。</p>
+<p>目前 linux bridge 只支持 vxlan，不支持 gre；open vswitch 两者都支持。vxlan 与 gre 实现非常类似，而且 vxlan 用得较多，所以只介绍 vxlan。</p>
+<p>VXLAN 为 Virtual eXtensible Local Area Network。正如名字所描述的，VXLAN 提供与 VLAN 相同的以太网二层服务，但拥有更强的扩展性和灵活性。与 VLAN 相比，VXLAN 有下面几个优势：</p>
+<p><strong>1. 支持更多的二层网段。</strong>VLAN 使用 12-bit 标记 VLAN ID，最多支持 4094 个 VLAN，这对大型云部署会成为瓶颈。VXLAN 的 ID （VNI 或者 VNID）则用 24-bit 标记，支持 16777216 个二层网段。</p>
+<p><strong>2. 能更好地利用已有的网络路径。</strong><br>VLAN 使用 Spanning Tree Protocol 避免环路，这会导致有一半的网络路径被 block 掉。VXLAN 的数据包是封装到 UDP 通过三层传输和转发的，可以使用所有的路径。</p>
+<p><strong>3. 避免物理交换机 MAC 表耗尽。</strong>由于采用隧道机制，TOR (Top on Rack) 交换机无需在 MAC 表中记录虚拟机的信息。</p>
+<h4 id="vxlan报结构"><a href="#vxlan报结构" class="headerlink" title="vxlan报结构"></a>vxlan报结构</h4><p>VXLAN 是将二层建立在三层上的网络。通过将二层数据封装到 UDP 的方式来扩展数据中心的二层网段数量。</p>
+<p>VXLAN 是一种在现有物理网络设施中支持大规模多租户网络环境的解决方案。VXLAN 的传输协议是 IP + UDP。</p>
+<p>VXLAN 定义了一个 MAC-in-UDP 的封装格式。在原始的 Layer 2 网络包前加上 VXLAN header，然后放到 UDP 和 IP 包中。通过 MAC-in-UDP 封装，VXLAN 能够在 Layer 3 网络上建立起了一条 Layer 2 的隧道。</p>
+<p>VXLAN 包的格式如下：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/22.jpg" alt="Neutron学习"></p>
+<p>如上图所示，VXLAN 引入了 8-byte VXLAN header，其中 VNI 占 24-bit。<br>VXLAN 和原始的 L2 frame 被封装到 UDP 包中。这 24-bit 的 VNI 用于标识不同的二层网段，能够支持 16777216 个 LAN。</p>
+<h4 id="VTEP"><a href="#VTEP" class="headerlink" title="VTEP"></a>VTEP</h4><p>VXLAN 使用 VXLAN tunnel endpoint (VTEP) 设备处理 VXLAN 的封装和解封。<br>每个 VTEP 有一个 IP interface，配置了一个 IP 地址。VTEP 使用该 IP 封装 Layer 2 frame，并通过该 IP interface 传输和接收封装后的 VXLAN 数据包。</p>
+<p>下面是 VTEP 的示意图：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/23.jpg" alt="Neutron学习"></p>
+<p>VXLAN 独立于底层的网络拓扑；<br>反过来，两个 VTEP 之间的底层 IP 网络也独立于 VXLAN。<br>VXLAN 数据包是根据外层的 IP header 路由的，该 header 将两端的 VTEP IP 作为源和目标 IP。</p>
+<h4 id="vxlan包转发流程"><a href="#vxlan包转发流程" class="headerlink" title="vxlan包转发流程"></a>vxlan包转发流程</h4><p>VXLAN 在 VTEP 间建立隧道，通过 Layer 3 网络传输封装后的 Layer 2 数据。下面例子演示了数据如何在 VXLAN 上传输：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/3.png" alt="Neutron学习"></p>
+<p>图中 Host-A 和 Host-B 位于 VNI 10 的 VXLAN，通过 VTEP-1 和 VTEP-2 之间建立的 VXLAN 隧道通信。数据传输过程如下：</p>
+<p>1.Host-A 向 Host-B 发送数据时，Host-B 的 MAC 和 IP 作为数据包的目标 MAC 和 IP，Host-A 的 MAC 作为数据包的源 MAC 和 IP，然后通过 VTEP-1 将数据发送出去。</p>
+<p>2.VTEP-1 从自己维护的映射表中找到 MAC-B 对应的 VTEP-2，然后执行 VXLAN 封装，加上 VXLAN 头，UDP 头，以及外层 IP 和 MAC 头。此时的外层 IP 头，目标地址为 VTEP-2 的 IP，源地址为 VTEP-1 的 IP。同时由于下一跳是 Router-1，所以外层 MAC 头中目标地址为 Router-1 的 MAC。</p>
+<p>3.数据包从 VTEP-1 发送出去后，外部网络的路由器会依据外层 IP 头进行包路由，最后到达与 VTEP-2 连接的路由器 Router-2。</p>
+<p>4.Router-2 将数据包发送给 VTEP-2。VTEP-2 负责解封数据包，依次去掉外层 MAC 头，外层 IP 头，UDP 头 和 VXLAN 头。</p>
+<p>5.VTEP-2 依据目标 MAC 地址将数据包发送给 Host-B。</p>
+<p>上面的流程我们看到 VTEP 是 VXLAN 的最核心组件，负责数据的封装和解封。<br>隧道也是建立在 VTEP 之间的，VTEP 负责数据的传送。</p>
+<h4 id="Linux对VXLAN的支持"><a href="#Linux对VXLAN的支持" class="headerlink" title="Linux对VXLAN的支持"></a>Linux对VXLAN的支持</h4><p>VTEP 可以由专有硬件来实现，也可以使用纯软件实现。<br>目前比较成熟的 VTEP 软件实现包括：<br>1.带 VXLAN 内核模块的 Linux<br>2.Open vSwitch</p>
+<p>我们先来看 Linux 如何支持 VXLAN，Open vSwitch 方式将在后面讨论。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/24.jpg" alt="Neutron学习"></p>
+<p>实现方式：<br>1.Linux vxlan 创建一个 UDP Socket，默认在 8472 端口监听。<br>2.Linux vxlan 在 UDP socket 上接收到 vxlan 包后，解包，然后根据其中的 vxlan ID 将它转给某个 vxlan interface，然后再通过它所连接的 linux bridge 转给虚机。<br>3.Linux vxlan 在收到虚机发来的数据包后，将其封装为多播 UDP 包，从网卡发出。</p>
+<h3 id="vxlan-L2-Population"><a href="#vxlan-L2-Population" class="headerlink" title="vxlan L2 Population"></a>vxlan L2 Population</h3><p>L2 Population 是用来提高 VXLAN 网络 Scalability 的。</p>
+<p>通常我们说某个系统的 Scalability 好，其意思是：当系统的规模变大时，仍然能够高效地工作。</p>
+<p>L2 Population 到底解决了怎样的 Scalability 问题？请看下图：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/25.jpg" alt="Neutron学习"></p>
+<p>这是一个包含 5 个节点的 VXLAN 网络，每个节点上运行了若干 VM。</p>
+<p>现在假设 Host 1 上的 VM A 想与 Host 4 上的 VM G 通信，VM A 要做的第一步是获知 VM G 的 MAC 地址。<br>于是 VM A 需要在整个 VXLAN 网络中广播 APR 报文：“VM G 的 MAC 地址是多少？”</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/26.jpg" alt="Neutron学习"></p>
+<p>如果 VXLAN 网络的节点很多，广播的成本会很大，这样 Scalability 就成问题了。<br>幸好 L2 Population 出现了。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/27.jpg" alt="Neutron学习"></p>
+<p>L2 Population 的作用是在 VTEP 上提供 Porxy ARP 功能，使得 VTEP 能够预先获知 VXLAN 网络中如下信息： </p>
+<ol>
+<li>VM IP – MAC 对应关系 </li>
+<li>VM – VTEP 的对应关系</li>
+</ol>
+<p>当 VM A 需要与 VM G 通信时： </p>
+<ol>
+<li>Host 1 上的 VTEP 直接响应 VM A 的 APR 请求，告之 VM G 的 MAC 地址。 </li>
+<li>因为 Host 1 上的 VTEP 知道 VM G 位于 Host 4，会将封装好的 VXLAN 数据包直接发送给 Host 4 的 VTEP。</li>
+</ol>
+<p>这样就解决了 MAC 地址学习和 APR 广播的问题，从而保证了 VXLAN 的 Scalability。</p>
+<p>那么下一个关键问题是：<br><strong>VTEP 是如何提前获知 IP – MAC – VTEP 相关信息的呢？</strong></p>
+<p>答案是： </p>
+<ol>
+<li>Neutron 知道每一个 port 的状态和信息；port 保存了 IP，MAC 相关数据。 </li>
+<li>instance 启动时，其 port 状态变化过程为：down -&gt; build -&gt; active。 </li>
+<li>每当 port 状态发生变化时，Neutron 都会通过 RPC 消息通知各节点上的 Neutron agent，使得 VTEP 能够更新 VM 和 port 的相关信息 </li>
+<li>VTEP 可以根据这些信息判断出其他 Host 上都有哪些 VM，以及它们的 MAC 地址，这样就能直接与之通信，从而避免了不必要的隧道连接和广播。</li>
+</ol>
+<h3 id="安全组"><a href="#安全组" class="headerlink" title="安全组"></a>安全组</h3><p>Neutron 为 instance 提供了两种管理网络安全的方法：安全组（Security Group）和虚拟防火墙。</p>
+<p>安全组的原理是通过 iptables 对 instance 所在计算节点的网络流量进行过滤。虚拟防火墙则由 Neutron Firewall as a Service（FWaaS）高级服务提供。其底层也是使用 iptables，在 Neutron Router 上对网络包进行过滤。</p>
+<p>每个 Project（租户）都有一个命名为 “default” 的默认安全组。“default” 安全组有四条规则，其作用是：允许所有外出（Egress）的流量，但禁止所有进入（Ingress）的流量。</p>
+<p>安全组有以下特性：</p>
+<ol>
+<li><p>通过宿主机上 iptables 规则控制进出 instance 的流量。</p>
+</li>
+<li><p>安全组作用在 instance 的 port 上。</p>
+</li>
+<li><p>安全组的规则都是 allow，不能定义 deny 的规则。</p>
+</li>
+<li><p>instance 可应用多个安全组叠加使用这些安全组中的规则。</p>
+</li>
+</ol>
+<h3 id="FWaaS"><a href="#FWaaS" class="headerlink" title="FWaaS"></a>FWaaS</h3><p>防火墙在openstack中又叫FWaaS。Firewall as a Service（FWaaS）是 Neutron 的一个高级服务。用户可以用它来创建和管理防火墙，在 subnet 边界上对 layer 3 和 layer 4 的流量进行过滤。</p>
+<p>传统网络中的防火墙一般放在网关上，用来控制子网之间的访问。FWaaS 的原理也一样，是在 Neutron 虚拟 router 上应用防火墙规则，控制进出租户网络的数据。</p>
+<p>FWaaS 有三个重要概念：Firewall、Policy 和 Rule。<br><strong>1.Firewall</strong>：租户能够创建和管理的逻辑防火墙资源。Firewall 必须关联某个 Policy，因此必须先创建 Policy。</p>
+<p><strong>2.Firewall Policy</strong>：Policy 是 Rule 的集合，Firewall 会按顺序应用 Policy 中的每一条 Rule。</p>
+<p><strong>3.Firewall Rule</strong>：Rule 是访问控制规则，由源与目的子网 IP、源与目的端口、协议、allow 或 deny 动作组成。例如，我们可以创建一条 Rule，允许外部网络通过 ssh 访问租户网络中的 instance，端口为 22。</p>
+<p>与 FWaaS 容易混淆的概念是安全组（Security Group）。</p>
+<p>安全组的应用对象是虚拟网卡，由 L2 Agent 实现，比如 neutron_openvswitch_agent 和 neutron_linuxbridge_agent。安全组会在计算节点上通过 iptables 规则来控制进出 instance 虚拟网卡的流量。也就是说：<strong>安全组保护的是 instance</strong>。<br>FWaaS 的应用对象是 router，可以在安全组之前控制外部过来的流量，但是对于同一个 subnet 内的流量不作限制。也就是说：<strong>FWaaS 保护的是 subnet</strong>。</p>
+<p><strong>FWaaS与Security Group联系：</strong><br>相同点：1. 底层都是通过 iptables 实现。</p>
+<p>不同点：</p>
+<ol>
+<li>FWaaS 的 iptables 规则应用在 router 上，保护整个租户网络；安全组则应用在虚拟网卡上，保护单个 instance。</li>
+<li>FWaaS 可以定义 allow 或者 deny 规则；安全组只能定义 allow 规则。</li>
+</ol>
+<h3 id="LBaaS"><a href="#LBaaS" class="headerlink" title="LBaaS"></a>LBaaS</h3><p>Load Balance as a Service（LBaaS）是 Neutron 提供的一项高级网络服务。<br>LBaaS 允许租户在自己的网络中创建和管理 load balancer。</p>
+<p>load balancer 可以说是分布式系统中比较基础的组件。<br>它接收前端发来的请求，然后将请求按照某种均衡策略转发给后端资源池中的某个处理单元，以完成处理。 load balancer 可以实现系统高可用和横向扩展。</p>
+<p>LBaaS 有三个主要的概念： Pool Member，Pool 和 Virtual IP<br>1.<strong>Pool Member</strong>：Pool Member 是 layer 4 的实体，拥有 IP 地址并通过监听端口对外提供服务。 例如 Pool Member 可以是一个 web server，IP 为 172.16.100.9 并通过 80 端口提供 HTTP 服务。</p>
+<p>2.<strong>Pool</strong>：Pool 由一组 Pool Member 组成。 这些 Pool Member 通常提供同一类服务。<br>例如一个 web server pool，包含：<br>web1：172.16.100.9：80<br>web2：172.16.100.10：80</p>
+<p>3.<strong>Virtual IP</strong>：Virtual IP 也称作 VIP，是定义在 load balancer 上的 IP 地址。<br>每个 pool member 都有自己的 IP，但对外服务则是通过 VIP。</p>
+<p>load balancer 负责监听外部的连接，并将连接分发到 pool member。<br>外部 client 只知道 VIP，不知道也不需要关心是否有 pool 或者有多少个 pool member。</p>
+<p>OpenStack Neutron 目前默认通过 <strong>HAProxy</strong> 软件来实现 LBaaS。<br>HAProxy 是一个流行的开源 load balancer。<br>Neutron 也支持其他一些第三方 load balancer。比如 radware，VMWareEdge 等。</p>
+<p>下图展示了 HAProxy 实现 load balancer 的方式。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/28.jpg" alt="Neutron学习"></p>
+<p>左图是 client 发送请求到 web server 的数据流：</p>
+<ol>
+<li><p>Client 10.10.10.4 通过浏览器访问服务器的外网 IP 10.10.10.7。</p>
+</li>
+<li><p>请求首先到达路由器，将目的地址设置为服务器的内网 VIP 172.16.100.11</p>
+</li>
+<li><p>VIP 设置在 load balancer 上，load balancer 收到请求后选择 pool member WEB1，<br>将数据包的目的 IP 设为 WEB1 的地址 172.16.100.9。</p>
+</li>
+<li><p>在将数据包转发给 WEB1 之前，load balancer 将数据包的源 IP 修改为自己的 VIP 地址 172.16.100.11，<br>其目的是保证 WEB1 能够将应答数据发送回 load balancer。</p>
+</li>
+<li><p>WEB1 收到请求数据包。</p>
+</li>
+</ol>
+<p>右图是 web server 应答的数据流：</p>
+<ol>
+<li><p>WEB1 将数据包发送给 load balancer。</p>
+</li>
+<li><p>load balancer 收到 WEB1 发回的数据后，将目的 IP 修改为 Client 的地址 10.10.10.4。<br>同时也将数据包的源 IP 修改为 VIP 地址 172.16.100.11，保证 Client 能够将后续数据发送给自己。</p>
+</li>
+<li><p>load balancer 将数据发送给路由器。</p>
+</li>
+<li><p>路由器将数据包的原地址恢复成服务器的外网 IP 10.10.10.7，然后发送给 Client。</p>
+</li>
+<li><p>Client 收到应答数据。</p>
+</li>
+</ol>
+<p>LBaaS 支持多种 load balance method:<br>1.<strong>ROUND_ROUBIN</strong>：如果采用 round robin 算法，load balancer 按固定的顺序从 pool 中选择 member 相应 client 的连接请求。这种方法的不足是缺乏机制检查 member 是否负载过重。有可能出现某些 member 由于处理能力弱而不得不继续处理新连接的情况。如果所有 pool member 具有相同处理能力、内存容量，并且每个连接持续的时间大致相同，这种情况非常适合 round robin，每个 member 的负载会很均衡。</p>
+<p>2.<strong>LEAST_CONNECTIONS</strong>：如果采用 least connections 算法，load balancer 会挑选当前连接数最少的 pool  member。这是一种动态的算法，需要实时监控每个 member 的连接数量和状态。计算能力强的 member 能够更快的处理连接进而会分配到更多的新连接。</p>
+<p>3.<strong>SOURCE_IP</strong>：如果采用 source IP 算法，具有相同 source IP 的连接会被分发到同一个 pool member。source IP 算法对于像购物车这种需要保存状态的应用特别有用，因为我们希望用同一 server 来处理某个 client 连续的在线购物操作。</p>
+<p>通常我们希望让同一个 server 来处理某个 client 的连续请求。否则 client 可能会由于丢失 session 而不得不重新登录。这个特性就是 Session Persistence。VIP 支持如下几种 Session Persistence 方式：<br>1.<strong>OURCE_IP</strong>：这种方式与前面 load balance 的 SOURCE_IP 效果一样。初始连接建立后，后续来自相同 source IP 的 client 请求会发送给同一个 member。当大量 client 通过同一个代理服务器访问 VIP 时（比如在公司和学校上网），SOURCE_IP 方式会造成 member 负载不均。</p>
+<p>2.<strong>HTTP_COOKIE</strong>：<br>HTTP_COOKIE 的工作方式如下：<br>当 client 第一次连接到 VIP 时，HAProxy 从 pool 中挑选出一个 member。<br>当此 member 响应请求时，HAProxy 会在应答报文中注入命名为 “SRV” 的 cookie，这个 cookie 包含了该 member 的唯一标识。client 的后续请求都会包含这个 “SRV” cookie。HAProxy 会分析 cookie 的内容，并将请求转发给同一个 member。HTTP_COOKIE 优于 SOURCE_IP，因为它不依赖 client 的 IP。</p>
+<p>3.<strong>APP_COOKIE</strong>：app cookie 依赖于服务器端应用定义的 cookie。比如 app 可以通过在 session 中创建 cookie 来区分不同的 client。HAProxy 会查看报文中的 app cookie，确保将包含 app cookie 的请求发送到同一个 member。如果没有 cookie（新连接或者服务器应用不创建 cookie），HAProxy 会采用 ROUND_ROUBIN 算法分配 member。</p>
+<p>前面我们介绍了三种 Load Balance Method，这里还有三种 Session Persistence</p>
+<p>因为两者都涉及到如何选择 pool member，所以很容易混淆。它们之间的最大区别在于选择 pool member 的阶段不同：</p>
+<ol>
+<li>Load Balance Method 是为新连接选择 member 的方法</li>
+<li>Session Persistence 是为同一个 client 的后续连接选择 member 的方法</li>
+</ol>
+<p>例如这里我们的设置为：<br>Load Balance Method – ROUND_ROUBIN<br>Session Persistence – SOURCE_IP</p>
+<p>当 client A 向 VIP 发送第一个请求时，HAProxy 通过 ROUND_ROUBIN 选择 member1。对于 client A 后续的请求，HAProxy 则会应用 SOURCE_IP 机制，仍然选择 member1 来处理请求。</p>
+<p>LBaaS 为租户提供了横向扩展应用的能力。<br>租户可以将外部请求 balancing 到多个 instance 上，并通过 monitor 实现应用的高可用。<br>LBaaS 当前的实现是基于 HAProxy，其功能已经能够满足普通业务需求。</p>
+<h2 id="Open-vSwitch-实现-Neutron"><a href="#Open-vSwitch-实现-Neutron" class="headerlink" title="Open vSwitch 实现 Neutron"></a>Open vSwitch 实现 Neutron</h2><h3 id="OVS网络设备"><a href="#OVS网络设备" class="headerlink" title="OVS网络设备"></a>OVS网络设备</h3><p><strong>控制节点：</strong><br>ifconfig 显示控制节点上有三个网桥 br-ex，br-int 和 br-tun。从命名上看我们大致能猜出他们的用途：</p>
+<p>br-ex：连接外部（external）网络的网桥。</p>
+<p>br-int：集成（integration）网桥，所有 instance 的虚拟网卡和其他虚拟网络设备都将连接到该网桥。</p>
+<p>br-tun：隧道（tunnel）网桥，基于隧道技术的 VxLAN 和 GRE 网络将使用该网桥进行通信。</p>
+<p>这些网桥都是 Neutron 自动为我们创建的，但是通过 brctl show 命令却看不到它们。这是因为我们使用的是 Open vSwitch 而非 Linux Bridge，需要用 Open vSwitch 的命令 ovs-vsctl show 查看</p>
+<p><strong>计算节点：</strong><br>计算节点上也有 br-int 和 br-tun，但没有 br-ext。这是合理的，因为发送到外网的流量是通过网络节点上的虚拟路由器转发出去的，所以 br-ext 只会放在网络节点（devstack-controller）上。</p>
+<p>在 Open vSwitch 环境中，一个数据包从 instance 发送到物理网卡大致会经过下面几个类型的设备：<br>1.tap interface：命名为 tapXXXX。</p>
+<p>2.linux bridge：命名为 qbrXXXX。</p>
+<p>3.veth pair：命名为 qvbXXXX, qvoXXXX。</p>
+<p>4.OVS integration bridge：命名为 br-int。</p>
+<p>5.OVS patch ports：命名为 int-br-ethX 和 phy-br-ethX（X 为 interface 的序号）。</p>
+<p>6.OVS provider bridge：命名为 br-ethX（X 为 interface 的序号）。</p>
+<p>7.物理 interface：命名为 ethX（X 为 interface 的序号）。</p>
+<p>8.OVS tunnel bridge：命名为 br-tun。</p>
+<p>OVS provider bridge 会在 flat 和 vlan 网络中使用；OVS tunnel bridge 则会在 vxlan 和 gre 网络中使用。</p>
+<h3 id="local-network-1"><a href="#local-network-1" class="headerlink" title="local network"></a>local network</h3><p><strong>1.我们创建一个local网络，带有dhcp服务：</strong></p>
+<p>创建 OVS local network 的过程与 Linux Bridge 没有什么区别。这是因为 Neutron 已经对不同 driver 进行了抽象，但底层肯定是有区别的。所以接下来要搞清楚底层网络发生了哪些变化？</p>
+<p>可以看到 Neutron 自动在 br-int 网桥上创建了 port “tap7970bdcd-f2”。从命名可知，该 port 对应 local_net 的 dhcp 接口。与 linux bridge driver 一样，dhcp 设备也是放在命名空间里的</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/29.jpg" alt="Neutron学习"></p>
+<p><strong>1.我们创建一个虚拟机：</strong></p>
+<p>在 br-int 上并没有看到 tapfc1c6ebb-71，而是多了一个 qvofc1c6ebb-71。</p>
+<p>我们再用 brctl show 查看一下 linux bridge 的配置：<br>这里我们看到有一个新建的网桥 qbrfc1c6ebb-71，上面连接了两个设备 qvbfc1c6ebb-71 和 tapfc1c6ebb-71。从命名上看，他们都应该与 cirros-vm1 的虚拟网卡有关。</p>
+<p><strong>qvbfc1c6ebb-71 和 qvofc1c6ebb-71 组成了一个 veth pair。</strong>之前介绍过，veth pair 是一种成对出现的特殊网络设备，它们象一根虚拟的网线连接两个网络设备。<br>这里 qvbfc1c6ebb-71 和 qvofc1c6ebb-71 的作用就是连接网桥 qbrfc1c6ebb-71 和 br-int。</p>
+<p>拓扑图：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/30.jpg" alt="Neutron学习"></p>
+<p>由图所示，tapfc1c6ebb-71 通过 qbrfc1c6ebb-71 间接连接到 br-int。</p>
+<p>那问题来了，为什么 tapfc1c6ebb-71 不能像左边的 DHCP 设备 tap7970bdcd-f2 那样直接连接到 br-int 呢？</p>
+<p>其原因是： Open vSwitch 目前还不支持将 iptables 规则放在与它直接相连的 tap 设备上。</p>
+<p>如果做不到这一点，就无法实现 Security Group 功能。 为了支持 Security Group，不得不多引入一个 Linux Bridge 支持 iptables。</p>
+<p>这样的后果就是网络结构更复杂了，路径上多了一个 linux bridge 和 一对 veth pair 设备。</p>
+<p>再建立一个虚拟机cirros-vm2的网络拓扑：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/31.jpg" alt="Neutron学习"></p>
+<p>再建立一个local网络，然后建立一个虚拟机cirros-vm3：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/32.jpg" alt="Neutron学习"></p>
+<p>下面我们讨论一个问题：cirros-vm3 能否 Ping 到 cirros-vm1 呢？</p>
+<p>根据我们在 linux bridge 中学到的知识，既然 cirros-vm3 和 cirros-vm1 都连接到同一个网桥 br-int，那么它们之间应该是可以 Ping 通的（linux bridge对于每一个local网络分别创建一个网桥）。 但另一方面，根据 Neutron 的设计，不同 local 网络之间是无法通信的。<br>实验证明 cirros-vm3 无法 Ping 到 cirros-vm1。</p>
+<p>下面我们需要解释同一个网桥上的 port 为什么不能通信。</p>
+<p>让我们重新审视一下 br-int 上各个 port 的配置。</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/33.jpg" alt="Neutron学习"></p>
+<p>这次我们注意到，虚拟网卡和 DHCP 对应的 port 都有一个特殊的 tag 属性。<br>first_local_net 相关 port 其 tag 为 1； second_local_net 相关 port 其 tag 为 2。</p>
+<p>玄机就在这里了： Open vSwitch 的每个网桥都可以看作一个真正的交换机，可以支持 VLAN，这里的 tag 就是 VLAN ID。</p>
+<p>br-int 中标记 tag 1 的 port 和 标记 tag 2 的 port 分别属于不同的 VLAN，它们之间是隔离的。</p>
+<p>需要特别说明的是： Open vSwitch 中的 tag 是内部 VLAN，用于隔离网桥中的 port，与物理网络中的 VLAN 没有关系。</p>
+<p>我们将 tag 信息添加到网络结构图中，如下所示：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/34.jpg" alt="Neutron学习"></p>
+<h3 id="flat-network-1"><a href="#flat-network-1" class="headerlink" title="flat network"></a>flat network</h3><p>flat 网络中的 instance 能与位于同一网络的 instance 通信，并且可以跨多个节点。</p>
+<p>flat network 是不带 tag 的网络，宿主机的物理网卡通过网桥与 flat network 连接，每个 flat network 都会占用一个物理网卡。</p>
+<p>在前面 local network 我们看到，br-int 与 linux bridge 之间可以通过 veth pair 连接。两个 ovs bridge 之间是用 patch port 连接的。看来 veth pair 和 patch port 都可以连接网桥，使用的时候如何选择呢？</p>
+<p>patch port 是 ovs bridge 自己特有的 port 类型，只能在 ovs 中使用。如果是连接两个 ovs bridge，优先使用 patch port，因为性能更好。</p>
+<p>所以：</p>
+<ol>
+<li>连接两个 ovs bridge，优先使用 patch port。技术上veth pair 也能实现，但性能不如 patch port。</li>
+<li>连接 ovs bridge 和 linux bridge，只能使用 veth pair。</li>
+<li>连接两个 linux bridge，只能使用 veth pair。</li>
+</ol>
+<h3 id="vlan-network-1"><a href="#vlan-network-1" class="headerlink" title="vlan network"></a>vlan network</h3><p>vlan network 是带 tag 的网络。</p>
+<p>在 Open vSwitch 实现方式下，不同 vlan instance 的虚拟网卡都接到 br-int 上。</p>
+<p>这一点与 linux bridge 非常不同，linux bridge 是不同 vlan 接到不同的网桥上。</p>
+<p>创建VLAN100网络：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/35.jpg" alt="Neutron学习"></p>
+<p>创建vm:</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/36.jpg" alt="Neutron学习"></p>
+<p>创建另一个vm:</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/37.jpg" alt="Neutron学习"></p>
+<p>因为计算节点上没有 hdcp 服务，所以没有相应的 tap 设备。</p>
+<p>创建另一个VLAN101,在此网络上创建vm3:</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/38.jpg" alt="Neutron学习"></p>
+<p>cirros-vm1 位于控制节点，属于 vlan100。<br>cirros-vm2 位于计算节点，属于 vlan100。<br>cirros-vm3 位于计算节点，属于 vlan101。</p>
+<p>cirros-vm1 与 cirros-vm2 都在 vlan100，它们之间能通信。<br>cirros-vm3 在 vlan101，不能与 cirros-vm1 和 cirros-vm2 通信。</p>
+<p>Open vSwitch 是如何实现 vlan100 和 vlan101 隔离？</p>
+<p>与 Linux Bridge driver 不同，Open vSwitch driver 并不通过 eth1.100, eth1.101 等 VLAN interface 来隔离不同的 VLAN。所有的 instance 都连接到同一个网桥 br-int，Open vSwitch 通过 <strong>flow rule（流规则）</strong>来指定如何对进出 br-int 的数据进行转发，进而实现 vlan 之间的隔离。</p>
+<p>具体来说：当数据进出 br-int 时，flow rule 可以修改、添加或者剥掉数据包的 VLAN tag，Neutron 负责创建这些 flow rule 并将它们配置到 br-int，br-eth1 等 Open vSwitch 上。</p>
+<h3 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h3><p>我们尝试添加路由，并将之前的网络VLAN100和VLAN101的接口加入到路由的接口中，我们可以看到控制节点的br-int 上多了两个 port:、</p>
+<ol>
+<li><p>qr-d295b258-45，从命名上可以推断该 interface 对应 router_100_101 的 interface (d295b258-4586)，是VLAN100的网关。</p>
+</li>
+<li><p>qr-2ffdb861-73，从命名上可以推断该 interface 对应 router_100_101 的 interface (2ffdb861-731c)，是 VLAN101的网关。</p>
+</li>
+</ol>
+<p>与 linux bridge 实现方式一样， router运行在自己的 namespace 中。</p>
+<p>具体的网络拓扑：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/39.jpg" alt="Neutron学习"></p>
+<h3 id="external-network"><a href="#external-network" class="headerlink" title="external network"></a>external network</h3><p>创建external网络，将其加入到之前的router:</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/40.jpg" alt="Neutron学习"></p>
+<p>通过 SNAT 使得 instance 能够直接访问外网，但外网还不能直接访问 instance。直接访问 instance 指的是通信连接由外网发起，例如从外网 SSH instance。 如果需要从外网直接访问 instance，可以利用 floating IP。</p>
+<h3 id="VxLAN-network"><a href="#VxLAN-network" class="headerlink" title="VxLAN network"></a>VxLAN network</h3><p>配置完Neutron 服务重启后，通过 ovs-vsctl show 查看网络配置：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/4.png" alt="Neutron学习"></p>
+<p>br-int 与 br-tun 通过 patch port “patch-tun” 和 “br-tun” 连接。 目前网络结构如下所示：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/41.jpg" alt="Neutron学习"></p>
+<p>vxlan100_net 并部署2个instance看看有什么变化：</p>
+<p>控制节点执行 ovs-vsctl show：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/5.png" alt="Neutron学习"></p>
+<p>br-int 连接了如下 port:<br>tap0d4cb13a-7a 是 vxlan100_net 的 DHCP 服务对应的 interface。<br>qvoa2ac3b9a-24 将 cirros-vm1 虚拟网卡连接到 vxlan100_net。</p>
+<p>br-tun 上创建了一个特殊的 port “vxlan-a642100b”，它是 VXLAN 的隧道端点，指定了本地（devstack-controller）节点和远端（devstack-compute1）节点 VTEP 的 IP。</p>
+<p>计算节点执行 ovs-vsctl show：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/6.png" alt="Neutron学习"></p>
+<p>br-int 上 qvoab219616-01 将 cirros-vm2 虚拟网卡连接到 vxlan100_net。</p>
+<p>br-tun 上也创建了 port “vxlan-a642100b”，配置内容与控制节点相对，指定了本地（devstack-compute1）节点和远端（devstack-controller）节点 VTEP 的 IP。</p>
+<p>当前网络结构如下：</p>
+<p> <img src="http://img.bcoder.top/2018.07.28/42.jpg" alt="Neutron学习"></p>
+<p>需要特别注意的是：无论存在多少个 VXLAN，devstack-controller 与 devstack-compute1 之间所有的数据都只通过 “vxlan-a642100b” 这对 port 上建立的隧道传输。</p>
+<p>流表部分将在后面研究。</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2018/07/28/Neutron%E5%AD%A6%E4%B9%A0/>https://www.bcoder.top/2018/07/28/Neutron%E5%AD%A6%E4%B9%A0/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/OpenStack/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>OpenStack</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Neutron/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Neutron</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2018/07/28/Neutron%E5%AD%A6%E4%B9%A0/&title=Neutron学习 - zln's blog&summary=
+引言本文主要讲解OpenStack的核心组件Neutron,本文的主要内容引子CloudMan的公众号系列文章，本文仅仅对Neutron做了一个简单的学习，后面会进行深入学习。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2018/07/28/Neutron%E5%AD%A6%E4%B9%A0/&title=Neutron学习 - zln's blog&summary=
+引言本文主要讲解OpenStack的核心组件Neutron,本文的主要内容引子CloudMan的公众号系列文章，本文仅仅对Neutron做了一个简单的学习，后面会进行深入学习。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2018/07/28/Neutron%E5%AD%A6%E4%B9%A0/&title=Neutron学习 - zln's blog&summary=
+引言本文主要讲解OpenStack的核心组件Neutron,本文的主要内容引子CloudMan的公众号系列文章，本文仅仅对Neutron做了一个简单的学习，后面会进行深入学习。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2018/08/01/LRU-Catch%E5%AD%A6%E4%B9%A0/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>LRU Catch学习</p>
+                <p class='content'>LRU Catch介绍LRU（Least recently used，最近最少使用）算法根据数据的历史访问记录来进行淘汰数据，其核心思想是“如果数据最近被访问过，那么将来被访问的几率也更高”，换...</p>
+              </a>
+            
+            
+              <a class='next' href='/2018/07/21/OpenStack%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/'>
+                <p class='title'>OpenStack学习笔记<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>
+引言由于毕业和新入职的种种关系，好久没更新博客了，最近工作慢慢稳定下来，继续更新。由于本人目前从事云计算编排相关的工作，所以在业余看了一下OpenStack相关的知识，本文的内容可能十分琐碎，...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'Neutron学习',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Neutron介绍"><span class="toc-text">Neutron介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Neutron概述"><span class="toc-text">Neutron概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Neutron功能"><span class="toc-text">Neutron功能</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#二层交换Switching"><span class="toc-text">二层交换Switching</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三层路由Routing"><span class="toc-text">三层路由Routing</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#负载均衡Load-Balancing"><span class="toc-text">负载均衡Load Balancing</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#防火墙Firewalling"><span class="toc-text">防火墙Firewalling</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Neutron网络基本概念"><span class="toc-text">Neutron网络基本概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Neutron架构"><span class="toc-text">Neutron架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Neutron物理部署方案"><span class="toc-text">Neutron物理部署方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Neutron服务组件"><span class="toc-text">Neutron服务组件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Neutron-Server"><span class="toc-text">Neutron Server</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#network-provider"><span class="toc-text">network provider</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ML2-Core-Plugin"><span class="toc-text">ML2 Core Plugin</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Why-ML2-Core-Plugin"><span class="toc-text">Why ML2 Core Plugin</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ML2-Core-Plugin架构"><span class="toc-text">ML2 Core Plugin架构</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Service-Plugin-Agent"><span class="toc-text">Service Plugin&#x2F;Agent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Neutron功能-1"><span class="toc-text">Neutron功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DHCP服务"><span class="toc-text">DHCP服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Routing服务"><span class="toc-text">Routing服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Floating-IP"><span class="toc-text">Floating IP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#local-network"><span class="toc-text">local network</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flat-network"><span class="toc-text">flat network</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vlan-network"><span class="toc-text">vlan network</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vxlan-network"><span class="toc-text">vxlan network</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#vxlan简介"><span class="toc-text">vxlan简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vxlan报结构"><span class="toc-text">vxlan报结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#VTEP"><span class="toc-text">VTEP</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vxlan包转发流程"><span class="toc-text">vxlan包转发流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Linux对VXLAN的支持"><span class="toc-text">Linux对VXLAN的支持</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vxlan-L2-Population"><span class="toc-text">vxlan L2 Population</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安全组"><span class="toc-text">安全组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FWaaS"><span class="toc-text">FWaaS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LBaaS"><span class="toc-text">LBaaS</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Open-vSwitch-实现-Neutron"><span class="toc-text">Open vSwitch 实现 Neutron</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#OVS网络设备"><span class="toc-text">OVS网络设备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#local-network-1"><span class="toc-text">local network</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flat-network-1"><span class="toc-text">flat network</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vlan-network-1"><span class="toc-text">vlan network</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#路由"><span class="toc-text">路由</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#external-network"><span class="toc-text">external network</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VxLAN-network"><span class="toc-text">VxLAN network</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

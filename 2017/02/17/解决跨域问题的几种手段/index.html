@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>解决跨域问题的几种手段 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="web,Ajax">
+  
+  
+    <meta name="description" content="
+前言：首先纠正一个误区，跨域并非浏览器限制了发起跨站请求的这种能力，恰恰相反，我们可以发出请求，服务端也可以接收到请求并正常返回数据，只不过在返回之后浏览器会阻止非同源数据（response），从而在控制台打出一系列报错信息。
+">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/02/17/%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E7%9A%84%E5%87%A0%E7%A7%8D%E6%89%8B%E6%AE%B5/">
+        解决跨域问题的几种手段
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/web%E5%BC%80%E5%8F%91/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>web开发</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-02-17 10:48:39</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>前言：首先纠正一个误区，跨域并非浏览器限制了发起跨站请求的这种能力，恰恰相反，我们可以发出请求，服务端也可以接收到请求并正常返回数据，只不过在返回之后浏览器会阻止非同源数据（response），从而在控制台打出一系列报错信息。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="兼容性查找"><a href="#兼容性查找" class="headerlink" title="兼容性查找"></a>兼容性查找</h2><p>文章中会涉及一系列兼容性的图解（mdn &amp; can i use）和一些专有名词（mdn），可以通过两个渠道来查看</p>
+<ul>
+<li><a href="http://caniuse.com/" target="_blank" rel="noopener">Can I Use</a></li>
+<li><a href="https://developer.mozilla.org/en-US/" target="_blank" rel="noopener">MDN</a></li>
+</ul>
+<h2 id="什么是跨域"><a href="#什么是跨域" class="headerlink" title="什么是跨域"></a>什么是跨域</h2><p>跨域是指从一个域名的网页去请求另一个域名的资源。比如从本地页面去请求 <a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a> 的资源。首先我们认识下哪些情况属于跨域，可以分为以下几点：</p>
+<ul>
+<li>协议不同，如http, https；</li>
+<li>端口不同；</li>
+<li>主域相同，子域不同；</li>
+<li>主域不同；</li>
+<li>ip地址和域名之间也算是跨域，浏览器不会自动做ip域名的映射；</li>
+</ul>
+<h2 id="为什么需要跨域"><a href="#为什么需要跨域" class="headerlink" title="为什么需要跨域"></a>为什么需要跨域</h2><p>以前在网页开发过程中我们大部分都只需要做页面上的用户交互，随着我们网页越来越应用化，现在越来越多的需要做页面与服务器的数据交互，而任何一个互联网产品都会有不同的端。</p>
+<h2 id="如何实现跨域"><a href="#如何实现跨域" class="headerlink" title="如何实现跨域"></a>如何实现跨域</h2><blockquote>
+<p>既然<code>XMLHttpRequest</code>对象不支持跨域请求，自然需要一个支持跨域的对象来帮我们完成跨域。</p>
+</blockquote>
+<p>目测，网页开发中支持跨域请求的对象：</p>
+<ul>
+<li>img<ul>
+<li>可以对其他域发起请求</li>
+<li>只能请求图片，不能把服务端的数据带出来</li>
+</ul>
+</li>
+<li>link<ul>
+<li>只能把数据发送到服务端，不能接收服务端的数据</li>
+</ul>
+</li>
+<li>script</li>
+<li>iframe</li>
+</ul>
+<p>这些对象都可以在网页中发送一个对其他域的请求，那么问题来了，我们怎么通过他们实现跨域的请求（数据交互）呢？</p>
+<p>注：所谓数据交互，就是指我们不仅可以将数据发出去，还可以将对方返回的数据接回来。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><ul>
+<li>document.domain</li>
+<li>window.name</li>
+<li>jsonp</li>
+<li>postMessage</li>
+<li>cors</li>
+</ul>
+<h3 id="document-domain"><a href="#document-domain" class="headerlink" title="document.domain"></a>document.domain</h3><ul>
+<li>关键点<ul>
+<li>跨域分为两种，一种xhr不能访问不同源的文档，另一种是不同window之间不能进行交互操作;</li>
+<li><code>document.domain</code>主要是解决第二种情况，且只能适用于主域相同子域不同的情况；</li>
+<li><code>document.domain</code>的设置是有限制的，我们只能把<code>document.domain</code>设置成自身或更高一级的父域，且主域必须相同。例如：<code>a.b.example.com</code>中某个文档的<code>document.domain</code>可以设成<code>a.b.example.com、b.example.com 、example.com</code>中的任意一个，但是不可以设成<code>c.a.b.example.com</code>，因为这是当前域的子域，也不可以设成baidu.com，因为主域已经不相同了。</li>
+</ul>
+</li>
+<li>兼容性：所有浏览器都支持；</li>
+<li>优点：<ul>
+<li>可以实现不同window之间的相互访问和操作；</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>只适用于父子window之间的通信，不能用于xhr；</li>
+<li>只能在主域相同且子域不同的情况下使用；</li>
+</ul>
+</li>
+<li>使用方式<ul>
+<li>a（当前页面或父页面）页面中加入document.domain = ‘example.com’;</li>
+<li>b（当前页面或子页面）页面中加入document.domain = ‘example.com’;</li>
+<li>a页面访问b页面里面的数据或者方法；</li>
+</ul>
+</li>
+</ul>
+<h3 id="window-name"><a href="#window-name" class="headerlink" title="window.name"></a>window.name</h3><ul>
+<li>关键点：window.name在页面的生命周期里共享一个window.name;</li>
+<li>兼容性：所有浏览器都支持；</li>
+<li>优点：<ul>
+<li>最简单的利用了浏览器的特性来做到不同域之间的数据传递；</li>
+<li>不需要前端和后端的特殊配制；</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>大小限制：window.name最大size是2M左右，不同浏览器中会有不同约定；</li>
+<li>安全性：当前页面所有window都可以修改，很不安全；</li>
+<li>数据类型：传递数据只能限于字符串，如果是对象或者其他会自动被转化为字符串，如下；</li>
+</ul>
+</li>
+<li>使用方式：修改window.name的值即可；</li>
+</ul>
+<h3 id="jsonp"><a href="#jsonp" class="headerlink" title="jsonp"></a>jsonp</h3><ul>
+<li>关键点：浏览器对XHR做了同源策略，但并没有将这种方式延续到script上（其实还有iframe，img等），从而可以利用动态script标签技术来做到跨域请求的作用。至于为什么会这样设计，本人也不太清楚，有可能是历史遗迹（漏洞），有可能是某些方面的技术瓶颈，也有可能是为了满足某些需求专门定制的，总之这项技术方案我们过去可以用，现在可以用就ok，至于将来应该也是会存在的，毕竟现在已经应用在很多家站点上，就算会废弃，也会有一段时间迭代。</li>
+<li>兼容性：所有浏览器都兼容这种方式；</li>
+<li>优点：很明显前端可以很轻松的做到跨域请求；</li>
+<li>缺点<ul>
+<li>只能通过GET方式请求，一方面是参数长度有限制，二是安全性比较差；</li>
+<li>后端需要知道前端的cb是什么样的结构，主要在参数和回调名；</li>
+<li>后端需要进行参数和cb的拼接然后才能执行；</li>
+</ul>
+</li>
+<li>使用方式</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** 前端生成script标签，并将src中传入需要执行的callback **/</span></span><br><span class="line">&lt;script type=<span class="string">"text/javascript"</span>&gt;</span><br><span class="line">    <span class="keyword">var</span> ele = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);</span><br><span class="line">    ele.type = <span class="string">"text/javascript"</span></span><br><span class="line">    ele.src = <span class="string">"http://example.com?jsonp=cb"</span>;</span><br><span class="line">    <span class="built_in">document</span>.body.appendChild(ele);</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">/</span>** 后端接到参数后给callback加入参数并执行 **<span class="regexp">/</span></span><br><span class="line"><span class="regexp">&lt;?php</span></span><br><span class="line"><span class="regexp">    $cb = $_GET['cb'];</span></span><br><span class="line"><span class="regexp">    $data = array('test1', 'test2', 'test3');</span></span><br><span class="line"><span class="regexp">    echo $cb.'('.json_encode($data).')';</span></span><br><span class="line"><span class="regexp">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="postMessage"><a href="#postMessage" class="headerlink" title="postMessage"></a>postMessage</h3><ul>
+<li>关键点：postMessage是h5引入的一个新概念，现在也在进一步的推广和发展中，他进行了一系列的封装，我们可以通过window.postMessage的方式进行使用，并可以监听其发送的消息；</li>
+<li>兼容性：下图是postMessage的兼容图，移动端可以放心用，但是pc端需要做降级处理，具体可以根据文中介绍的这几种跨域方式来则情选择；</li>
+</ul>
+<p><img src="/img/2017.02.17_1.jpg" alt="poseMessage兼容性"></p>
+<ul>
+<li>优点<ul>
+<li>不需要后端介入就可以非常简单的的做到跨域，一个函数外加两个参数（请求url，发送数据）就可以搞定；</li>
+<li>移动端兼容性好；</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>无法做到一对一的传递方式：监听中需要做很多消息的识别，由于postMessage发出的消息对于同一个页面的不同功能相当于一个广播的过程，该页面的所有onmessage都会收到，所以需要做消息的判断；</li>
+<li>安全性问题：三方可以通过截获，注入html或者脚本的形式监听到消息，从而能够做到篡改的效果，所以在postMessage和onmessage中一定要做好这方面的限制；</li>
+<li>发送的数据会通过<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm" target="_blank" rel="noopener">结构化克隆算法</a>进行序列化，所以只有满足该算法要求的参数才能够被解析，否则会报错，如function就不能当作参数进行传递；</li>
+</ul>
+</li>
+<li>使用方式：下面是前段时间写的一个通信的函数，sendMessage_负责发送消息，bindEvent_负责消息的监听并处理，可以通过代码来做一个大致了解；</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">Storage.prototype.sendMessage_ = <span class="function"><span class="keyword">function</span>(<span class="params">type, params, fn</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.topWindow) &#123;</span><br><span class="line">        <span class="keyword">this</span>.handleCookie_(type, params, fn);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> eventId = <span class="keyword">this</span>.addToQueue_(fn, type);</span><br><span class="line">    <span class="keyword">var</span> storageIframe = <span class="built_in">document</span>.getElementById(<span class="string">'mip-storage-iframe'</span>);</span><br><span class="line">    <span class="keyword">var</span> element = <span class="built_in">document</span>.createElement(<span class="string">"a"</span>);</span><br><span class="line">    element.href = <span class="keyword">this</span>.origin;</span><br><span class="line">    <span class="keyword">var</span> origin = element.href.slice(<span class="number">0</span>, element.href.indexOf(element.pathname) + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    storageIframe.contentWindow.postMessage(&#123;</span><br><span class="line">        type: type,</span><br><span class="line">        params: params,</span><br><span class="line">        eventId: eventId</span><br><span class="line">    &#125;, origin);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Storage.prototype.bindEvent_ = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">window</span>.onmessage = <span class="function"><span class="keyword">function</span> (<span class="params">res</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 判断消息来源</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">window</span> == res.source.window.parent &amp;&amp;</span><br><span class="line">            res.data.type === <span class="keyword">this</span>.messageType.RES &amp;&amp;</span><br><span class="line">            <span class="built_in">window</span>.location.href.match(res.origin.host).length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">var</span> fn = <span class="keyword">this</span>.eventQueue[res.data.eventId];</span><br><span class="line">            fn &amp;&amp; fn();</span><br><span class="line">            <span class="keyword">delete</span> <span class="keyword">this</span>.eventQueue[res.data.eventId];</span><br><span class="line">            <span class="comment">// reset id</span></span><br><span class="line">            <span class="keyword">var</span> isEmpty = <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">var</span> t <span class="keyword">in</span> <span class="keyword">this</span>.eventQueue) &#123;</span><br><span class="line">                isEmpty = <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (isEmpty) &#123;</span><br><span class="line">                <span class="keyword">this</span>.id = <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;.bind(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="cors"><a href="#cors" class="headerlink" title="cors"></a>cors</h3><ul>
+<li><p>关键点：cors是一种通过前后端http header配置来进行跨域的一种方式；</p>
+</li>
+<li><p>兼容性：如果不考虑pc端的IE，移动端的opera的话那兼容性还是不错的，针对ie和opera可以做适当的降级处理；</p>
+</li>
+<li><p>安全策略</p>
+<ul>
+<li>请求<ul>
+<li><code>origin</code>：通过<code>http</code>头中的<code>origin</code>判断域名是否是允许的；</li>
+<li><code>Example-Same-origin</code>：如果<code>http origin</code>不存在，最好能够自己在请求头中加入该参数来标示是否是同源，<code>true</code>表示请求来自于同域名下（同域名下请求不带origin）；如果该字段存在并且为true则允许请求接口，否则禁止；</li>
+<li><code>Example_source_origin</code>：该参数同<code>origin</code>，是在<code>origin</code>不存在的情况下用来标示请求来源的<code>url</code>；</li>
+</ul>
+</li>
+<li>返回<ul>
+<li><code>Access-Control-Allow-Origin: origin</code>，<code>origin</code>表示允许哪些网站请求，不建议设置为*；</li>
+<li><code>Access-Control-Expose-Headers:Example-Access-Control-Allow-Source-Origin</code>，允许http返回中包含该字段，可以通过这种方式在返回头中加入自定义字段，如该例子中的<code>Example-Access-Control-Allow-Source-Origin</code>;</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>优点</p>
+<ul>
+<li>前端方便不少，只需要发请求而不用考虑跨域问题；</li>
+<li>安全性能够得以控制和保障；</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>兼容性不全面，需要做降级处理；</li>
+</ul>
+</li>
+<li><p>使用方式</p>
+<ul>
+<li>正常请求即可，无论是你要用xhr，还是用一些封装好的组件，如<a href="https://github.com/github/fetch" target="_blank" rel="noopener">fetch</a>，<a href="https://github.com/camsong/fetch-jsonp" target="_blank" rel="noopener">fetchJsonp</a>，亦或是jquery一类的技术均可；</li>
+<li>后端在response时需要设置一定的配置参数，并保证安全策略，具体方案可以参照下面安全策略模块；</li>
+</ul>
+</li>
+</ul>
+<h2 id="服务端解决跨域的手段"><a href="#服务端解决跨域的手段" class="headerlink" title="服务端解决跨域的手段"></a>服务端解决跨域的手段</h2><blockquote>
+<p>同源策略</p>
+</blockquote>
+<ul>
+<li>CORS</li>
+<li>反向代理</li>
+</ul>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/02/17/%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E7%9A%84%E5%87%A0%E7%A7%8D%E6%89%8B%E6%AE%B5/>https://www.bcoder.top/2017/02/17/%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E7%9A%84%E5%87%A0%E7%A7%8D%E6%89%8B%E6%AE%B5/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:04+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:04</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/web/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>web</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Ajax/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>Ajax</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/02/17/%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E7%9A%84%E5%87%A0%E7%A7%8D%E6%89%8B%E6%AE%B5/&title=解决跨域问题的几种手段 - zln's blog&summary=
+前言：首先纠正一个误区，跨域并非浏览器限制了发起跨站请求的这种能力，恰恰相反，我们可以发出请求，服务端也可以接收到请求并正常返回数据，只不过在返回之后浏览器会阻止非同源数据（response），从而在控制台打出一系列报错信息。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/02/17/%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E7%9A%84%E5%87%A0%E7%A7%8D%E6%89%8B%E6%AE%B5/&title=解决跨域问题的几种手段 - zln's blog&summary=
+前言：首先纠正一个误区，跨域并非浏览器限制了发起跨站请求的这种能力，恰恰相反，我们可以发出请求，服务端也可以接收到请求并正常返回数据，只不过在返回之后浏览器会阻止非同源数据（response），从而在控制台打出一系列报错信息。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/02/17/%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E7%9A%84%E5%87%A0%E7%A7%8D%E6%89%8B%E6%AE%B5/&title=解决跨域问题的几种手段 - zln's blog&summary=
+前言：首先纠正一个误区，跨域并非浏览器限制了发起跨站请求的这种能力，恰恰相反，我们可以发出请求，服务端也可以接收到请求并正常返回数据，只不过在返回之后浏览器会阻止非同源数据（response），从而在控制台打出一系列报错信息。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/02/19/%E6%80%8E%E6%A0%B7%E8%BF%9B%E8%A1%8C%E9%87%8D%E5%86%99equals%E5%92%8CHashcode%E6%96%B9%E6%B3%95/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>怎样进行重写equals()和Hashcode()方法</p>
+                <p class='content'>
+前言：重写equals()和Hashcode()方法在编码中经常会用到
+
+
+
+为什么重写equals()方法所有对象都继承于Object,Object提供eaquals()方法，重写equal...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/02/02/Java-Web%E5%AD%A6%E4%B9%A0%E4%B9%8BJSP/'>
+                <p class='title'>Java Web学习之JSP<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>JSP基础JSP概念介绍JSP:Java Server Page, Java 服务器端网页. 在 HTML 页面中编写 Java 代码的页面.
+JSP 是简化 Servlet 编写的一种技术, ...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: '解决跨域问题的几种手段',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#兼容性查找"><span class="toc-text">兼容性查找</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是跨域"><span class="toc-text">什么是跨域</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么需要跨域"><span class="toc-text">为什么需要跨域</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何实现跨域"><span class="toc-text">如何实现跨域</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决方案"><span class="toc-text">解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#document-domain"><span class="toc-text">document.domain</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#window-name"><span class="toc-text">window.name</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jsonp"><span class="toc-text">jsonp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#postMessage"><span class="toc-text">postMessage</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cors"><span class="toc-text">cors</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#服务端解决跨域的手段"><span class="toc-text">服务端解决跨域的手段</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

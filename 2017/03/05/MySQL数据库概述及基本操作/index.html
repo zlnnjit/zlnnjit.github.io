@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>MySQL数据库概述及基本操作 - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="MySQL">
+  
+  
+    <meta name="description" content="
+引言本文通过对数据库的概述、基本的SQL操作（包括做常用的库操作，表操作和数据操作）、数据库的中文乱码问题的解决等方面展开。
+">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2017/03/05/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/">
+        MySQL数据库概述及基本操作
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>数据库</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2017-03-05 08:02:55</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <blockquote>
+<p>引言<br>本文通过对数据库的概述、基本的SQL操作（包括做常用的库操作，表操作和数据操作）、数据库的中文乱码问题的解决等方面展开。</p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="数据库基础"><a href="#数据库基础" class="headerlink" title="数据库基础"></a>数据库基础</h1><h2 id="什么是数据库"><a href="#什么是数据库" class="headerlink" title="什么是数据库?"></a>什么是数据库?</h2><p>数据库: database, 存储数据的仓库<br>数据库: 高效的存储和处理数据的介质(介质主要是两种: 磁盘和内存)</p>
+<h2 id="数据库的分类"><a href="#数据库的分类" class="headerlink" title="数据库的分类?"></a>数据库的分类?</h2><p>数据库基于存储介质的不同: 进行了分类,分为两类: </p>
+<p>关系型数据库(SQL)</p>
+<p>非关系型数据库(NoSQL: Not Only SQL, 不是关系型的数据库都叫做非关系型数据库)</p>
+<h2 id="不同的数据库阵营中的产品有哪些"><a href="#不同的数据库阵营中的产品有哪些" class="headerlink" title="不同的数据库阵营中的产品有哪些?"></a>不同的数据库阵营中的产品有哪些?</h2><h3 id="关系型数据库"><a href="#关系型数据库" class="headerlink" title="关系型数据库"></a>关系型数据库</h3><ul>
+<li>大型: Oracle, DB2</li>
+<li>中型: SQL-SERVER, Mysql等</li>
+<li>小型: access等</li>
+</ul>
+<h3 id="非关系型数据库"><a href="#非关系型数据库" class="headerlink" title="非关系型数据库"></a>非关系型数据库</h3><ul>
+<li>memcached</li>
+<li>mongodb</li>
+<li>redis(同步到磁盘)</li>
+</ul>
+<h2 id="两种数据库阵营的区别"><a href="#两种数据库阵营的区别" class="headerlink" title="两种数据库阵营的区别?"></a>两种数据库阵营的区别?</h2><h3 id="关系型数据库-1"><a href="#关系型数据库-1" class="headerlink" title="关系型数据库:"></a>关系型数据库:</h3><ul>
+<li>安全(保存磁盘基本不可能丢失)</li>
+<li>容易理解</li>
+<li>比较浪费空间(二维表)</li>
+</ul>
+<h3 id="非关系型数据库-1"><a href="#非关系型数据库-1" class="headerlink" title="非关系型数据库:"></a>非关系型数据库:</h3><ul>
+<li>效率高 </li>
+<li>不安全(断电丢失)</li>
+</ul>
+<h2 id="关系型数据库-2"><a href="#关系型数据库-2" class="headerlink" title="关系型数据库"></a>关系型数据库</h2><h3 id="什么是关系型数据库"><a href="#什么是关系型数据库" class="headerlink" title="什么是关系型数据库?"></a>什么是关系型数据库?</h3><p>关系型数据库: 是一种建立在关系模型(数学模型)上的数据库.</p>
+<ul>
+<li>关系模型: 一种所谓建立在关系上的模型. 关系模型包含三个方面:</li>
+<li>数据结构: 数据存储的问题, 二维表(有行和列)</li>
+<li>操作指令集合: 所有SQL语句</li>
+<li>完整性约束: 表内数据约束(字段与字段), 表与表之间约束(外键) </li>
+</ul>
+<h3 id="关系型数据库的设计"><a href="#关系型数据库的设计" class="headerlink" title="关系型数据库的设计?"></a>关系型数据库的设计?</h3><p>关系型数据库: 从需要存储的数据需求中分析, 如果是一类数据(实体)应该设计成一张二维表: 表是由表头(字段名: 用来规定数据的名字)和数据部分组成(实际存储的数据单元)</p>
+<p>二维表: 行和列</p>
+<p><img src="/img/20170305_1.png" alt=""></p>
+<p>以实际案例来进行处理: 分析一个教学系统, 讲师负责教学, 教学生, 在教室教学生.</p>
+<p>①找出系统中所存在的实体: 讲师表, 学生表, 班级表</p>
+<p>②找出实体中应该存在的数据信息</p>
+<p>讲师: 姓名,性别,年龄,工资</p>
+<p>学生: 姓名,性别,学号,学科</p>
+<p>班级: 班级名字, 教室编号</p>
+<p>关系型数据库: 维护实体内部, 实体与实体之间的联系.</p>
+<p>实体内部联系: 每个学生都有姓名,性别, 学号,学科信息</p>
+<p><img src="/img/20170305_2.png" alt=""></p>
+<p>第二行的所有字段, 都是在描述陈明这个学生(内部联系); 第二列只能放性别(内部约束) </p>
+<p>关系型数据库的特点之一: 如果表中对应的某个字段没有值(数据), 但是系统依然要分配空间: 关系型数据库比较浪费空间</p>
+<p>实体与实体之间的联系: 每个学生肯定属于某个班级, 每个班级一定有多个学生(一对多)</p>
+<p>学生表</p>
+<p><img src="/img/20170305_3.png" alt=""></p>
+<p>班级表</p>
+<p><img src="/img/20170305_4.png" alt=""></p>
+<p>解决方案: 在学生表中增加一个班级字段来指向班级(必须能够唯一的找到一个班级信息)</p>
+<p><img src="/img/20170305_5.png" alt=""></p>
+<p>学生实体与班级实体的关联关系: 实体与实体之间的关系</p>
+<h2 id="关键字说明"><a href="#关键字说明" class="headerlink" title="关键字说明"></a>关键字说明</h2><ul>
+<li><p>数据库: database</p>
+</li>
+<li><p>数据库系统: DBS(Database System): 是一种虚拟系统, 将多种内容关联起来的称呼</p>
+</li>
+<li><p><strong>DBS</strong> = DBMS + DB</p>
+</li>
+<li><p><strong>DBMS</strong>: Database Management System, 数据库管理系统, 专门管理数据库</p>
+</li>
+<li><p><strong>DBA</strong>: Database Administrator,数据库管理员</p>
+</li>
+<li><p>行/记录: row/record, 本质是一个东西: 都是指表中的一行(一条记录): 行是从结构角度出发,记录是从数据角度出发</p>
+</li>
+<li><p>列/字段: column/field, 本质是一个东西</p>
+</li>
+</ul>
+<h2 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h2><p>SQL: Structured Query Language, 结构化查询语言(数据以查询为主: 99%是在进行查询操作)</p>
+<p>SQL分为三个部分</p>
+<ul>
+<li><strong>DDL</strong> : Data Definition Language, 数据定义语言, 用来维护存储数据的结构(数据库,表), 代表指令: create, drop, alter等</li>
+<li><strong>DML</strong>: Data Manipulation Language, 数据操作语言, 用来对数据进行操作(数据表中的内容), 代表指令: insert, delete,update等: 其中DML内部又单独进行了一个分类: DQL(Data Query Language: 数据查询语言, 如select)</li>
+<li><strong>DCL</strong>: Data Control Language, 数据控制语言, 主要是负责权限管理(用户), 代表指令: grant,revoke等</li>
+</ul>
+<p>SQL是关系型数据库的操作指令, SQL是一种约束,但不强制(类似W3C): 不同的数据库产品(如Oracle,mysql)可能内部会有一些细微的区别.</p>
+<h2 id="Mysql数据库"><a href="#Mysql数据库" class="headerlink" title="Mysql数据库"></a>Mysql数据库</h2><p>Mysql数据库是一种c/s结构的软件: 客户端/服务端, 若想访问服务器必须通过客户端(服务器一直运行, 客户端在需要使用的时候运行).</p>
+<p>交互方式</p>
+<ol>
+<li>客户端连接认证: 连接服务器, 认证身份:</li>
+</ol>
+<p>mysql.exe -hPup</p>
+<p>mysql -hlocalhost -P3306 -uroot -padmin</p>
+<p><img src="/img/20170305_6.png" alt=""></p>
+<ol start="2">
+<li>客户端发送SQL指令</li>
+<li>服务器接收SQL指令: 处理SQL指令: 返回操作结果</li>
+<li>客户端接收结果: 显示结果</li>
+</ol>
+<p><img src="/img/20170305_7.png" alt=""></p>
+<ol start="5">
+<li>断开连接(释放资源: 服务器并发限制): exit/quit/\q</li>
+</ol>
+<p><img src="/img/20170305_8.png" alt=""></p>
+<h2 id="Mysql服务器对象"><a href="#Mysql服务器对象" class="headerlink" title="Mysql服务器对象"></a>Mysql服务器对象</h2><p>没有办法完全了解服务器内部的内容: 只能粗略的去分析数据库服务器的内部的结构.</p>
+<p>将mysql服务器内部对象分成了四层: 系统(DBMS) -&gt; 数据库(DB) -&gt; 数据表(Table) -&gt; 字段(field)</p>
+<p><img src="/img/20170305_9.png" alt=""></p>
+<h1 id="SQL基本操作"><a href="#SQL基本操作" class="headerlink" title="SQL基本操作"></a>SQL基本操作</h1><p>基本操作: CRUD</p>
+<p>将SQL的基本操作根据操作对象进行分类 ,分为三类: 库操作, 表操作(字段), 数据操作</p>
+<h2 id="库操作"><a href="#库操作" class="headerlink" title="库操作"></a>库操作</h2><p>对数据库的增删改查.</p>
+<h3 id="新增数据库"><a href="#新增数据库" class="headerlink" title="新增数据库"></a>新增数据库</h3><p><strong>基本语法<br>Create database 数据库名字 [库选项];</strong></p>
+<p>库选项: 用来约束数据库, 分为两个选项</p>
+<p>字符集设定: charset/character set 具体字符集(数据存储的编码格式): 常用字符集: GBK和UTF8</p>
+<p>校对集设定: collate 具体校对集(数据比较的规则)</p>
+<p><img src="/img/20170305_10.png" alt=""></p>
+<p>其中: 数据库名字不能用关键字(已经被使用的字符)或者保留字(将来可能会用到的)</p>
+<p><img src="/img/20170305_11.png" alt=""></p>
+<p>如果非要使用关键字或者保留字,那么必须使用反引号(esc键下面的键在英文状态下的输出:`)</p>
+<p><img src="/img/20170305_12.png" alt=""></p>
+<p>中文数据库是可以的,但是有前提条件: 保证服务器能够识别(建议不用)</p>
+<p><img src="/img/20170305_13.png" alt=""></p>
+<p><strong>当创建数据库的SQL语句执行之后,发生了什么?</strong></p>
+<ol>
+<li>在数据库系统中,增加了对应的数据库信息</li>
+<li>会在保存数据的文件夹下: Data目录,创建一个对应数据库名字的文件夹</li>
+</ol>
+<p><img src="/img/20170305_14.png" alt=""></p>
+<ol start="3">
+<li>每个数据库下都有一个opt文件: 保存了库选项</li>
+</ol>
+<p><img src="/img/20170305_15.png" alt=""></p>
+<h3 id="查看数据库"><a href="#查看数据库" class="headerlink" title="查看数据库"></a>查看数据库</h3><ol>
+<li>查看所有数据库: show databases;</li>
+</ol>
+<p><img src="/img/20170305_16.png" alt=""></p>
+<ol start="2">
+<li>查看指定部分的数据库: 模糊查询<br>Show databases like ‘pattern’;    </li>
+</ol>
+<p>– pattern是匹配模式</p>
+<p>%: 表示匹配多个字符</p>
+<p>_: 表示匹配单个字符</p>
+<p><img src="/img/20170305_17.png" alt=""></p>
+<ol start="3">
+<li>查看数据库的创建语句: show create database 数据库名字;</li>
+</ol>
+<p><img src="/img/20170305_18.png" alt=""></p>
+<h3 id="更新数据库"><a href="#更新数据库" class="headerlink" title="更新数据库"></a>更新数据库</h3><p>数据库名字不可以修改.</p>
+<p>**数据库的修改仅限库选项: 字符集和校对集(校对集依赖字符集)</p>
+<p>Alter database 数据库名字 [库选项];</p>
+<p>Charset/ character set [=] 字符集</p>
+<p>Collate 校对集**</p>
+<p><img src="/img/20170305_19.png" alt=""></p>
+<h3 id="删除数据库"><a href="#删除数据库" class="headerlink" title="删除数据库"></a>删除数据库</h3><p>所有的操作中: 删除是最简单</p>
+<p><strong>Drop database 数据库名字;</strong></p>
+<p><img src="/img/20170305_20.png" alt=""></p>
+<p>当删除数据库语句执行之后,发生了什么?</p>
+<ol>
+<li>在数据库内部看不到对应的数据库</li>
+</ol>
+<p><img src="/img/20170305_21.png" alt=""></p>
+<ol start="2">
+<li>在对应的数据库存储的文件夹内: 数据库名字对应的文件夹也被删除（级联删除：里面的数据表全部删除）</li>
+</ol>
+<p><img src="/img/20170305_22.png" alt=""></p>
+<p>注意：数据库的删除不是闹着玩的，不要随意删除，应该先进行备份后操作．（删除不可逆）</p>
+<h2 id="表操作"><a href="#表操作" class="headerlink" title="表操作"></a>表操作</h2><p>表与字段是密不可分的．</p>
+<h3 id="新增数据表"><a href="#新增数据表" class="headerlink" title="新增数据表"></a>新增数据表</h3><p><strong>Create table [if not exists] 表名(<br>字段名字 数据类型,<br>字段名字 数据类型    – 最后一行不需要逗号<br>)[表选项];</strong></p>
+<p>If not exists: 如果表名不存在,那么就创建,否则不执行创建代码: 检查功能</p>
+<p>表选项: 控制表的表现</p>
+<p>字符集: charset/character set 具体字符集;    – 保证表中数据存储的字符集</p>
+<p>校对集: collate 具体校对集;</p>
+<p>存储引擎: engine 具体的存储引擎(innodb和myisam)</p>
+<p><img src="/img/20170305_23.png" alt=""></p>
+<p>任何一个表的设计都必须指定数据库.</p>
+<p>方案1: 显示的指定表所属的数据库</p>
+<p>Create table 数据库名.表名();    – 将当前数据表创建到指定的数据库下</p>
+<p><img src="/img/20170305_24.png" alt=""></p>
+<p>方案2: 隐式的指定表所属数据库: 先进入到某个数据库环境,然后这样创建的表自动归属到某个指定的数据库. </p>
+<p>进入数据库环境: use 数据库名字;</p>
+<p><img src="/img/20170305_25.png" alt=""></p>
+<p><strong>当创建数据表的SQL指令执行之后,到底发生了什么?</strong></p>
+<ol>
+<li>指定数据库下已经存在对应的表</li>
+<li>在数据库对应的文件夹下,会产生对应表的结构文件(跟存储引擎有关系)</li>
+</ol>
+<p><img src="/img/20170305_26.png" alt=""></p>
+<h3 id="查看数据表"><a href="#查看数据表" class="headerlink" title="查看数据表"></a>查看数据表</h3><p>数据库能查看的方式,表都可以查看. </p>
+<h4 id="查看所有表"><a href="#查看所有表" class="headerlink" title="查看所有表:"></a>查看所有表:</h4><p><strong>show tables;</strong></p>
+<p><img src="/img/20170305_27.png" alt=""></p>
+<h4 id="查看部分表"><a href="#查看部分表" class="headerlink" title="查看部分表:"></a>查看部分表:</h4><p><strong>模糊匹配: show tables like ‘pattern’ ;</strong></p>
+<p><img src="/img/20170305_28.png" alt=""></p>
+<h4 id="查看表的创建语句"><a href="#查看表的创建语句" class="headerlink" title="查看表的创建语句:"></a>查看表的创建语句:</h4><p><strong>show create table 表名;</strong></p>
+<p><img src="/img/20170305_29.png" alt=""></p>
+<h4 id="查看表结构-查看表中的字段信息"><a href="#查看表结构-查看表中的字段信息" class="headerlink" title="查看表结构: 查看表中的字段信息"></a>查看表结构: 查看表中的字段信息</h4><p><strong>Desc/describe/show columns from 表名;</strong></p>
+<p><img src="/img/20170305_30.png" alt=""></p>
+<h3 id="修改数据表"><a href="#修改数据表" class="headerlink" title="修改数据表"></a>修改数据表</h3><p>表本身存在, 还包含字段: 表的修改分为两个部分: 修改表本身和修改字段</p>
+<h4 id="修改表本身"><a href="#修改表本身" class="headerlink" title="修改表本身"></a>修改表本身</h4><p>表本身可以修改: 表名和表选项</p>
+<p><strong>修改表名: rename table 老表名 to 新表名;</strong></p>
+<p><img src="/img/20170305_31.png" alt=""></p>
+<p>修改表选项: 字符集,校对集和存储引擎</p>
+<p>Alter table 表名 表选项 [=] 值;</p>
+<p><img src="/img/20170305_32.png" alt=""></p>
+<h4 id="修改字段"><a href="#修改字段" class="headerlink" title="修改字段"></a>修改字段</h4><p>字段操作很多: 新增, 修改, 重名, 删除</p>
+<h5 id="新增字段"><a href="#新增字段" class="headerlink" title="新增字段"></a>新增字段</h5><p><strong>Alter table 表名 add [column] 字段名 数据类型 [列属性] [位置];</strong></p>
+<p>位置: 字段名可以存放表中的任意位置</p>
+<p>First: 第一个位置</p>
+<p>After: 在哪个字段之后: after 字段名; 默认的是在最后一个字段之后</p>
+<p><img src="/img/20170305_33.png" alt=""></p>
+<h5 id="修改字段-1"><a href="#修改字段-1" class="headerlink" title="修改字段"></a>修改字段</h5><p>修改通常是修改属性或者数据类型</p>
+<p><strong>Alter table 表名 modify 字段名 数据类型 [属性] [位置];</strong></p>
+<p><img src="/img/20170305_34.png" alt=""></p>
+<h5 id="重命名字段"><a href="#重命名字段" class="headerlink" title="重命名字段"></a>重命名字段</h5><p><strong>Alter table 表名 change 旧字段 新字段名 数据类型 [属性] [位置];</strong></p>
+<p><img src="/img/20170305_35.png" alt=""></p>
+<h5 id="删除字段"><a href="#删除字段" class="headerlink" title="删除字段"></a>删除字段</h5><p><strong>Alter table 表名 drop 字段名;</strong></p>
+<p><img src="/img/20170305_36.png" alt=""></p>
+<p>小心: 如果表中已经存在数据,那么删除字段会清空该字段的所有数据(不可逆)</p>
+<h3 id="删除数据表"><a href="#删除数据表" class="headerlink" title="删除数据表"></a>删除数据表</h3><p><strong>Drop table 表名1,表名2…;    – 可以一次性删除多张表</strong></p>
+<p><img src="/img/20170305_37.png" alt=""></p>
+<p><strong>当删除数据表的指令执行之后发生了什么?</strong></p>
+<ol>
+<li>在表空间中,没有了指定的表(数据也没有了)</li>
+<li>在数据库对应的文件夹下, 表对应的文件(与存储引擎有关)也会被删除</li>
+</ol>
+<p><img src="/img/20170305_37.5.png" alt=""></p>
+<p>注意: 删除有危险,操作需谨慎(不可逆)</p>
+<h2 id="数据操作"><a href="#数据操作" class="headerlink" title="数据操作"></a>数据操作</h2><h3 id="新增数据"><a href="#新增数据" class="headerlink" title="新增数据"></a>新增数据</h3><p>有两种方案</p>
+<p>方案1: 给全表字段插入数据, 不需要指定字段列表: 要求数据的值出现的顺序必须与表中设计的字段出现的顺序一致: 凡是非数值数据,都需要使用引号(建议是单引号)包裹</p>
+<p><strong>Insert into 表名 values(值列表)[,(值列表)];    – 可以一次性插入多条记录</strong></p>
+<p><img src="/img/20170305_38.png" alt=""></p>
+<p>方案2: 给部分字段插入数据,需要选定字段列表: 字段列表出现的顺序与字段的顺序无关; 但是值列表的顺序必须与选定的字段的顺序一致.<br>Insert into 表名 (字段列表) values (值列表)[,(值列表)];<br>39</p>
+<h3 id="查看数据"><a href="#查看数据" class="headerlink" title="查看数据"></a>查看数据</h3><p><strong>Select */字段列表 from 表名 [where条件];</strong></p>
+<p>查看所有数据</p>
+<p><img src="/img/20170305_40.png" alt=""></p>
+<p>查看指定字段,指定条件的数据.</p>
+<p><img src="/img/20170305_41.png" alt=""></p>
+<h3 id="更新数据"><a href="#更新数据" class="headerlink" title="更新数据"></a>更新数据</h3><p><strong>Update 表名 set 字段 = 值 [where条件];    – 建议都有where: 要不是更新全部</strong></p>
+<p><img src="/img/20170305_42.png" alt=""></p>
+<p>更新不一定会成功: 如没有真正要更新的数据</p>
+<p><img src="/img/20170305_43.png" alt=""></p>
+<h3 id="删除数据"><a href="#删除数据" class="headerlink" title="删除数据"></a>删除数据</h3><p>删除是不可逆的: 谨慎删除</p>
+<p><strong>Delete from 表名 [where条件];</strong></p>
+<p><img src="/img/20170305_44.png" alt=""></p>
+<h1 id="中文数据问题"><a href="#中文数据问题" class="headerlink" title="中文数据问题"></a>中文数据问题</h1><p>中文数据问题本质是字符集问题.</p>
+<p>计算机只识别二进制: 人类更多是识别符号: 需要有个二进制与字符的对应关系(字符集)</p>
+<p>客户端向服务器插入中文数据: 没有成功</p>
+<p><img src="/img/20170305_45.png" alt=""></p>
+<p>原因: \xD5\xC5\xD4\xBD代表的是”张越”在当前编码(字符集)下对应的二进制编码转换成的十六进制: 两个汉字 =&gt; 四个字节(GBK)</p>
+<p><img src="/img/20170305_46.png" alt=""></p>
+<p>报错: 服务器没有识别对应的四个字节: 服务器认为数据是UTF8, 一个汉字有三个字节: 读取三个字节转换成汉字(失败),剩余的再读三个字节(不够): 最终失败.</p>
+<p>所有的数据库服务器认为(表现)的一些特性都是通过服务器端的变量来保存: 系统先读取自己的变量,看看应该怎么表现. </p>
+<p>//查看服务器到底识别哪些字符集</p>
+<p><strong>Show character set;</strong></p>
+<p><img src="/img/20170305_47.png" alt=""></p>
+<p>基本上: 服务器是万能,什么字符集都支持</p>
+<p>//既然服务器识别这么多: 总有一种是服务器默认的跟客户端打交道的字符集</p>
+<p><strong>Show variables like ‘character_set%’;</strong></p>
+<p><img src="/img/20170305_48.png" alt=""></p>
+<p>问题根源: 客户端数据只能是GBK, 而服务器认为是UTF8: 矛盾产生<br>解决方案: 改变服务器, 默认的接收字符集为GBK;</p>
+<p><strong>Set character_set_client = gbk;</strong></p>
+<p><img src="/img/20170305_49.png" alt=""></p>
+<p>插入中文的效果</p>
+<p><img src="/img/20170305_50.png" alt=""></p>
+<p>查看数据效果: 依然是乱码</p>
+<p><img src="/img/20170305_51.png" alt=""></p>
+<p>原因: 数据来源是服务器, 解析数据是客户端(客户端只识别GBK: 只会两个字节一个汉字): 但是事实服务器给的数据却是UTF8,三个字节一个汉字: 乱码</p>
+<p>解决方案: 修改服务器给客户端的数据字符集为GBK</p>
+<p><strong>Set character_set_results = GBK ;</strong></p>
+<p><img src="/img/20170305_52.png" alt=""></p>
+<p>查看数据效果</p>
+<p><img src="/img/20170305_53.png" alt=""></p>
+<p>Set 变量 = 值; 修改只是会话级别(当前客户端,当次连接有效: 关闭失效)</p>
+<p><img src="/img/20170305_54.png" alt=""></p>
+<p>设置服务器对客户端的字符集的认识: 可以使用快捷方式: set names 字符集</p>
+<p>Set names gbk; ====&gt; character_set_client,character_set_results,character_set_connection</p>
+<p><img src="/img/20170305_55.png" alt=""></p>
+<p>Connection连接层: 是字符集转变的中间者,如果统一了效率更高,不统一也没问题.</p>
+<h1 id="校对集问题"><a href="#校对集问题" class="headerlink" title="校对集问题"></a>校对集问题</h1><p>校对集: 数据比较的方式</p>
+<p>校对集有三种格式</p>
+<p><strong>_bin:</strong> binary,二进制比较, 取出二进制位,一位一位的比较, 区分大小写</p>
+<p><strong>_cs:</strong> case sensitive,大小写敏感, 区分大小写</p>
+<p><strong>_ci:</strong> case insensitice,大小写不敏感,不区分大小写</p>
+<p>查看数据库所支持的校对集: <strong>show collation;</strong></p>
+<p><img src="/img/20170305_56.png" alt=""></p>
+<p>校对集应用: 只有当数据产生比较的时候,校对集才会生效.</p>
+<p><img src="/img/20170305_57.png" alt=""></p>
+<p>对比: 使用utf8 的_bin和_ci来验证不同的校对集的效果</p>
+<ol>
+<li>创建不同校对集对应的表</li>
+</ol>
+<p><img src="/img/20170305_58.png" alt=""></p>
+<ol start="2">
+<li>插入数据</li>
+</ol>
+<p><img src="/img/20170305_59.png" alt=""></p>
+<ol start="3">
+<li>比较: 根据某个字段进行排序: </li>
+</ol>
+<p>order by 字段名 </p>
+<p><strong>[asc|desc]; asc升序,desc降序,默认是升序</strong></p>
+<p><img src="/img/20170305_60.png" alt=""></p>
+<p>校对集: 必须在没有数据之前生命好,如果有了数据,那么再进行校对集修改: 那么修改无效.</p>
+<p><img src="/img/20170305_61.png" alt=""></p>
+<h1 id="Web乱码问题"><a href="#Web乱码问题" class="headerlink" title="Web乱码问题"></a>Web乱码问题</h1><p>动态网站由三部分构成: 浏览器, apache服务器(PHP),数据库服务器, 三个部分都有自己的字符集(中文), 数据需要在三个部分之间来回传递: 很容易产生乱码.</p>
+<p>如何解决乱码问题: 统一编码(三码合一)</p>
+<p>但是事实上不可能: 浏览器是用户管理(根本不可能控制).</p>
+<p>但是必须要解决这些问题: 主要靠服务器来做</p>
+<p><img src="/img/20170305_62.png" alt=""></p>
+<h1 id="SQL语句小结"><a href="#SQL语句小结" class="headerlink" title="SQL语句小结"></a>SQL语句小结</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 双中划线+空格: 注释(单行注释),也可以使用#号</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建数据库</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">database</span> mydatabase <span class="keyword">charset</span> utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建关键字数据库</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">database</span> <span class="keyword">database</span> <span class="keyword">charset</span> utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 使用反引号</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">database</span> <span class="string">`database`</span> <span class="keyword">charset</span> utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建中文数据库</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">database</span> 中国 <span class="keyword">charset</span> utf8;</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">database</span> <span class="string">`中国`</span> <span class="keyword">charset</span> utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 解决方案: 告诉服务器当前中文的字符集是什么</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">names</span> gbk;</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">database</span> 中国 <span class="keyword">charset</span> utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看所有数据库</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">databases</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建数据库</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">database</span> informationtest <span class="keyword">charset</span> utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看以information_开始的数据库: _需要被转义</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">databases</span> <span class="keyword">like</span> <span class="string">'information\_%'</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">databases</span> <span class="keyword">like</span> <span class="string">'information_%'</span>;	<span class="comment">-- 相当于information%</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看数据库创建语句</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">database</span> mydatabase;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">database</span> <span class="string">`database`</span>;	<span class="comment">-- 关键字需要使用反引号</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 修改数据库informationtest的字符集</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">database</span> informationtest <span class="keyword">charset</span> GBK;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 删除数据库</span></span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">database</span> informationtest;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建表</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">if</span> <span class="keyword">not</span> <span class="keyword">exists</span> mydatabase.student(	<span class="comment">-- 显示的将student表放到mydatabase数据库下</span></span><br><span class="line"><span class="keyword">name</span> <span class="built_in">varchar</span>(<span class="number">10</span>),</span><br><span class="line">gender <span class="built_in">varchar</span>(<span class="number">10</span>),</span><br><span class="line"><span class="built_in">number</span> <span class="built_in">varchar</span>(<span class="number">10</span>),</span><br><span class="line">age <span class="built_in">int</span></span><br><span class="line">)<span class="keyword">charset</span> utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建数据表</span></span><br><span class="line"><span class="comment">-- 进入数据库</span></span><br><span class="line"><span class="keyword">use</span> mydatabase;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建表</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">class</span>(</span><br><span class="line"><span class="keyword">name</span> <span class="built_in">varchar</span>(<span class="number">10</span>),</span><br><span class="line">room <span class="built_in">varchar</span>(<span class="number">10</span>)</span><br><span class="line">)<span class="keyword">charset</span> utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看所有表</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">tables</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看以s结尾的表</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">tables</span> <span class="keyword">like</span> <span class="string">'%s'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看表创建语句</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">table</span> student\g	<span class="comment">-- \g ==== ;</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">table</span> student\G	<span class="comment">-- 将查到的结构旋转90度变成纵向</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看表结构</span></span><br><span class="line"><span class="keyword">desc</span> <span class="keyword">class</span>;</span><br><span class="line"><span class="keyword">describe</span> <span class="keyword">class</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">columns</span> <span class="keyword">from</span> <span class="keyword">class</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 重命名表: student表 -&gt; my_student(取数据库名字前两个字母)</span></span><br><span class="line"><span class="keyword">rename</span> <span class="keyword">table</span> student <span class="keyword">to</span> my_student;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 修改表选项: 字符集</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> my_student <span class="keyword">charset</span> = GBK;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 给学生表增加ID放到第一个位置</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> my_student</span><br><span class="line"><span class="keyword">add</span> <span class="keyword">column</span> <span class="keyword">id</span> <span class="built_in">int</span></span><br><span class="line"><span class="keyword">first</span>;	<span class="comment">-- mysql会自动寻找分号: 语句结束符</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 将学生表中的number学号字段变成固定长度,且放到第二位(id之后)</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> my_student</span><br><span class="line"><span class="keyword">modify</span> <span class="built_in">number</span> <span class="built_in">char</span>(<span class="number">10</span>) <span class="keyword">after</span> <span class="keyword">id</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 修改学生表中的gender字段为sex</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> my_student</span><br><span class="line"><span class="keyword">change</span> gender sex <span class="built_in">varchar</span>(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 删除学生表中的年龄字段(age)</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> my_student <span class="keyword">drop</span> age;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 删除数据表</span></span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">table</span> <span class="keyword">class</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 插入数据</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> my_student <span class="keyword">values</span>(<span class="number">1</span>,<span class="string">'itcast0001'</span>,<span class="string">'Jim'</span>,<span class="string">'male'</span>),</span><br><span class="line">(<span class="number">2</span>,<span class="string">'itcast0002'</span>,<span class="string">'Hanmeimei'</span>,<span class="string">'female'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 插入数据: 指定字段列表</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> my_student(<span class="built_in">number</span>,sex,<span class="keyword">name</span>,<span class="keyword">id</span>) <span class="keyword">values</span></span><br><span class="line">(<span class="string">'itcast0003'</span>,<span class="string">'male'</span>,<span class="string">'Tom'</span>,<span class="number">3</span>),</span><br><span class="line">(<span class="string">'itcast0004'</span>,<span class="string">'female'</span>,<span class="string">'Lily'</span>,<span class="number">4</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看所有数据</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> my_student;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看指定字段,指定条件数据</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">id</span>,<span class="built_in">number</span>,sex,<span class="keyword">name</span> <span class="keyword">from</span> my_student <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">1</span>;	<span class="comment">-- 查看满足id为1的学生信息</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 更新数据</span></span><br><span class="line"><span class="keyword">update</span> my_student <span class="keyword">set</span> sex  = <span class="string">'female'</span> <span class="keyword">where</span> <span class="keyword">name</span> = <span class="string">'jim'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 删除数据</span></span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> my_student <span class="keyword">where</span> sex = <span class="string">'male'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 插入数据(中文)</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> my_student <span class="keyword">values</span>(<span class="number">5</span>,<span class="string">'itcast0005'</span>,<span class="string">'张越'</span>,<span class="string">'男'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看所有字符集</span></span><br><span class="line"><span class="keyword">show</span> <span class="built_in">character</span> <span class="keyword">set</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看服务器默认的对外处理的字符集</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'character_set%'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 修改服务器认为的客户端数据的字符集为GBK</span></span><br><span class="line"><span class="keyword">set</span> character_set_client = gbk;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 修改服务器给定数据的字符集为GBK</span></span><br><span class="line"><span class="keyword">set</span> character_set_results = gbk;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 快捷设置字符集</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">names</span> gbk;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看所有校对集</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">collation</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建表使用不同的校对集</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> my_collate_bin(</span><br><span class="line"><span class="keyword">name</span> <span class="built_in">char</span>(<span class="number">1</span>)</span><br><span class="line">)<span class="keyword">charset</span> utf8 <span class="keyword">collate</span> utf8_bin;</span><br><span class="line"></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> my_collate_ci(</span><br><span class="line"><span class="keyword">name</span> <span class="built_in">char</span>(<span class="number">1</span>)</span><br><span class="line">)<span class="keyword">charset</span> utf8 <span class="keyword">collate</span> utf8_general_ci;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 插入数据</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> my_collate_bin <span class="keyword">values</span>(<span class="string">'a'</span>),(<span class="string">'A'</span>),(<span class="string">'B'</span>),(<span class="string">'b'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> my_collate_ci <span class="keyword">values</span>(<span class="string">'a'</span>),(<span class="string">'A'</span>),(<span class="string">'B'</span>),(<span class="string">'b'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 排序查找</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> my_collate_bin <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">name</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> my_collate_ci <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">name</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 有数据后修改校对集</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> my_collate_ci <span class="keyword">collate</span> = utf8_bin;</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> my_collate_ci <span class="keyword">collate</span> = utf8_general_ci;</span><br></pre></td></tr></table></figure>
+
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2017/03/05/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/>https://www.bcoder.top/2017/03/05/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-21T18:44:03+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-01-21 18:44:03</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/MySQL/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>MySQL</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2017/03/05/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/&title=MySQL数据库概述及基本操作 - zln's blog&summary=
+引言本文通过对数据库的概述、基本的SQL操作（包括做常用的库操作，表操作和数据操作）、数据库的中文乱码问题的解决等方面展开。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2017/03/05/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/&title=MySQL数据库概述及基本操作 - zln's blog&summary=
+引言本文通过对数据库的概述、基本的SQL操作（包括做常用的库操作，表操作和数据操作）、数据库的中文乱码问题的解决等方面展开。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2017/03/05/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/&title=MySQL数据库概述及基本操作 - zln's blog&summary=
+引言本文通过对数据库的概述、基本的SQL操作（包括做常用的库操作，表操作和数据操作）、数据库的中文乱码问题的解决等方面展开。
+"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2017/03/11/HashMap%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>HashMap 源码分析</p>
+                <p class='content'>1.概述Hashmap继承于AbstractMap，实现了Map、Cloneable、java.io.Serializable接口。它的key、value都可以为null，映射不是有序的。
+
+H...</p>
+              </a>
+            
+            
+              <a class='next' href='/2017/03/04/HashCode%E7%9A%84%E4%BD%9C%E7%94%A8%E6%8E%A2%E7%A9%B6/'>
+                <p class='title'>HashCode的作用探究<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>关于HashCode的官方文档定义：
+hashcode方法返回该对象的哈希码值。支持该方法是为哈希表提供一些优点，例如，java.util.Hashtable 提供的哈希表。 hashCode ...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'MySQL数据库概述及基本操作',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是数据库"><span class="toc-text">什么是数据库?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据库的分类"><span class="toc-text">数据库的分类?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#不同的数据库阵营中的产品有哪些"><span class="toc-text">不同的数据库阵营中的产品有哪些?</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#关系型数据库"><span class="toc-text">关系型数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#非关系型数据库"><span class="toc-text">非关系型数据库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#两种数据库阵营的区别"><span class="toc-text">两种数据库阵营的区别?</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#关系型数据库-1"><span class="toc-text">关系型数据库:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#非关系型数据库-1"><span class="toc-text">非关系型数据库:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关系型数据库-2"><span class="toc-text">关系型数据库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是关系型数据库"><span class="toc-text">什么是关系型数据库?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#关系型数据库的设计"><span class="toc-text">关系型数据库的设计?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关键字说明"><span class="toc-text">关键字说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL"><span class="toc-text">SQL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mysql数据库"><span class="toc-text">Mysql数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mysql服务器对象"><span class="toc-text">Mysql服务器对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#库操作"><span class="toc-text">库操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#新增数据库"><span class="toc-text">新增数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看数据库"><span class="toc-text">查看数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更新数据库"><span class="toc-text">更新数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除数据库"><span class="toc-text">删除数据库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#表操作"><span class="toc-text">表操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#新增数据表"><span class="toc-text">新增数据表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看数据表"><span class="toc-text">查看数据表</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#查看所有表"><span class="toc-text">查看所有表:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查看部分表"><span class="toc-text">查看部分表:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查看表的创建语句"><span class="toc-text">查看表的创建语句:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查看表结构-查看表中的字段信息"><span class="toc-text">查看表结构: 查看表中的字段信息</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改数据表"><span class="toc-text">修改数据表</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#修改表本身"><span class="toc-text">修改表本身</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#修改字段"><span class="toc-text">修改字段</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#新增字段"><span class="toc-text">新增字段</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#修改字段-1"><span class="toc-text">修改字段</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#重命名字段"><span class="toc-text">重命名字段</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#删除字段"><span class="toc-text">删除字段</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除数据表"><span class="toc-text">删除数据表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据操作"><span class="toc-text">数据操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#新增数据"><span class="toc-text">新增数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看数据"><span class="toc-text">查看数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更新数据"><span class="toc-text">更新数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除数据"><span class="toc-text">删除数据</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>

@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html>
+<head hexo-theme='https://volantis.js.org/#2020'>
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+    
+  
+  <!-- 渲染优化 -->
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- 页面元数据 -->
+  
+    <title>istio笔记2-Ingress Gateway - zln&#39;s blog</title>
+  
+    <meta name="keywords" content="kubernetes,istio">
+  
+  
+    <meta name="description" content="简介在 Kubernetes 环境中，使用 Kubernetes Ingress 资源 来指定需要暴露到集群外的服务。 在 Istio 服务网格中，更好的选择（同样适用于 Kubernetes 及其他环境）是使用一种新的配置模型，名为 Istio Gateway。 Gateway 允许应用一些诸如监控和路由规则的...">
+  
+
+  <!-- feed -->
+  
+
+  <!-- import meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css">
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.css">
+  
+
+  <!-- import link -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+<header class="l_header shadow blur">
+
+  <div class='wrapper'>
+    <div class='nav-sub container--flex'>
+      <a class="logo flat-box"></a>
+      <ul class='switcher h-list'>
+        <li><a class="s-comment flat-btn fas fa-comments fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+          <li><a class="s-toc flat-btn fas fa-list fa-fw" target="_self" href='javascript:void(0)'></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main container container--flex">
+      
+        
+        <a class="logo flat-box" target="_self" href='/'>
+          
+          
+          
+          
+            周陆宁 <b><sup style='color:#3AA757'>2020</sup></b>
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='h-list'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/
+                  
+                  
+                  
+                    id="home"
+                  >
+                  
+                    <i class='fas fa-rss fa-fw'></i>
+                  
+                  博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/categories/
+                  
+                  
+                  
+                    id="categories"
+                  >
+                  
+                    <i class='fas fa-folder-open fa-fw'></i>
+                  
+                  分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/tags/
+                  
+                  
+                  
+                    id="tags"
+                  >
+                  
+                    <i class='fas fa-tags fa-fw'></i>
+                  
+                  标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="flat-box" href=/archives/
+                  
+                  
+                  
+                    id="archives"
+                  >
+                  
+                    <i class='fas fa-archive fa-fw'></i>
+                  
+                  归档
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+
+      
+        <div class="m_search">
+          <form name="searchform" class="form u-search-form">
+            <i class="icon fas fa-search fa-fw"></i>
+            <input type="text" class="input u-search-input" placeholder="搜索" />
+          </form>
+        </div>
+      
+
+			<ul class='switcher h-list'>
+				
+					<li><a class="s-search flat-btn fas fa-search fa-fw" target="_self" href='javascript:void(0)'></a></li>
+				
+				<li><a class="s-menu flat-btn fas fa-bars fa-fw" target="_self" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+<ul class="menu-phone navigation white-box">
+  
+  
+    <li>
+      <a class="flat-box" href=/
+        
+        
+        
+          id="home"
+        >
+        
+          <i class='fas fa-rss fa-fw'></i>
+        
+        博客
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/categories/
+        
+        
+        
+          id="categories"
+        >
+        
+          <i class='fas fa-folder-open fa-fw'></i>
+        
+        分类
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/tags/
+        
+        
+        
+          id="tags"
+        >
+        
+          <i class='fas fa-tags fa-fw'></i>
+        
+        标签
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/archives/
+        
+        
+        
+          id="archives"
+        >
+        
+          <i class='fas fa-archive fa-fw'></i>
+        
+        归档
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/friends/
+        
+        
+        
+          id="friends"
+        >
+        
+          <i class='fas fa-link fa-fw'></i>
+        
+        友链
+      </a>
+    </li>
+  
+    <li>
+      <a class="flat-box" href=/about/
+        
+        
+        
+          id="about"
+        >
+        
+          <i class='fas fa-info-circle fa-fw'></i>
+        
+        关于
+      </a>
+    </li>
+  
+</ul>
+<script>setLoadingBarProgress(40);</script>
+
+
+
+  <div class="l_body nocover">
+    <div class='body-wrapper'>
+      
+
+<div class='l_main'>
+  
+
+  
+    <article id="post" class="post white-box shadow article-type-post" itemscope itemprop="blogPost">
+      
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2020/03/19/istio%E7%AC%94%E8%AE%B02-Ingress-Gateway/">
+        istio笔记2-Ingress Gateway
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+<div class='new-meta-item author'>
+  <a href="https://bcoder.top" target="_blank" rel="nofollow noopener">
+    <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/avatar/avatar.png">
+    <p>周陆宁</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  
+  <div class='new-meta-item category'>
+    <a href='/categories/istio/' rel="nofollow">
+      <i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>
+      <p>istio</p>
+    </a>
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2020-03-19 13:20:28</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          
+          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>在 Kubernetes 环境中，使用 <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/" target="_blank" rel="noopener">Kubernetes Ingress 资源</a> 来指定需要暴露到集群外的服务。 在 Istio 服务网格中，更好的选择（同样适用于 Kubernetes 及其他环境）是使用一种新的配置模型，名为 <a href="https://istio.io/zh/docs/reference/config/networking/gateway/" target="_blank" rel="noopener">Istio Gateway</a>。 <code>Gateway</code> 允许应用一些诸如监控和路由规则的 Istio 特性来管理进入集群的流量。</p>
+<p>下面介绍如何配置 Istio，以使用 Istio <code>Gateway</code> 来将服务暴露至服务网格之外。</p>
+<a id="more"></a>
+
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>1.进入<code>istio</code> 目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;root&#x2F;istio-1.5.0</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2.启动 <a href="https://github.com/istio/istio/tree/release-1.5/samples/httpbin" target="_blank" rel="noopener">httpbin</a> 样例程序。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sed -i "s/docker.io/wixr7yss.mirror.aliyuncs.com/g" samples/httpbin/httpbin.yaml</span><br><span class="line">kubectl apply -f samples/httpbin/httpbin.yaml</span><br></pre></td></tr></table></figure>
+
+
+
+<p>3.检查服务</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@zz-node1 istio-1.5.0]# kubectl --namespace=default get service</span><br><span class="line">NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE</span><br><span class="line">httpbin      ClusterIP   10.96.116.209   &lt;none&gt;        8000/TCP   115s</span><br><span class="line">kubernetes   ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP    4h42m</span><br><span class="line">[root@zz-node1 istio-1.5.0]# kubectl --namespace=default get pod</span><br><span class="line">NAME                       READY   STATUS    RESTARTS   AGE</span><br><span class="line">httpbin-7cf4db564c-6s8sr   2/2     Running   0          118s</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="确定-ingress-IP-和端口"><a href="#确定-ingress-IP-和端口" class="headerlink" title="确定 ingress IP 和端口"></a>确定 ingress IP 和端口</h2><p>执行如下指令，明确自身 Kubernetes 集群环境支持外部负载均衡：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get svc istio-ingressgateway -n istio-system</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://img.bcoder.top/2020.03.19.2/1.png" alt=""></p>
+<p>2.如果 <code>EXTERNAL-IP</code> 值已设置，说明环境正在使用外部负载均衡，可以用其为 ingress gateway 提供服务。 如果 <code>EXTERNAL-IP</code> 值为 <code>（或持续显示</code>）， 说明环境没有提供外部负载均衡，无法使用 ingress gateway。 在这种情况下，你可以使用服务的 <a href="https://kubernetes.io/docs/concepts/services-networking/service/#nodeport" target="_blank" rel="noopener">node port</a> 访问网关。</p>
+<ul>
+<li><p><strong>外部负载均衡器</strong></p>
+<ul>
+<li><p>若已确定自身环境使用了外部负载均衡器，执行如下指令。</p>
+</li>
+<li><p>设置 ingress IP 和端口：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=<span class="string">'&#123;.status.loadBalancer.ingress[0].ip&#125;'</span>)</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=<span class="string">'&#123;.spec.ports[?(@.name=="http2")].port&#125;'</span>)</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=<span class="string">'&#123;.spec.ports[?(@.name=="https")].port&#125;'</span>)</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>在特定的环境下，可能会使用主机名指代负载均衡器，而不是 IP 地址。 此时，ingress 网关的 <code>EXTERNAL-IP</code> 值将不再是 IP 地址，而是主机名。前文设置 <code>INGRESS_HOST</code> 环境变量的命令将执行失败。 使用下面的命令更正 <code>INGRESS_HOST</code> 值：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=<span class="string">'&#123;.status.loadBalancer.ingress[0].hostname&#125;'</span>)</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>node port</strong></p>
+<ul>
+<li><p>若自身环境未使用外部负载均衡器，需要通过 node port 访问。执行如下命令。</p>
+</li>
+<li><p>设置 ingress 端口：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='&#123;.spec.ports[?(@.name=="http2")].nodePort&#125;')</span><br><span class="line">export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='&#123;.spec.ports[?(@.name=="https")].nodePort&#125;')</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>基于集群供应商，设置 ingress IP：GKE/Minikube/Docker For Desktop等多种方式</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='&#123;.items[0].status.hostIP&#125;')</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+</li>
+</ul>
+<p>采用<strong>node port</strong>最后结果：</p>
+<p><img src="http://img.bcoder.top/2020.03.19.2/2.png" alt=""></p>
+<h2 id="使用-Istio-Gateway-配置-ingress"><a href="#使用-Istio-Gateway-配置-ingress" class="headerlink" title="使用 Istio Gateway 配置 ingress"></a>使用 Istio Gateway 配置 ingress</h2><p>Ingress <a href="https://istio.io/zh/docs/reference/config/networking/gateway/" target="_blank" rel="noopener">Gateway</a> 描述运行在网格边界的负载均衡器，负责接收入口 HTTP/TCP 连接。 其中配置了对外暴露的端口、协议等。 但是，不像 <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/" target="_blank" rel="noopener">Kubernetes Ingress 资源</a>，ingress Gateway 不包含任何流量路由配置。Ingress 流量的路由使用 Istio 路由规则来配置，和内部服务请求完全一样。</p>
+<p>让我们一起来看如何为 HTTP 流量在80端口上配置 <code>Gateway</code>。</p>
+<p>1.创建 Istio <code>Gateway</code>并应用：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> cat &lt;&lt; EOF &gt; gw.yaml</span></span><br><span class="line">apiVersion: networking.istio.io/v1alpha3</span><br><span class="line">kind: Gateway</span><br><span class="line">metadata:</span><br><span class="line">  name: httpbin-gateway</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    istio: ingressgateway # use Istio default gateway implementation</span><br><span class="line">  servers:</span><br><span class="line">  - port:</span><br><span class="line">      number: 80</span><br><span class="line">      name: http</span><br><span class="line">      protocol: HTTP</span><br><span class="line">    hosts:</span><br><span class="line">    - "httpbin.example.com"</span><br><span class="line">---</span><br><span class="line">apiVersion: networking.istio.io/v1alpha3</span><br><span class="line">kind: VirtualService</span><br><span class="line">metadata:</span><br><span class="line">  name: httpbin</span><br><span class="line">spec:</span><br><span class="line">  hosts:</span><br><span class="line">  - "httpbin.example.com"</span><br><span class="line">  gateways:</span><br><span class="line">  - httpbin-gateway</span><br><span class="line">  http:</span><br><span class="line">  - match:</span><br><span class="line">    - uri:</span><br><span class="line">        prefix: /status</span><br><span class="line">    - uri:</span><br><span class="line">        prefix: /delay</span><br><span class="line">    route:</span><br><span class="line">    - destination:</span><br><span class="line">        port:</span><br><span class="line">          number: 8000</span><br><span class="line">        host: httpbin</span><br><span class="line">EOF</span><br><span class="line">kubectl apply -f gw.yaml</span><br></pre></td></tr></table></figure>
+
+
+
+<p>已为 <code>httpbin</code> 服务创建了<a href="https://istio.io/zh/docs/reference/config/networking/virtual-service/" target="_blank" rel="noopener">虚拟服务</a> 配置，包含两个路由规则，允许流量流向路径 <code>/status</code> 和 <code>/delay</code>。</p>
+<p><a href="https://istio.io/zh/docs/reference/config/networking/virtual-service/#VirtualService-gateways" target="_blank" rel="noopener">gateways</a> 列表规约了哪些请求允许通过 <code>httpbin-gateway</code> 网关。 所有其他外部请求均被拒绝并返回 404 响应。</p>
+<blockquote>
+<p>来自网格内部其他服务的内部请求无需遵循这些规则，而是默认遵守轮询调度路由规则。 你可以为 <code>gateways</code> 列表添加特定的 <code>mesh</code> 值，将这些规则同时应用到内部请求。 由于服务的内部主机名可能与外部主机名不一致（譬如： <code>httpbin.default.svc.cluster.local</code>），你需要同时将内部主机名添加到 <code>hosts</code> 列表中。 详情请参考 <a href="https://istio.io/zh/docs/ops/common-problems/network-issues#route-rules-have-no-effect-on-ingress-gateway-requests" target="_blank" rel="noopener">操作指南</a>。</p>
+</blockquote>
+<p>使用 <em>curl</em> 访问 <em>httpbin</em> 服务：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@zz-node1 istio-1.5.0]# curl -I -HHost:httpbin.example.com http://$INGRESS_HOST:$INGRESS_PORT/status/200</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">server: istio-envoy</span><br><span class="line">date: Sat, 14 Mar 2020 12:12:49 GMT</span><br><span class="line">content-type: text/html; charset=utf-8</span><br><span class="line">access-control-allow-origin: *</span><br><span class="line">access-control-allow-credentials: true</span><br><span class="line">content-length: 0</span><br><span class="line">x-envoy-upstream-service-time: 41</span><br><span class="line"></span><br><span class="line">[root@zz-node1 istio-1.5.0]#</span><br></pre></td></tr></table></figure>
+
+<p>注意上文命令使用 <code>-H</code> 标识将 HTTP头部参数 <em>Host</em> 设置为 “httpbin.example.com”。 该操作为必须操作，因为 ingress <code>Gateway</code> 已<strong>被配置用来处理 “httpbin.example.com” 的服务请求</strong>，而在测试环境中并没有为该主机绑定 DNS 而是简单直接地向 ingress IP 发送请求。</p>
+<p>4.访问其他没有被显式暴露的 URL 时，将看到 HTTP 404 错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -I -HHost:httpbin.example.com http:&#x2F;&#x2F;$INGRESS_HOST:$INGRESS_PORT&#x2F;headers</span><br><span class="line">HTTP&#x2F;1.1 404 Not Found</span><br><span class="line">date: Mon, 29 Jan 2018 04:45:49 GMT</span><br><span class="line">server: envoy</span><br><span class="line">content-length: 0</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="通过浏览器访问-ingress-服务"><a href="#通过浏览器访问-ingress-服务" class="headerlink" title="通过浏览器访问 ingress 服务"></a>通过浏览器访问 ingress 服务</h2><p>在浏览器中输入 <code>httpbin</code> 服务的URL 不能获得有效的响应，因为无法像 <code>curl</code> 那样，将请求头部参数 <em>Host</em> 传给浏览器。在现实场景中，这并不是问题，因为你需要合理配置被请求的主机及可解析的 DNS，从而在 URL 中使用主机的域名，譬如： <code>https://httpbin.example.com/status/200</code>。</p>
+<p>为了在简单的测试和演示中绕过这个问题，请在 <code>Gateway</code> 和 <code>VirtualService</code> 配置中使用通配符 <code>*</code>。譬如，修改 ingress 配置如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> cat &lt;&lt; EOF &gt; gw.yaml</span></span><br><span class="line">apiVersion: networking.istio.io/v1alpha3</span><br><span class="line">kind: Gateway</span><br><span class="line">metadata:</span><br><span class="line">  name: httpbin-gateway</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    istio: ingressgateway # use Istio default gateway implementation</span><br><span class="line">  servers:</span><br><span class="line">  - port:</span><br><span class="line">      number: 80</span><br><span class="line">      name: http</span><br><span class="line">      protocol: HTTP</span><br><span class="line">    hosts:</span><br><span class="line">    - "*"</span><br><span class="line">---</span><br><span class="line">apiVersion: networking.istio.io/v1alpha3</span><br><span class="line">kind: VirtualService</span><br><span class="line">metadata:</span><br><span class="line">  name: httpbin</span><br><span class="line">spec:</span><br><span class="line">  hosts:</span><br><span class="line">  - "*"</span><br><span class="line">  gateways:</span><br><span class="line">  - httpbin-gateway</span><br><span class="line">  http:</span><br><span class="line">  - match:</span><br><span class="line">    - uri:</span><br><span class="line">        prefix: /headers</span><br><span class="line">    route:</span><br><span class="line">    - destination:</span><br><span class="line">        port:</span><br><span class="line">          number: 8000</span><br><span class="line">        host: httpbin</span><br><span class="line">EOF</span><br><span class="line">kubectl apply -f gw.yaml</span><br></pre></td></tr></table></figure>
+
+<p>此时，便可以在浏览器中输入包含 $INGRESS_HOST:$INGRESS_PORT 的URL。譬如，输入http://$INGRESS_HOST:$INGRESS_PORT/headers，将显示浏览器发送的所有 headers 信息。</p>
+<p><img src="http://img.bcoder.top/2020.03.19.2/3.png" alt=""></p>
+<p><code>Gateway</code> 配置资源允许外部流量进入 Istio 服务网格，并对边界服务实施流量管理和 Istio 可用的策略特性。</p>
+<p>事先，在服务网格中创建一个服务并向外部流量暴露该服务的 HTTP 端点。</p>
+<h2 id="环境清除"><a href="#环境清除" class="headerlink" title="环境清除"></a>环境清除</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl delete gateway httpbin-gateway</span><br><span class="line">kubectl delete virtualservice httpbin</span><br><span class="line">kubectl delete --ignore-not-found=true -f samples/httpbin/httpbin.yaml</span><br></pre></td></tr></table></figure>
+
+<p><strong>–ignore-not-found=true</strong>:忽略不存在的资源</p>
+
+          
+            <br>
+            
+  
+    
+    
+
+<section class="widget copyright  desktop mobile">
+  <div class='content'>
+    
+      <blockquote>
+        
+          
+            <p>博客内容遵循 署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</p>
+
+          
+        
+          
+            <p>本文永久链接是：<a href=https://www.bcoder.top/2020/03/19/istio%E7%AC%94%E8%AE%B02-Ingress-Gateway/>https://www.bcoder.top/2020/03/19/istio%E7%AC%94%E8%AE%B02-Ingress-Gateway/</a></p>
+          
+        
+      </blockquote>
+    
+  </div>
+</section>
+
+  
+
+  
+    
+    
+
+<section class="widget qrcode  desktop mobile">
+  
+
+  <div class='content article-entry'>
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+      
+        <div class='fancybox'><img src='https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/qrcode/wiki_volantis.png'
+        
+          height='64px'
+        ></div>
+      
+    
+  </div>
+</section>
+
+  
+
+
+          
+        </div>
+        
+          
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-03-19T20:25:33+08:00">
+  <a class='notlink'>
+    <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2020-03-19 20:25:33</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/kubernetes/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>kubernetes</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/istio/" rel="nofollow"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i><p>istio</p></a></div>
+
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=https://www.bcoder.top/2020/03/19/istio%E7%AC%94%E8%AE%B02-Ingress-Gateway/&title=istio笔记2-Ingress Gateway - zln's blog&summary=简介在 Kubernetes 环境中，使用 Kubernetes Ingress 资源 来指定需要暴露到集群外的服务。 在 Istio 服务网格中，更好的选择（同样适用于 Kubernetes 及其他环境）是使用一种新的配置模型，名为 Istio Gateway。 Gateway 允许应用一些诸如监控和路由规则的 Istio 特性来管理进入集群的流量。
+下面介绍如何配置 Istio，以使用 Istio Gateway 来将服务暴露至服务网格之外。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://www.bcoder.top/2020/03/19/istio%E7%AC%94%E8%AE%B02-Ingress-Gateway/&title=istio笔记2-Ingress Gateway - zln's blog&summary=简介在 Kubernetes 环境中，使用 Kubernetes Ingress 资源 来指定需要暴露到集群外的服务。 在 Istio 服务网格中，更好的选择（同样适用于 Kubernetes 及其他环境）是使用一种新的配置模型，名为 Istio Gateway。 Gateway 允许应用一些诸如监控和路由规则的 Istio 特性来管理进入集群的流量。
+下面介绍如何配置 Istio，以使用 Istio Gateway 来将服务暴露至服务网格之外。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=https://www.bcoder.top/2020/03/19/istio%E7%AC%94%E8%AE%B02-Ingress-Gateway/&title=istio笔记2-Ingress Gateway - zln's blog&summary=简介在 Kubernetes 环境中，使用 Kubernetes Ingress 资源 来指定需要暴露到集群外的服务。 在 Istio 服务网格中，更好的选择（同样适用于 Kubernetes 及其他环境）是使用一种新的配置模型，名为 Istio Gateway。 Gateway 允许应用一些诸如监控和路由规则的 Istio 特性来管理进入集群的流量。
+下面介绍如何配置 Istio，以使用 Istio Gateway 来将服务暴露至服务网格之外。"
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-assets/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+        
+        
+          <div class="prev-next">
+            
+              <a class='prev' href='/2020/03/19/istio%E7%AC%94%E8%AE%B03-Bookinfo-%E5%BA%94%E7%94%A8/'>
+                <p class='title'><i class="fas fa-chevron-left" aria-hidden="true"></i>istio笔记3-Bookinfo 应用</p>
+                <p class='content'>Bookinfo 应用描述这个示例部署了一个用于演示多种 Istio 特性的应用，该应用由四个单独的微服务构成。 这个应用模仿在线书店的一个分类，显示一本书的信息。 页面上会显示一本书的描述，书...</p>
+              </a>
+            
+            
+              <a class='next' href='/2020/03/19/istio%E7%AC%94%E8%AE%B01-%E6%B5%81%E9%87%8F%E7%AE%A1%E7%90%86%E5%AD%A6%E4%B9%A0/'>
+                <p class='title'>istio笔记1-流量管理学习<i class="fas fa-chevron-right" aria-hidden="true"></i></p>
+                <p class='content'>Istio 的流量路由规则可以很容易的控制服务之间的流量和 API 调用。Istio 简化了服务级别属性的配置，比如熔断器、超时和重试，并且能轻松的设置重要的任务，如 A/B 测试、金丝雀发布、...</p>
+              </a>
+            
+          </div>
+        
+      </section>
+    </article>
+  
+
+  
+    <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'istio笔记2-Ingress Gateway',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+  
+
+  
+    
+    
+
+
+  <section class="widget toc-wrapper shadow desktop mobile">
+    
+  <header>
+    
+      <i class="fas fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#部署"><span class="toc-text">部署</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#确定-ingress-IP-和端口"><span class="toc-text">确定 ingress IP 和端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用-Istio-Gateway-配置-ingress"><span class="toc-text">使用 Istio Gateway 配置 ingress</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#通过浏览器访问-ingress-服务"><span class="toc-text">通过浏览器访问 ingress 服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#环境清除"><span class="toc-text">环境清除</span></a></li></ol>
+    </div>
+  </section>
+
+
+  
+
+
+</aside>
+
+
+  
+  <footer class="clearfix">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+  
+    <meting-js
+      theme='#1BCDFC'
+      autoplay='false'
+      volume='0.7'
+      loop='all'
+      order='list'
+      fixed='false'
+      list-max-height='340px'
+      server='netease'
+      type='playlist'
+      id='3175833810'
+      list-folded='true'>
+    </meting-js>
+  
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper">
+          
+            
+              <a href="/atom.xml"
+                class="social fas fa-rss flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="mailto:me@xaoxuu.com"
+                class="social fas fa-envelope flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://github.com/xaoxuu"
+                class="social fab fa-github flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+            
+              <a href="https://music.163.com/#/user/home?id=63035382"
+                class="social fas fa-headphones-alt flat-btn"
+                target="_blank"
+                rel="external nofollow noopener noreferrer">
+              </a>
+            
+          
+        </div>
+      
+    
+      
+        <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+      
+    
+      
+        Use
+        <a href="https://bcoder,top/" target="_blank" class="codename">周陆宁</a>
+        as theme
+        
+          , 
+          total visits
+          <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+          times
+        
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="https://xaoxuu.com" target="_blank" rel="noopener">Copyright © 2017-2020 Mr. X</a></p>
+
+        </div>
+      
+    
+  </footer>
+
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4/dist/jquery.min.js"></script>
+
+
+  <script>
+    
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/" || "/";
+    if (!ROOT.endsWith('/')) ROOT += '/';
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+  
+  
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery-backstretch@2.1.18/jquery.backstretch.min.js"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        var imgs=["https://cdn.jsdelivr.net/gh/xaoxuu/cdn-wallpaper/abstract/41F215B9-261F-48B4-80B5-4E86E165259E.jpeg"];
+        if ('true' == 'true') {
+          function shuffle(arr){
+            /*From countercurrent-time*/
+            var n = arr.length;
+            while(n--) {
+              var index = Math.floor(Math.random() * n);
+              var temp = arr[index];
+              arr[index] = arr[n];
+              arr[n] = temp;
+            }
+          }
+          shuffle(imgs);
+        }
+        if ('.cover') {
+          $('.cover').backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        } else {
+          $.backstretch(
+            imgs,
+          {
+            duration: "20000",
+            fade: "1500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10/dist/APlayer.min.js" async></script>
+
+  
+    
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0/dist/Meting.min.js" async></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2.1/js/search.js"></script>
+
+
+
+  
+<script src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-volantis@2/js/comment_typing.js"></script>
+
+
+
+<!-- 复制 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="fas fa-copy"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copyed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-clipboard-check');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPYED';
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('fa-copy');
+        $icon.addClass('fa-exclamation-triangle');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+
+
+<!-- fancybox -->
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("div.fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>
